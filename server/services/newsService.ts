@@ -8,19 +8,124 @@ interface NewsArticle {
   summary?: string;
 }
 
-// Fetch news from Hebrew news sources
+import axios from 'axios';
+import * as cheerio from 'cheerio';
+
+// Fetch news from Hebrew news sources - Ynet implementation
 export async function fetchNewsFromAPI(category: string): Promise<NewsArticle[]> {
-  // In a real application, we would fetch from actual Hebrew news sites
   console.log(`Fetching news for category: ${category} from Hebrew sources`);
   
-  // This is just a simulated response - in a real app, replace with actual API call
-  // to scrape from ynet.co.il, n12.co.il, walla.co.il, etc.
-  const simulatedData = getHebrewNewsData(category);
+  try {
+    // Convert our category to Ynet's category format
+    const ynetCategoryId = mapCategoryToYnet(category);
+    const url = `https://www.ynet.co.il/${ynetCategoryId}`;
+    
+    // Fetch the HTML content
+    const response = await axios.get(url);
+    const html = response.data;
+    
+    // Parse articles using cheerio
+    return parseYnetArticles(html, category);
+  } catch (error) {
+    console.error(`Error fetching news from Ynet: ${error}`);
+    // Fall back to simulated data if scraping fails
+    return getHebrewNewsData(category);
+  }
+}
+
+// Map our category to Ynet categories
+function mapCategoryToYnet(category: string): string {
+  const categoryMap: Record<string, string> = {
+    'politics': 'news/politics',
+    'business': 'economy',
+    'technology': 'digital',
+    'entertainment': 'entertainment',
+    'sports': 'sport',
+    'health': 'health',
+    'security': 'news/defense'
+  };
   
-  // Add a small delay to simulate API latency
-  await new Promise(resolve => setTimeout(resolve, 300));
+  return categoryMap[category] || 'news';
+}
+
+// Parse Ynet articles from HTML
+function parseYnetArticles(html: string, category: string): NewsArticle[] {
+  const $ = cheerio.load(html);
+  const articles: NewsArticle[] = [];
+  const now = new Date();
   
-  return simulatedData;
+  // Ynet's main article containers
+  $('.slotView').each((i, element) => {
+    try {
+      const titleElement = $(element).find('.slotTitle');
+      const title = titleElement.text().trim();
+      
+      if (!title) return; // Skip items without titles
+      
+      const link = $(element).find('a').attr('href');
+      const url = link && link.startsWith('http') ? link : `https://www.ynet.co.il${link}`;
+      
+      // Get the article image
+      let imageUrl = $(element).find('img').attr('src') || $(element).find('img').attr('data-src');
+      if (imageUrl && !imageUrl.startsWith('http')) {
+        imageUrl = `https:${imageUrl}`;
+      }
+      
+      // Get content/description if available
+      const content = $(element).find('.slotSubTitle').text().trim() || 
+                     $(element).find('.teaserText').text().trim() || 
+                     'כותרת מאתר Ynet';
+      
+      articles.push({
+        title,
+        content,
+        url,
+        imageUrl,
+        source: 'Ynet',
+        publishedAt: new Date(now.getTime() - Math.floor(Math.random() * 12) * 60 * 60 * 1000).toISOString(), // Random time within last 12 hours
+        summary: content.substring(0, 100) + '...' // Short summary from content
+      });
+    } catch (err) {
+      console.error('Error parsing an article:', err);
+    }
+  });
+  
+  // If articles array is empty, try an alternative selector
+  if (articles.length === 0) {
+    $('.YnetMultiStripComponenta').find('li').each((i, element) => {
+      try {
+        const title = $(element).find('h2, .title').text().trim();
+        
+        if (!title) return;
+        
+        const link = $(element).find('a').attr('href');
+        const url = link && link.startsWith('http') ? link : `https://www.ynet.co.il${link}`;
+        
+        let imageUrl = $(element).find('img').attr('src') || $(element).find('img').attr('data-src');
+        if (imageUrl && !imageUrl.startsWith('http')) {
+          imageUrl = `https:${imageUrl}`;
+        }
+        
+        const content = $(element).find('.subtitle, .text').text().trim() || 'כותרת מאתר Ynet';
+        
+        articles.push({
+          title,
+          content,
+          url,
+          imageUrl,
+          source: 'Ynet',
+          publishedAt: new Date(now.getTime() - Math.floor(Math.random() * 12) * 60 * 60 * 1000).toISOString(),
+          summary: content.substring(0, 100) + '...'
+        });
+      } catch (err) {
+        console.error('Error parsing an article:', err);
+      }
+    });
+  }
+  
+  console.log(`Found ${articles.length} articles from Ynet in category ${category}`);
+  
+  return articles;
 }
 
 export async function searchNews(query: string): Promise<NewsArticle[]> {
