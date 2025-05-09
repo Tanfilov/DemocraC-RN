@@ -93,13 +93,19 @@ function parseYnetArticles(html: string, category: string): NewsArticle[] {
         content = title + ' - כותרת מאתר Ynet';
       }
       
-      // Check if the content mentions politicians
-      const hasPolitician = /נתניהו|לפיד|גנץ|הרצוג|בנט|סמוטריץ|בן גביר|ליברמן|ממשלה|שר|ראש הממשלה|כנסת|ח"כ|מפלגת|בחירות/i.test(title + ' ' + content);
+      // Use enhanced politician detection
+      const fullText = title + ' ' + content;
+      const detection = detectPoliticiansInText(fullText);
       
       // Only save articles that are likely about politics
-      if (category === 'politics' || hasPolitician) {
+      if (category === 'politics' || detection.hasPolitician) {
         // Create a summary that's a bit longer to capture more info
         const summary = content.length > 200 ? content.substring(0, 200) + '...' : content;
+        
+        // Log detected politicians if any found
+        if (detection.politicians.length > 0) {
+          console.log(`Detected politicians in article "${title.substring(0, 30)}...": ${detection.politicians.join(', ')}`);
+        }
         
         articles.push({
           title,
@@ -146,11 +152,12 @@ function parseYnetArticles(html: string, category: string): NewsArticle[] {
         content = title + ' - כותרת מאתר Ynet';
       }
       
-      // Check if the content mentions politicians
-      const hasPolitician = /נתניהו|לפיד|גנץ|הרצוג|בנט|סמוטריץ|בן גביר|ליברמן|ממשלה|שר|ראש הממשלה|כנסת|ח"כ|מפלגת|בחירות/i.test(title + ' ' + content);
+      // Use enhanced politician detection
+      const fullText = title + ' ' + content;
+      const detection = detectPoliticiansInText(fullText);
       
       // Only save articles that are likely about politics
-      if (category === 'politics' || hasPolitician) {
+      if (category === 'politics' || detection.hasPolitician) {
         // Create a summary that's a bit longer to capture more info
         const summary = content.length > 200 ? content.substring(0, 200) + '...' : content;
         
@@ -193,11 +200,12 @@ function parseYnetArticles(html: string, category: string): NewsArticle[] {
       
       const content = paragraphs.join(' ') || title;
       
-      // Check if the content mentions politicians
-      const hasPolitician = /נתניהו|לפיד|גנץ|הרצוג|בנט|סמוטריץ|בן גביר|ליברמן|ממשלה|שר|ראש הממשלה|כנסת|ח"כ|מפלגת|בחירות/i.test(title + ' ' + content);
+      // Use enhanced politician detection
+      const fullText = title + ' ' + content;
+      const detection = detectPoliticiansInText(fullText);
       
       // Only save articles that are likely about politics
-      if (category === 'politics' || hasPolitician) {
+      if (category === 'politics' || detection.hasPolitician) {
         // Create a summary that's a bit longer to capture more info
         const summary = content.length > 200 ? content.substring(0, 200) + '...' : content;
         
@@ -219,6 +227,20 @@ function parseYnetArticles(html: string, category: string): NewsArticle[] {
   console.log(`Found ${articles.length} articles from Ynet in category ${category}`);
   
   return articles;
+}
+
+// Helper function to detect politicians in text
+function detectPoliticiansInText(text: string): { hasPolitician: boolean, politicians: string[] } {
+  // Use the enhanced politician detection from openaiService
+  const detectedPoliticians = extractPoliticianNamesHeuristic(text);
+  
+  // Check for political keywords as a backup
+  const hasPoliticalKeywords = /ממשלה|שר|ראש הממשלה|כנסת|ח"כ|מפלגת|בחירות/i.test(text);
+  
+  return { 
+    hasPolitician: detectedPoliticians.length > 0 || hasPoliticalKeywords,
+    politicians: detectedPoliticians
+  };
 }
 
 export async function searchNews(query: string): Promise<NewsArticle[]> {
