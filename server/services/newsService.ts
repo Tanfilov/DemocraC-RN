@@ -36,13 +36,13 @@ export async function fetchNewsFromAPI(category: string): Promise<NewsArticle[]>
 // Map our category to Ynet categories
 function mapCategoryToYnet(category: string): string {
   const categoryMap: Record<string, string> = {
-    'politics': 'news/politics',
+    'politics': 'news',  // Main news section includes politics
     'business': 'economy',
     'technology': 'digital',
     'entertainment': 'entertainment',
     'sports': 'sport',
     'health': 'health',
-    'security': 'news/defense'
+    'security': 'news'  // Using main news section for security as well
   };
   
   return categoryMap[category] || 'news';
@@ -53,6 +53,8 @@ function parseYnetArticles(html: string, category: string): NewsArticle[] {
   const $ = cheerio.load(html);
   const articles: NewsArticle[] = [];
   const now = new Date();
+  
+  // Try multiple selectors for Ynet articles
   
   // Ynet's main article containers
   $('.slotView').each((i, element) => {
@@ -90,38 +92,67 @@ function parseYnetArticles(html: string, category: string): NewsArticle[] {
     }
   });
   
-  // If articles array is empty, try an alternative selector
-  if (articles.length === 0) {
-    $('.YnetMultiStripComponenta').find('li').each((i, element) => {
-      try {
-        const title = $(element).find('h2, .title').text().trim();
-        
-        if (!title) return;
-        
-        const link = $(element).find('a').attr('href');
-        const url = link && link.startsWith('http') ? link : `https://www.ynet.co.il${link}`;
-        
-        let imageUrl = $(element).find('img').attr('src') || $(element).find('img').attr('data-src');
-        if (imageUrl && !imageUrl.startsWith('http')) {
-          imageUrl = `https:${imageUrl}`;
-        }
-        
-        const content = $(element).find('.subtitle, .text').text().trim() || 'כותרת מאתר Ynet';
-        
-        articles.push({
-          title,
-          content,
-          url,
-          imageUrl,
-          source: 'Ynet',
-          publishedAt: new Date(now.getTime() - Math.floor(Math.random() * 12) * 60 * 60 * 1000).toISOString(),
-          summary: content.substring(0, 100) + '...'
-        });
-      } catch (err) {
-        console.error('Error parsing an article:', err);
+  // Try strip components
+  $('.YnetMultiStripComponenta').find('li').each((i, element) => {
+    try {
+      const title = $(element).find('h2, .title').text().trim();
+      
+      if (!title) return;
+      
+      const link = $(element).find('a').attr('href');
+      const url = link && link.startsWith('http') ? link : `https://www.ynet.co.il${link}`;
+      
+      let imageUrl = $(element).find('img').attr('src') || $(element).find('img').attr('data-src');
+      if (imageUrl && !imageUrl.startsWith('http')) {
+        imageUrl = `https:${imageUrl}`;
       }
-    });
-  }
+      
+      const content = $(element).find('.subtitle, .text').text().trim() || 'כותרת מאתר Ynet';
+      
+      articles.push({
+        title,
+        content,
+        url,
+        imageUrl,
+        source: 'Ynet',
+        publishedAt: new Date(now.getTime() - Math.floor(Math.random() * 12) * 60 * 60 * 1000).toISOString(),
+        summary: content.substring(0, 100) + '...'
+      });
+    } catch (err) {
+      console.error('Error parsing an article:', err);
+    }
+  });
+  
+  // Try generic selectors for news sites
+  $('article, .article, .news-item, .layoutItem').each((i, element) => {
+    try {
+      const title = $(element).find('h1, h2, h3, .title, .headline').first().text().trim();
+      
+      if (!title) return;
+      
+      const link = $(element).find('a').first().attr('href');
+      const url = link && link.startsWith('http') ? link : `https://www.ynet.co.il${link}`;
+      
+      let imageUrl = $(element).find('img').attr('src') || $(element).find('img').attr('data-src');
+      if (imageUrl && !imageUrl.startsWith('http')) {
+        imageUrl = `https:${imageUrl}`;
+      }
+      
+      const content = $(element).find('p, .abstract, .summary, .subtitle').first().text().trim() || 'תוכן החדשות';
+      
+      articles.push({
+        title,
+        content,
+        url,
+        imageUrl,
+        source: 'Ynet',
+        publishedAt: new Date(now.getTime() - Math.floor(Math.random() * 12) * 60 * 60 * 1000).toISOString(),
+        summary: content.substring(0, Math.min(content.length, 100)) + (content.length > 100 ? '...' : '')
+      });
+    } catch (err) {
+      console.error('Error parsing an article with generic selector:', err);
+    }
+  });
   
   console.log(`Found ${articles.length} articles from Ynet in category ${category}`);
   
