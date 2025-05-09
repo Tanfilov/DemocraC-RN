@@ -12,10 +12,50 @@ import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { extractPoliticianNamesHeuristic } from './openaiService';
 
-// Fetch news from Hebrew news sources - Ynet implementation
+// Fetch news from all Hebrew news sources
 export async function fetchNewsFromAPI(category: string): Promise<NewsArticle[]> {
   console.log(`Fetching news for category: ${category} from Hebrew sources`);
   
+  let allArticles: NewsArticle[] = [];
+  
+  try {
+    // Fetch from Ynet
+    const ynetArticles = await fetchFromYnet(category);
+    allArticles = [...allArticles, ...ynetArticles];
+    
+    // Fetch from Mako
+    const makoArticles = await fetchFromMako(category);
+    allArticles = [...allArticles, ...makoArticles];
+    
+    // Fetch from Walla
+    const wallaArticles = await fetchFromWalla(category);
+    allArticles = [...allArticles, ...wallaArticles];
+    
+    // Remove duplicates (based on title)
+    const uniqueArticles = removeDuplicateArticles(allArticles);
+    
+    // Return unique articles
+    return uniqueArticles;
+  } catch (error) {
+    console.error(`Error fetching news: ${error}`);
+    // Fall back to simulated data if all scraping fails
+    return getHebrewNewsData(category);
+  }
+}
+
+// Remove duplicate articles based on title
+function removeDuplicateArticles(articles: NewsArticle[]): NewsArticle[] {
+  const uniqueTitles = new Set<string>();
+  return articles.filter(article => {
+    const titleNormalized = article.title.trim();
+    if (uniqueTitles.has(titleNormalized)) return false;
+    uniqueTitles.add(titleNormalized);
+    return true;
+  });
+}
+
+// Fetch from Ynet
+async function fetchFromYnet(category: string): Promise<NewsArticle[]> {
   try {
     // Convert our category to Ynet's category format
     const ynetCategoryId = mapCategoryToYnet(category);
@@ -29,9 +69,151 @@ export async function fetchNewsFromAPI(category: string): Promise<NewsArticle[]>
     return parseYnetArticles(html, category);
   } catch (error) {
     console.error(`Error fetching news from Ynet: ${error}`);
-    // Fall back to simulated data if scraping fails
-    return getHebrewNewsData(category);
+    return [];
   }
+}
+
+// Fetch from Mako
+async function fetchFromMako(category: string): Promise<NewsArticle[]> {
+  try {
+    const urls = [];
+    
+    // Add Mako URLs based on category
+    if (category === 'politics') {
+      urls.push('https://www.mako.co.il/news-politics');
+      urls.push('https://www.mako.co.il/news-diplomatic');
+    }
+    
+    let allArticles: NewsArticle[] = [];
+    
+    // Fetch from all URLs
+    for (const url of urls) {
+      const response = await axios.get(url);
+      const html = response.data;
+      const makoArticles = parseMakoArticles(html, category);
+      allArticles = [...allArticles, ...makoArticles];
+    }
+    
+    return allArticles;
+  } catch (error) {
+    console.error(`Error fetching news from Mako: ${error}`);
+    return [];
+  }
+}
+
+// Fetch from Walla
+async function fetchFromWalla(category: string): Promise<NewsArticle[]> {
+  try {
+    const url = 'https://news.walla.co.il/';
+    
+    const response = await axios.get(url);
+    const html = response.data;
+    
+    return parseWallaArticles(html, category);
+  } catch (error) {
+    console.error(`Error fetching news from Walla: ${error}`);
+    return [];
+  }
+}
+
+// Parse articles from Mako
+function parseMakoArticles(html: string, category: string): NewsArticle[] {
+  const $ = cheerio.load(html);
+  const articles: NewsArticle[] = [];
+  const now = new Date();
+  
+  // Find articles in Mako format
+  $('article, .article_content, .mako_news_item, .news-item-container').each((i, element) => {
+    try {
+      const title = $(element).find('h2, h3, .news_title, .title').first().text().trim();
+      if (!title) return;
+      
+      let link = $(element).find('a').first().attr('href');
+      const url = link && link.startsWith('http') ? link : `https://www.mako.co.il${link}`;
+      
+      let imageUrl = $(element).find('img').attr('src') || $(element).find('img').attr('data-src');
+      if (imageUrl && !imageUrl.startsWith('http')) {
+        imageUrl = `https:${imageUrl}`;
+      }
+      
+      // Get text content
+      const content = $(element).find('p, .article_abstract, .abstract, .subtitle').text().trim() || title;
+      
+      // Check for politicians
+      const fullText = title + ' ' + content;
+      const detection = detectPoliticiansInText(fullText);
+      
+      if (detection.hasPolitician || category === 'politics') {
+        // Create a summary that's a bit longer
+        const summary = content.length > 200 ? content.substring(0, 200) + '...' : content;
+        
+        articles.push({
+          title,
+          content,
+          url,
+          imageUrl,
+          source: 'Mako',
+          publishedAt: new Date(now.getTime() - Math.floor(Math.random() * 12) * 60 * 60 * 1000).toISOString(),
+          summary
+        });
+      }
+    } catch (err) {
+      console.error('Error parsing a Mako article:', err);
+    }
+  });
+  
+  console.log(`Found ${articles.length} articles from Mako in category ${category}`);
+  return articles;
+}
+
+// Parse articles from Walla
+function parseWallaArticles(html: string, category: string): NewsArticle[] {
+  const $ = cheerio.load(html);
+  const articles: NewsArticle[] = [];
+  const now = new Date();
+  
+  // Find articles in Walla format
+  $('.article-item, div[data-type="article"], .with-image, .list-item').each((i, element) => {
+    try {
+      const title = $(element).find('h2, h3, .title, .headline').first().text().trim();
+      if (!title) return;
+      
+      let link = $(element).find('a').first().attr('href');
+      const url = link && link.startsWith('http') ? link : `https://news.walla.co.il${link}`;
+      
+      let imageUrl = $(element).find('img').attr('src') || $(element).find('img').attr('data-src');
+      if (imageUrl && !imageUrl.startsWith('http')) {
+        imageUrl = `https:${imageUrl}`;
+      }
+      
+      // Get text content
+      const content = $(element).find('p, .subtitle, .summery, .text').text().trim() || title;
+      
+      // Check for politicians
+      const fullText = title + ' ' + content;
+      const detection = detectPoliticiansInText(fullText);
+      
+      if (detection.hasPolitician || category === 'politics') {
+        // Create a summary that's a bit longer
+        const summary = content.length > 200 ? content.substring(0, 200) + '...' : content;
+        
+        articles.push({
+          title,
+          content,
+          url,
+          imageUrl,
+          source: 'Walla',
+          publishedAt: new Date(now.getTime() - Math.floor(Math.random() * 12) * 60 * 60 * 1000).toISOString(),
+          summary
+        });
+      }
+    } catch (err) {
+      console.error('Error parsing a Walla article:', err);
+    }
+  });
+  
+  console.log(`Found ${articles.length} articles from Walla in category ${category}`);
+  return articles;
 }
 
 // Map our category to Ynet categories

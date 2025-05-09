@@ -7,16 +7,20 @@ import { Link } from "wouter";
 import { NewsArticle, TopicWithArticles } from "@shared/schema";
 import PoliticianCard from "@/components/politicians/PoliticianCard";
 
+interface TopicResponse {
+  topic: TopicWithArticles;
+}
+
 export default function NewsDetail() {
   const [, params] = useRoute("/topic/:id");
   const topicId = params?.id ? parseInt(params.id) : 0;
   
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error } = useQuery<TopicResponse>({
     queryKey: [`/api/topics/${topicId}`],
     enabled: !!topicId,
   });
   
-  const topic = data?.topic as TopicWithArticles | undefined;
+  const topic = data?.topic;
   
   if (isLoading) {
     return (

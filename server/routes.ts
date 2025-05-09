@@ -320,20 +320,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Fetch political news specifically
   app.get("/api/fetch-political-news", async (_req: Request, res: Response) => {
     try {
-      console.log("Fetching political news from Ynet");
+      console.log("Fetching political news from all Israeli news sources");
+      // Get articles from all sources configured in fetchNewsFromAPI
       const articles = await fetchNewsFromAPI("politics");
+      
+      console.log(`Retrieved ${articles.length} political articles from all sources`);
       
       // Create or update topics and process politicians
       const processedTopics = [];
       const processedPoliticians = new Set<string>();
+      const sourceCounts: Record<string, number> = {};
       
       if (articles.length > 0) {
+        // Count articles by source
+        articles.forEach(article => {
+          if (!sourceCounts[article.source]) {
+            sourceCounts[article.source] = 0;
+          }
+          sourceCounts[article.source]++;
+        });
+        
+        // Log the source breakdown
+        Object.entries(sourceCounts).forEach(([source, count]) => {
+          console.log(`Source: ${source}, Articles: ${count}`);
+        });
+        
         // Group articles by some similarity measure
         const articleGroups: Record<string, any[]> = {};
         
         for (const article of articles) {
           // Create a simple hash key for grouping similar articles
           const words = article.title.toLowerCase().split(/\s+/).filter(w => w.length > 4);
+          if (words.length === 0) {
+            // If no long words, just use the first few words
+            words.push(...article.title.toLowerCase().split(/\s+/).slice(0, 3));
+          }
           const key = words.slice(0, 3).sort().join('-');
           
           if (!articleGroups[key]) {
@@ -349,7 +370,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           // Create or update topic
           const topicTitle = groupArticles[0].title;
-          const topicSummary = groupArticles[0].content;
+          const topicSummary = groupArticles[0].summary || groupArticles[0].content.substring(0, 300);
           
           const topic = await storage.upsertTopic({
             title: topicTitle,
