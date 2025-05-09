@@ -34,7 +34,7 @@ export default function Header() {
             <Link href="/">
               <a className="flex items-center space-x-2">
                 <span className="material-icons text-primary text-3xl">article</span>
-                <h1 className="text-xl font-bold text-gray-800 sm:text-2xl">NewsAggr</h1>
+                <h1 className="text-xl font-bold text-gray-800 sm:text-2xl mr-2">חדשות ישראל</h1>
               </a>
             </Link>
           </div>
@@ -43,11 +43,11 @@ export default function Header() {
           <div className="hidden md:flex flex-1 max-w-xl mx-8">
             <form onSubmit={handleSearch} className="w-full">
               <div className="relative w-full">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <Input
                   type="text"
-                  className="w-full pl-10 bg-gray-100"
-                  placeholder="Search topics, politicians, or keywords..."
+                  className="w-full pr-10 bg-gray-100 text-right"
+                  placeholder="חיפוש נושאים, פוליטיקאים או מילות מפתח..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -79,19 +79,19 @@ export default function Header() {
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left">
+              <SheetContent side="right">
                 <SheetHeader>
-                  <SheetTitle>Menu</SheetTitle>
+                  <SheetTitle className="text-right">תפריט</SheetTitle>
                 </SheetHeader>
                 <div className="py-4">
-                  <h3 className="font-semibold text-lg mb-3">News Categories</h3>
+                  <h3 className="font-semibold text-lg mb-3 text-right">קטגוריות חדשות</h3>
                   <ul className="space-y-2 mb-6">
                     <li>
                       <SheetClose asChild>
                         <Link href="/">
-                          <a className="flex items-center text-primary font-medium p-2 rounded-md bg-blue-50">
-                            <span className="material-icons mr-3 text-primary">home</span>
-                            <span>Top Stories</span>
+                          <a className="flex flex-row-reverse items-center text-primary font-medium p-2 rounded-md bg-blue-50">
+                            <span className="material-icons ml-3 text-primary">home</span>
+                            <span>סיפורים מובילים</span>
                           </a>
                         </Link>
                       </SheetClose>
@@ -100,8 +100,8 @@ export default function Header() {
                       <li key={category.id}>
                         <SheetClose asChild>
                           <Link href={`/?category=${category.id}`}>
-                            <a className="flex items-center text-gray-700 hover:text-primary p-2 rounded-md hover:bg-blue-50 transition">
-                              <span className={`material-icons mr-3 text-category-${category.id}`}>{category.icon}</span>
+                            <a className="flex flex-row-reverse items-center text-gray-700 hover:text-primary p-2 rounded-md hover:bg-blue-50 transition">
+                              <span className={`material-icons ml-3 text-category-${category.id}`}>{category.icon}</span>
                               <span>{category.name}</span>
                             </a>
                           </Link>
@@ -110,14 +110,14 @@ export default function Header() {
                     ))}
                   </ul>
                   
-                  <h3 className="font-semibold text-lg mb-3">Rated Politicians</h3>
+                  <h3 className="font-semibold text-lg mb-3 text-right">פוליטיקאים מדורגים</h3>
                   <ul className="space-y-2">
                     <li>
                       <SheetClose asChild>
                         <Link href="/politicians/top">
-                          <a className="flex items-center text-gray-700 hover:text-primary p-2 rounded-md hover:bg-blue-50 transition">
-                            <span className="material-icons mr-3">star</span>
-                            <span>Top Rated</span>
+                          <a className="flex flex-row-reverse items-center text-gray-700 hover:text-primary p-2 rounded-md hover:bg-blue-50 transition">
+                            <span className="material-icons ml-3">star</span>
+                            <span>דירוג גבוה</span>
                           </a>
                         </Link>
                       </SheetClose>
@@ -125,9 +125,9 @@ export default function Header() {
                     <li>
                       <SheetClose asChild>
                         <Link href="/politicians/my-ratings">
-                          <a className="flex items-center text-gray-700 hover:text-primary p-2 rounded-md hover:bg-blue-50 transition">
-                            <span className="material-icons mr-3">star_half</span>
-                            <span>My Ratings</span>
+                          <a className="flex flex-row-reverse items-center text-gray-700 hover:text-primary p-2 rounded-md hover:bg-blue-50 transition">
+                            <span className="material-icons ml-3">star_half</span>
+                            <span>הדירוגים שלי</span>
                           </a>
                         </Link>
                       </SheetClose>
@@ -144,11 +144,11 @@ export default function Header() {
           <div className="md:hidden py-2">
             <form onSubmit={handleSearch}>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <Input
                   type="text"
-                  className="w-full pl-10 bg-gray-100"
-                  placeholder="Search topics, politicians, or keywords..."
+                  className="w-full pr-10 bg-gray-100 text-right"
+                  placeholder="חיפוש נושאים, פוליטיקאים או מילות מפתח..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
