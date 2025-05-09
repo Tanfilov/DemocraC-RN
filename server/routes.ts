@@ -491,6 +491,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Specifically refresh news data on demand
+  app.get("/api/fetch-now", async (_req: Request, res: Response) => {
+    try {
+      console.log("Manual refresh triggered...");
+      await refreshNewsData();
+      res.json({ message: "Manual news refresh completed successfully" });
+    } catch (error) {
+      console.error("Manual news refresh failed:", error);
+      res.status(500).json({ message: "Failed to manually refresh news" });
+    }
+  });
+  
+  // Initial news refresh when the server starts
+  setTimeout(async () => {
+    try {
+      console.log("Running initial news refresh on startup...");
+      await refreshNewsData();
+      console.log("Initial news refresh completed");
+    } catch (error) {
+      console.error("Initial news refresh failed:", error);
+    }
+  }, 5000); // 5 seconds after startup
+  
+  // Set up a shorter interval to refresh news data more frequently (15 minutes)
+  setInterval(async () => {
+    try {
+      console.log("Running scheduled news refresh...");
+      await refreshNewsData();
+      console.log("Scheduled news refresh completed");
+    } catch (error) {
+      console.error("Scheduled news refresh failed:", error);
+    }
+  }, 15 * 60 * 1000); // 15 minutes
+  
   return httpServer;
 }
 

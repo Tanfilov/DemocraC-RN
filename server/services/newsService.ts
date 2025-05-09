@@ -82,16 +82,28 @@ async function fetchFromMako(category: string): Promise<NewsArticle[]> {
     if (category === 'politics') {
       urls.push('https://www.mako.co.il/news-politics');
       urls.push('https://www.mako.co.il/news-diplomatic');
+      urls.push('https://www.mako.co.il/news-politics/2024_q2');
+      urls.push('https://www.mako.co.il/news-israel');
+      urls.push('https://www.mako.co.il/news-political');
+    } else {
+      // For non-political categories, still check main news
+      urls.push('https://www.mako.co.il/news');
     }
     
     let allArticles: NewsArticle[] = [];
     
     // Fetch from all URLs
     for (const url of urls) {
-      const response = await axios.get(url);
-      const html = response.data;
-      const makoArticles = parseMakoArticles(html, category);
-      allArticles = [...allArticles, ...makoArticles];
+      try {
+        console.log(`Fetching from Mako URL: ${url}`);
+        const response = await axios.get(url);
+        const html = response.data;
+        const makoArticles = parseMakoArticles(html, category);
+        allArticles = [...allArticles, ...makoArticles];
+      } catch (urlError) {
+        console.error(`Error fetching from specific Mako URL ${url}:`, urlError);
+        // Continue to next URL even if this one fails
+      }
     }
     
     return allArticles;
@@ -104,12 +116,36 @@ async function fetchFromMako(category: string): Promise<NewsArticle[]> {
 // Fetch from Walla
 async function fetchFromWalla(category: string): Promise<NewsArticle[]> {
   try {
-    const url = 'https://news.walla.co.il/';
+    const urls = [];
     
-    const response = await axios.get(url);
-    const html = response.data;
+    // Add Walla URLs based on category
+    if (category === 'politics') {
+      urls.push('https://news.walla.co.il/');
+      urls.push('https://news.walla.co.il/category/1');  // Main news
+      urls.push('https://news.walla.co.il/category/9');  // Politics
+      urls.push('https://news.walla.co.il/breaking');    // Breaking news
+    } else {
+      // For non-political categories, still check main news
+      urls.push('https://news.walla.co.il/');
+    }
     
-    return parseWallaArticles(html, category);
+    let allArticles: NewsArticle[] = [];
+    
+    // Fetch from all URLs
+    for (const url of urls) {
+      try {
+        console.log(`Fetching from Walla URL: ${url}`);
+        const response = await axios.get(url);
+        const html = response.data;
+        const wallaArticles = parseWallaArticles(html, category);
+        allArticles = [...allArticles, ...wallaArticles];
+      } catch (urlError) {
+        console.error(`Error fetching from specific Walla URL ${url}:`, urlError);
+        // Continue to next URL even if this one fails
+      }
+    }
+    
+    return allArticles;
   } catch (error) {
     console.error(`Error fetching news from Walla: ${error}`);
     return [];
@@ -122,30 +158,105 @@ function parseMakoArticles(html: string, category: string): NewsArticle[] {
   const articles: NewsArticle[] = [];
   const now = new Date();
   
-  // Find articles in Mako format
-  $('article, .article_content, .mako_news_item, .news-item-container').each((i, element) => {
+  // Debug the HTML structure first
+  console.log("Parsing Mako HTML structure...");
+  
+  // Find articles in Mako format - using more comprehensive selectors
+  $('div[class*="item"], article, .element, .teasers li, .news-item, [data-type="news"]').each((i, element) => {
     try {
-      const title = $(element).find('h2, h3, .news_title, .title').first().text().trim();
-      if (!title) return;
+      // Try multiple selectors for title
+      const titleSelectors = ['h2', 'h3', 'h1', '.title', '.headline', '[data-type="title"]', '.teasers-title', 'span.title', 'a > span', '.news-title'];
+      let title = '';
       
-      let link = $(element).find('a').first().attr('href');
-      const url = link && link.startsWith('http') ? link : `https://www.mako.co.il${link}`;
-      
-      let imageUrl = $(element).find('img').attr('src') || $(element).find('img').attr('data-src');
-      if (imageUrl && !imageUrl.startsWith('http')) {
-        imageUrl = `https:${imageUrl}`;
+      for (const selector of titleSelectors) {
+        const foundTitle = $(element).find(selector).first().text().trim();
+        if (foundTitle && foundTitle.length > 5) {
+          title = foundTitle;
+          break;
+        }
       }
       
-      // Get text content
-      const content = $(element).find('p, .article_abstract, .abstract, .subtitle').text().trim() || title;
+      // If still no title, try the element itself
+      if (!title) {
+        title = $(element).text().trim();
+      }
+      
+      // If still no useful title, skip this element
+      if (!title || title.length < 5) return;
+      
+      // Try to find the link with multiple approaches
+      let link;
+      // First try the element itself if it's an anchor
+      if ($(element).is('a')) {
+        link = $(element).attr('href');
+      } 
+      // Then try finding an anchor inside
+      else {
+        link = $(element).find('a').first().attr('href');
+      }
+      
+      // Skip if no link found
+      if (!link) return;
+      
+      // Normalize the URL
+      const url = link.startsWith('http') 
+        ? link 
+        : (link.startsWith('/') 
+          ? `https://www.mako.co.il${link}` 
+          : `https://www.mako.co.il/${link}`);
+      
+      // Try to extract image
+      let imageUrl;
+      // Check for img tag
+      const imgElement = $(element).find('img').first();
+      imageUrl = imgElement.attr('src') || imgElement.attr('data-src');
+      
+      // Check for background image in style attribute
+      if (!imageUrl) {
+        const style = $(element).attr('style') || $(element).find('[style*="background"]').attr('style');
+        if (style && style.includes('url(')) {
+          const match = style.match(/url\(['"]?(.*?)['"]?\)/);
+          if (match && match[1]) {
+            imageUrl = match[1];
+          }
+        }
+      }
+      
+      // Normalize image URL
+      if (imageUrl && !imageUrl.startsWith('http')) {
+        imageUrl = imageUrl.startsWith('//') ? `https:${imageUrl}` : `https://www.mako.co.il${imageUrl}`;
+      }
+      
+      // Get text content from multiple potential sources
+      const contentSelectors = ['.abstract', '.subtitle', '.teaser', 'p', '.summary', '.content', '.description'];
+      let content = '';
+      
+      for (const selector of contentSelectors) {
+        const foundContent = $(element).find(selector).text().trim();
+        if (foundContent && foundContent.length > 15) {
+          content = foundContent;
+          break;
+        }
+      }
+      
+      // If we couldn't find content, use the title
+      if (!content || content.length < 15) {
+        content = title + ' - מאמר מאתר Mako';
+      }
       
       // Check for politicians
       const fullText = title + ' ' + content;
       const detection = detectPoliticiansInText(fullText);
       
+      // For politics category or if politicians are detected
       if (detection.hasPolitician || category === 'politics') {
-        // Create a summary that's a bit longer
+        // Create a summary
         const summary = content.length > 200 ? content.substring(0, 200) + '...' : content;
+        
+        // Log detected politicians
+        if (detection.politicians.length > 0) {
+          console.log(`Mako article: detected politicians in "${title.substring(0, 30)}...": ${detection.politicians.join(', ')}`);
+        }
         
         articles.push({
           title,
@@ -172,30 +283,99 @@ function parseWallaArticles(html: string, category: string): NewsArticle[] {
   const articles: NewsArticle[] = [];
   const now = new Date();
   
-  // Find articles in Walla format
-  $('.article-item, div[data-type="article"], .with-image, .list-item').each((i, element) => {
+  console.log("Parsing Walla HTML structure...");
+  
+  // Find articles in Walla format - using a wider range of selectors
+  $('.article, article, .item, li.fc, .news-item, [data-type="article"], div[class*="item"], div[class*="article"], .with-image').each((i, element) => {
     try {
-      const title = $(element).find('h2, h3, .title, .headline').first().text().trim();
-      if (!title) return;
+      // Try multiple selectors for title
+      const titleSelectors = ['h1', 'h2', 'h3', '.title', '.headline', '[data-type="title"]', '.teasers-title', 'a > h2', 'a > h3', 'a > span.title'];
+      let title = '';
       
-      let link = $(element).find('a').first().attr('href');
-      const url = link && link.startsWith('http') ? link : `https://news.walla.co.il${link}`;
-      
-      let imageUrl = $(element).find('img').attr('src') || $(element).find('img').attr('data-src');
-      if (imageUrl && !imageUrl.startsWith('http')) {
-        imageUrl = `https:${imageUrl}`;
+      for (const selector of titleSelectors) {
+        const foundTitle = $(element).find(selector).first().text().trim();
+        if (foundTitle && foundTitle.length > 5) {
+          title = foundTitle;
+          break;
+        }
       }
       
-      // Get text content
-      const content = $(element).find('p, .subtitle, .summery, .text').text().trim() || title;
+      // If still no useful title, skip this element
+      if (!title || title.length < 5) return;
+      
+      // Try to find the link
+      let link;
+      // First check if the element itself is an anchor
+      if ($(element).is('a')) {
+        link = $(element).attr('href');
+      } 
+      // Then check for anchors inside
+      else {
+        link = $(element).find('a').first().attr('href');
+      }
+      
+      // Skip if no link found
+      if (!link) return;
+      
+      // Normalize the URL
+      const url = link.startsWith('http') 
+        ? link 
+        : (link.startsWith('/') 
+          ? `https://news.walla.co.il${link}` 
+          : `https://news.walla.co.il/${link}`);
+      
+      // Try to extract image with multiple approaches
+      let imageUrl;
+      // Check for img tag
+      const imgElement = $(element).find('img').first();
+      imageUrl = imgElement.attr('src') || imgElement.attr('data-src') || imgElement.attr('data-original');
+      
+      // Check for background image in style attribute
+      if (!imageUrl) {
+        const style = $(element).attr('style') || $(element).find('[style*="background"]').attr('style');
+        if (style && style.includes('url(')) {
+          const match = style.match(/url\(['"]?(.*?)['"]?\)/);
+          if (match && match[1]) {
+            imageUrl = match[1];
+          }
+        }
+      }
+      
+      // Normalize image URL
+      if (imageUrl && !imageUrl.startsWith('http')) {
+        imageUrl = imageUrl.startsWith('//') ? `https:${imageUrl}` : `https://news.walla.co.il${imageUrl}`;
+      }
+      
+      // Get text content from multiple potential sources
+      const contentSelectors = ['.subtitle', '.desc', '.content', 'p', '.summary', '.description', '.teaser'];
+      let content = '';
+      
+      for (const selector of contentSelectors) {
+        const foundContent = $(element).find(selector).text().trim();
+        if (foundContent && foundContent.length > 15) {
+          content = foundContent;
+          break;
+        }
+      }
+      
+      // If we couldn't find content, use the title
+      if (!content || content.length < 15) {
+        content = title + ' - מאמר מאתר Walla';
+      }
       
       // Check for politicians
       const fullText = title + ' ' + content;
       const detection = detectPoliticiansInText(fullText);
       
+      // For politics category or if politicians are detected
       if (detection.hasPolitician || category === 'politics') {
-        // Create a summary that's a bit longer
+        // Create a summary
         const summary = content.length > 200 ? content.substring(0, 200) + '...' : content;
+        
+        // Log detected politicians
+        if (detection.politicians.length > 0) {
+          console.log(`Walla article: detected politicians in "${title.substring(0, 30)}...": ${detection.politicians.join(', ')}`);
+        }
         
         articles.push({
           title,
