@@ -90,6 +90,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Create a new politician
+  app.post("/api/politicians", async (req: Request, res: Response) => {
+    try {
+      const { name, title, description, imageUrl } = req.body;
+      
+      if (!name) {
+        return res.status(400).json({ message: "Politician name is required" });
+      }
+      
+      // Check if politician already exists
+      const existingPolitician = await storage.getPoliticianByName(name);
+      if (existingPolitician) {
+        return res.json({ 
+          message: "Politician already exists", 
+          politician: existingPolitician 
+        });
+      }
+      
+      // Create new politician
+      const politician = await storage.createPolitician({
+        name,
+        title: title || null,
+        description: description || null,
+        imageUrl: imageUrl || null
+      });
+      
+      console.log(`Created new politician: ${name}`);
+      
+      res.status(201).json({
+        message: "Politician created successfully",
+        politician
+      });
+    } catch (error) {
+      console.error("Error creating politician:", error);
+      res.status(500).json({ message: "Failed to create politician" });
+    }
+  });
+  
   // Get a politician by ID
   app.get("/api/politicians/:id", async (req: Request, res: Response) => {
     try {
