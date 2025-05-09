@@ -1,8 +1,8 @@
 import { PoliticianWithRating, NewsSource } from "@shared/schema";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import StarRating from "@/components/politicians/StarRating";
 import { Skeleton } from "@/components/ui/skeleton";
+import PoliticianCard from "@/components/politicians/PoliticianCard";
 
 interface PoliticianSidebarProps {
   politicians: PoliticianWithRating[];
@@ -59,24 +59,11 @@ export default function PoliticianSidebar({ politicians, sources, isLoading = fa
         
         <div className="space-y-4">
           {politicians.slice(0, 3).map((politician) => (
-            <div key={politician.id} className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-              <img 
-                src={politician.imageUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(politician.name)}&background=random`} 
-                alt={politician.name} 
-                className="w-12 h-12 rounded-full object-cover"
-              />
-              <div>
-                <p className="font-medium">{politician.name}</p>
-                <p className="text-sm text-gray-500 line-clamp-2 mb-1">
-                  {politician.title}, {politician.description}
-                </p>
-                <StarRating value={politician.averageRating} />
-                <div className="flex mt-2 space-x-1">
-                  <Button size="sm" className="px-2 py-1 text-xs">Profile</Button>
-                  <Button variant="outline" size="sm" className="px-2 py-1 text-xs">Related News</Button>
-                </div>
-              </div>
-            </div>
+            <PoliticianCard 
+              key={politician.id} 
+              politician={politician} 
+              variant="compact"
+            />
           ))}
         </div>
         

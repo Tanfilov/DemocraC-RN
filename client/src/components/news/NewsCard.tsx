@@ -70,7 +70,7 @@ export default function NewsCard({ topic }: NewsCardProps) {
                 <PoliticianCard 
                   key={politician.id} 
                   politician={politician}
-                  compact
+                  variant="compact"
                 />
               ))}
               
