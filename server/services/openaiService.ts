@@ -95,34 +95,93 @@ function extractPoliticianNamesHeuristic(text: string): string[] {
   const hasHebrew = /[\u0590-\u05FF]/.test(text);
   
   if (hasHebrew) {
-    // Hebrew patterns - common titles in Hebrew followed by names
-    const hebrewTitlePatterns = [
-      /\b(ראש הממשלה|שר|שרת|ח\"כ|חבר כנסת|חברת כנסת|נשיא|נשיאת|סגן|סגנית)\s+([א-ת]+(?:\s+[א-ת]+){0,3})\b/g,
+    // Common Israeli politicians (hardcoded list for fallback)
+    const commonIsraeliPoliticians = [
+      "בנימין נתניהו",
+      "יאיר לפיד",
+      "בני גנץ",
+      "איילת שקד",
+      "אביגדור ליברמן",
+      "יצחק הרצוג",
+      "משה כחלון",
+      "נפתלי בנט",
+      "מירי רגב",
+      "גדעון סער",
+      "יולי אדלשטיין",
+      "ניצן הורוביץ",
+      "אהוד ברק",
+      "מנסור עבאס",
+      "איתמר בן גביר",
+      "בצלאל סמוטריץ",
+      "יאיר גולן",
+      "אורלי לוי אבקסיס",
+      "עמיר פרץ",
+      "מרב מיכאלי",
+      "מאיר כהן",
+      "אורנה ברביבאי",
+      "יועז הנדל",
+      "אלי אבידר",
+      "זאב אלקין"
     ];
     
+    // Hebrew patterns - common titles in Hebrew followed by names
+    const hebrewTitlePatterns = [
+      /\b(ראש הממשלה|שר|שרת|ח\"כ|חבר כנסת|חברת כנסת|נשיא|נשיאת|סגן|סגנית)\s+([א-ת\s'"]+)\b/g,
+      /\b(יו"ר|ראש|מזכ"ל|מנהיג|מנהיגת)\s+([א-ת\s'"]+)\b/g,
+    ];
+    
+    // Check if text contains any of the common politicians
+    for (const politician of commonIsraeliPoliticians) {
+      if (text.includes(politician)) {
+        politicians.push(politician);
+      }
+    }
+    
+    // Extract politicians with titles
     for (const pattern of hebrewTitlePatterns) {
       let match;
       while ((match = pattern.exec(text)) !== null) {
         if (match[2]) {
-          politicians.push(match[0]); // Include title + name
+          // Extract name without the title
+          const name = match[2].trim();
+          if (name.length > 3) { // Avoid short matches
+            politicians.push(name);
+          }
         }
       }
     }
+    
+    // Look for patterns of first and last names (without titles)
+    const hebrewNamePattern = /\b([א-ת]{2,})\s+([א-ת]{2,})\b/g;
+    let nameMatch;
+    while ((nameMatch = hebrewNamePattern.exec(text)) !== null) {
+      const fullName = nameMatch[0].trim();
+      // Minimum length to avoid false positives
+      if (fullName.length > 6 && !fullName.includes(" את ") && !fullName.includes(" של ")) {
+        politicians.push(fullName);
+      }
+    }
+    
   } else {
     // English patterns - common titles followed by names
     const englishTitlePatterns = [
-      /\b(President|Pres\.|Senator|Sen\.|Representative|Rep\.|Governor|Gov\.|Minister|Min\.|Secretary|Sec\.)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3})\b/g,
+      /\b(President|Pres\.|Prime Minister|PM|Senator|Sen\.|Representative|Rep\.|Governor|Gov\.|Minister|Min\.|Secretary|Sec\.|Congressman|Congresswoman|Speaker)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,3})\b/g,
     ];
     
     for (const pattern of englishTitlePatterns) {
       let match;
       while ((match = pattern.exec(text)) !== null) {
         if (match[2]) {
-          politicians.push(match[0]); // Include title + name
+          // Extract name without the title
+          politicians.push(match[2].trim());
         }
       }
     }
   }
   
-  return [...new Set(politicians)]; // Remove duplicates
+  // Remove duplicates
+  const uniquePoliticians = Array.from(new Set(politicians));
+  
+  // Filter out very short names (likely false positives)
+  return uniquePoliticians.filter(name => name.length > 5);
 }

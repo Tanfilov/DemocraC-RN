@@ -194,7 +194,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Manually fetch news from Ynet
   app.get("/api/fetch-ynet", async (req: Request, res: Response) => {
     try {
-      const category = req.query.category as string || "business";
+      const category = req.query.category as string || "politics";
       
       console.log(`Manual fetch from Ynet for category: ${category}`);
       const articles = await fetchNewsFromAPI(category);
@@ -213,9 +213,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           updatedAt: new Date()
         });
         
-        // Add articles to the topic
+        // Process articles and identify politicians
+        const processedArticles = [];
+        const foundPoliticians = new Set<string>();
+        
         for (const article of articles) {
-          await storage.upsertArticle({
+          const savedArticle = await storage.upsertArticle({
             title: article.title,
             content: article.content,
             summary: article.summary || null,
@@ -226,12 +229,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
             publishedAt: new Date(article.publishedAt),
             topicId: topic.id
           });
+          
+          processedArticles.push(savedArticle);
+          
+          // Try to identify politicians in the article
+          try {
+            const politicianNames = await identifyPoliticians(`${article.title}. ${article.content}`);
+            
+            for (const politicianName of politicianNames) {
+              // Skip very short names (likely false positives)
+              if (politicianName.length < 6) continue;
+              
+              foundPoliticians.add(politicianName);
+              
+              const politician = await storage.upsertPolitician({
+                name: politicianName,
+                title: null,
+                description: null,
+                imageUrl: null
+              });
+              
+              // Add mention
+              await storage.addPoliticianMention({
+                politicianId: politician.id,
+                articleId: savedArticle.id
+              });
+            }
+          } catch (err) {
+            console.error("Failed to process politicians for article:", err);
+          }
         }
+        
+        // Get the politicians with mentions in these articles
+        const politiciansInArticles = await storage.getPoliticiansInTopicArticles(topic.id);
         
         res.json({ 
           message: `Fetched ${articles.length} articles from Ynet for category: ${category}`, 
           topic,
-          articles: articles.slice(0, 5).map(a => a.title)  // Show just a sample
+          articles: articles.slice(0, 5).map(a => a.title),  // Show just a sample
+          foundPoliticians: Array.from(foundPoliticians),
+          politiciansInArticles
         });
       } else {
         res.json({ message: "No articles found for category: " + category });
@@ -239,6 +276,108 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error in /api/fetch-ynet:", error);
       res.status(500).json({ message: "Error fetching from Ynet", error: String(error) });
+    }
+  });
+  
+  // Fetch political news specifically
+  app.get("/api/fetch-political-news", async (_req: Request, res: Response) => {
+    try {
+      console.log("Fetching political news from Ynet");
+      const articles = await fetchNewsFromAPI("politics");
+      
+      // Create or update topics and process politicians
+      const processedTopics = [];
+      const processedPoliticians = new Set<string>();
+      
+      if (articles.length > 0) {
+        // Group articles by some similarity measure
+        const articleGroups: Record<string, any[]> = {};
+        
+        for (const article of articles) {
+          // Create a simple hash key for grouping similar articles
+          const words = article.title.toLowerCase().split(/\s+/).filter(w => w.length > 4);
+          const key = words.slice(0, 3).sort().join('-');
+          
+          if (!articleGroups[key]) {
+            articleGroups[key] = [];
+          }
+          
+          articleGroups[key].push(article);
+        }
+        
+        // Process each group of articles
+        for (const [key, groupArticles] of Object.entries(articleGroups)) {
+          if (groupArticles.length < 1) continue; // Ensure we have at least one article
+          
+          // Create or update topic
+          const topicTitle = groupArticles[0].title;
+          const topicSummary = groupArticles[0].content;
+          
+          const topic = await storage.upsertTopic({
+            title: topicTitle,
+            summary: topicSummary,
+            category: "politics",
+            updatedAt: new Date()
+          });
+          
+          processedTopics.push(topic);
+          
+          // Process each article in the group
+          for (const article of groupArticles) {
+            const savedArticle = await storage.upsertArticle({
+              title: article.title,
+              content: article.content,
+              summary: article.summary || null,
+              url: article.url,
+              imageUrl: article.imageUrl || null,
+              source: article.source,
+              category: "politics",
+              publishedAt: new Date(article.publishedAt),
+              topicId: topic.id
+            });
+            
+            // Try to identify politicians in the article
+            try {
+              const politicianNames = await identifyPoliticians(`${article.title}. ${article.content}`);
+              
+              for (const politicianName of politicianNames) {
+                // Skip very short names (likely false positives)
+                if (politicianName.length < 6) continue;
+                
+                processedPoliticians.add(politicianName);
+                
+                const politician = await storage.upsertPolitician({
+                  name: politicianName,
+                  title: null,
+                  description: null,
+                  imageUrl: null
+                });
+                
+                // Add mention
+                await storage.addPoliticianMention({
+                  politicianId: politician.id,
+                  articleId: savedArticle.id
+                });
+              }
+            } catch (err) {
+              console.error("Failed to process politicians for article:", err);
+            }
+          }
+        }
+      }
+      
+      // Get top politicians based on mentions
+      const topPoliticians = await storage.getTopRatedPoliticians(10);
+      
+      res.json({
+        message: `Processed ${articles.length} political news articles`,
+        topics: processedTopics,
+        politicians: Array.from(processedPoliticians),
+        topPoliticians
+      });
+    } catch (error) {
+      console.error("Error fetching political news:", error);
+      res.status(500).json({ message: "Error fetching political news", error: String(error) });
     }
   });
   
