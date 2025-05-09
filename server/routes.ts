@@ -380,6 +380,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Error fetching political news", error: String(error) });
     }
   });
+
+  // Add specific politician endpoint
+  app.get("/api/fetch-politician/:name", async (req: Request, res: Response) => {
+    try {
+      const name = req.params.name;
+      
+      if (!name) {
+        return res.status(400).json({ error: "Politician name is required" });
+      }
+      
+      // Check if politician exists
+      let politician = await storage.getPoliticianByName(name);
+      
+      // If not, create new politician
+      if (!politician) {
+        politician = await storage.createPolitician({
+          name: name,
+          title: "פוליטיקאי ישראלי", // Generic Israeli politician title
+          description: `פוליטיקאי ישראלי בשם ${name}`,
+          imageUrl: null
+        });
+        console.log(`Created new politician: ${name}`);
+      }
+      
+      // Set initial rating if none exists
+      const ratings = await storage.getPoliticianRatings(politician.id);
+      if (ratings.length === 0) {
+        await storage.createPoliticianRating({
+          politicianId: politician.id,
+          userId: null,
+          rating: 3, // Default middle rating
+          comment: "דירוג ראשוני",
+          createdAt: new Date()
+        });
+      }
+      
+      const averageRating = await storage.getPoliticianAverageRating(politician.id);
+      
+      res.status(200).json({
+        success: true,
+        politician: {
+          ...politician,
+          averageRating,
+          totalRatings: ratings.length,
+        },
+        message: `Politician ${name} has been added to the system.`
+      });
+    } catch (error) {
+      console.error(`Error adding politician ${req.params.name}:`, error);
+      res.status(500).json({ error: "Failed to add politician" });
+    }
+  });
   
   return httpServer;
 }

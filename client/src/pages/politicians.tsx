@@ -1,14 +1,18 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
 import PoliticianCard from "@/components/politicians/PoliticianCard";
-import { Search } from "lucide-react";
+import { Search, User, UserPlus, Users } from "lucide-react";
 
 export default function PoliticiansPage() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
   
   const { data: topPoliticians, isLoading: isLoadingTop } = useQuery({
     queryKey: ['/api/politicians/top'],
@@ -19,6 +23,38 @@ export default function PoliticiansPage() {
     queryKey: ['/api/politicians'],
     refetchOnWindowFocus: false,
   });
+  
+  // Function to fetch a specific politician
+  const fetchPolitician = async (name: string) => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/fetch-politician/${encodeURIComponent(name)}`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch politician: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      
+      toast({
+        title: "הוספת פוליטיקאי",
+        description: `${name} נוסף בהצלחה למאגר הפוליטיקאים`,
+      });
+      
+      // Refresh the politicians lists
+      queryClient.invalidateQueries({ queryKey: ['/api/politicians'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/politicians/top'] });
+      
+    } catch (error) {
+      console.error('Error fetching politician:', error);
+      toast({
+        title: "שגיאה",
+        description: `לא ניתן היה להוסיף את ${name}`,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
   
   // Filter politicians based on search query
   const filteredPoliticians = allPoliticians?.politicians?.filter(
@@ -66,6 +102,39 @@ export default function PoliticiansPage() {
           />
           <Search className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
         </div>
+      </div>
+      
+      <div className="flex flex-wrap gap-2 mb-6">
+        <Button 
+          variant="outline" 
+          size="sm"
+          className="flex items-center gap-2" 
+          onClick={() => fetchPolitician("בנימין נתניהו")}
+          disabled={isLoading}
+        >
+          <UserPlus className="h-4 w-4" />
+          הוסף את בנימין נתניהו
+        </Button>
+        <Button 
+          variant="outline" 
+          size="sm"
+          className="flex items-center gap-2"
+          onClick={() => fetchPolitician("יאיר לפיד")}
+          disabled={isLoading}
+        >
+          <UserPlus className="h-4 w-4" />
+          הוסף את יאיר לפיד
+        </Button>
+        <Button 
+          variant="outline" 
+          size="sm"
+          className="flex items-center gap-2"
+          onClick={() => fetchPolitician("בני גנץ")}
+          disabled={isLoading}
+        >
+          <UserPlus className="h-4 w-4" />
+          הוסף את בני גנץ
+        </Button>
       </div>
       
       <Tabs defaultValue="top" className="mb-6">
