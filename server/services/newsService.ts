@@ -10,6 +10,7 @@ interface NewsArticle {
 
 import axios from 'axios';
 import * as cheerio from 'cheerio';
+import { extractPoliticianNamesHeuristic } from './openaiService';
 
 // Fetch news from Hebrew news sources - Ynet implementation
 export async function fetchNewsFromAPI(category: string): Promise<NewsArticle[]> {
