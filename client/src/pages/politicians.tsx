@@ -143,7 +143,10 @@ export default function PoliticiansPage() {
   
   return (
     <div className="container mx-auto py-8 dir-rtl">
-      <h1 className="text-3xl font-bold mb-6 text-right">פוליטיקאים</h1>
+      <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 rounded-lg mb-6">
+        <h1 className="text-3xl font-bold mb-2 text-right">פוליטיקאים ישראלים</h1>
+        <p className="text-right">דרג את הפוליטיקאים המובילים בישראל וראה מה אחרים חושבים</p>
+      </div>
       
       <div className="mb-6">
         <div className="relative">

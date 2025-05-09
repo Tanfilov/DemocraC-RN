@@ -83,44 +83,52 @@ export default function PoliticianCard({ politician, variant = "default" }: Poli
   // Default full card
   return (
     <Card className="overflow-hidden border-gray-200 hover:border-primary hover:shadow-md transition duration-300">
-      <CardHeader className="pb-2">
+      <div className="bg-gradient-to-r from-blue-100 to-purple-100 p-2">
         <div className="flex justify-between items-start">
           <div className="flex items-center space-x-2">
-            <Avatar className="h-12 w-12">
+            <Avatar className="h-14 w-14 border-2 border-white shadow-sm">
               <AvatarImage src={politician.imageUrl || ""} alt={politician.name} />
-              <AvatarFallback className="text-xl">{initials}</AvatarFallback>
+              <AvatarFallback className="text-xl bg-gradient-to-r from-blue-500 to-purple-600 text-white">{initials}</AvatarFallback>
             </Avatar>
             <div>
               <CardTitle className="text-lg">{politician.name}</CardTitle>
               {politician.title && (
-                <CardDescription className="text-gray-600">{politician.title}</CardDescription>
+                <CardDescription className="text-gray-700">{politician.title}</CardDescription>
               )}
             </div>
           </div>
-          
-          {averageRating > 0 && (
-            <Badge variant="secondary" className="flex items-center space-x-1">
-              <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
-              <span>{averageRating.toFixed(1)}</span>
-              {totalRatings > 0 && (
-                <span className="text-xs text-gray-500">({totalRatings})</span>
-              )}
-            </Badge>
-          )}
         </div>
+      </div>
+
+      <CardHeader className="pb-2 pt-4">
+        {averageRating > 0 && (
+          <div className="flex items-center justify-center mb-2">
+            <div className="bg-yellow-50 border border-yellow-200 rounded-full px-4 py-1 flex items-center gap-2">
+              <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+              <span className="font-bold text-lg">{averageRating.toFixed(1)}</span>
+              {totalRatings > 0 && (
+                <span className="text-sm text-gray-600">מתוך {totalRatings} דירוגים</span>
+              )}
+            </div>
+          </div>
+        )}
       </CardHeader>
       
       <CardContent className="pb-2">
         {politician.description && (
-          <p className="text-gray-700 text-sm">{politician.description}</p>
+          <p className="text-gray-700 text-sm py-2">{politician.description}</p>
         )}
       </CardContent>
       
       <CardFooter className="pt-0">
         <Dialog open={showRatingModal} onOpenChange={setShowRatingModal}>
           <DialogTrigger asChild>
-            <Button variant="outline" size="sm" className="w-full">
-              דרג פוליטיקאי
+            <Button 
+              variant="default" 
+              size="sm" 
+              className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-sm"
+            >
+              <Star className="h-4 w-4 mr-2" /> דרג פוליטיקאי
             </Button>
           </DialogTrigger>
           
