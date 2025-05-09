@@ -73,20 +73,43 @@ function parseYnetArticles(html: string, category: string): NewsArticle[] {
         imageUrl = `https:${imageUrl}`;
       }
       
-      // Get content/description if available
-      const content = $(element).find('.slotSubTitle').text().trim() || 
-                     $(element).find('.teaserText').text().trim() || 
-                     'כותרת מאתר Ynet';
+      // Get content/description if available - look for multiple selectors
+      let content = '';
       
-      articles.push({
-        title,
-        content,
-        url,
-        imageUrl,
-        source: 'Ynet',
-        publishedAt: new Date(now.getTime() - Math.floor(Math.random() * 12) * 60 * 60 * 1000).toISOString(), // Random time within last 12 hours
-        summary: content.substring(0, 100) + '...' // Short summary from content
-      });
+      // Try to get as much text as possible from various selectors
+      const subTitle = $(element).find('.slotSubTitle').text().trim();
+      const teaserText = $(element).find('.teaserText').text().trim();
+      const articleText = $(element).find('p, .article-body, .article-content').text().trim();
+      const descriptionText = $(element).find('meta[name="description"], meta[property="og:description"]').attr('content') || '';
+      
+      // Combine all texts found
+      content = [subTitle, teaserText, articleText, descriptionText]
+        .filter(text => text && text.length > 0)
+        .join(' ');
+        
+      // If we still don't have content, use a default
+      if (!content || content.length < 10) {
+        content = title + ' - כותרת מאתר Ynet';
+      }
+      
+      // Check if the content mentions politicians
+      const hasPolitician = /נתניהו|לפיד|גנץ|הרצוג|בנט|סמוטריץ|בן גביר|ליברמן|ממשלה|שר|ראש הממשלה|כנסת|ח"כ|מפלגת|בחירות/i.test(title + ' ' + content);
+      
+      // Only save articles that are likely about politics
+      if (category === 'politics' || hasPolitician) {
+        // Create a summary that's a bit longer to capture more info
+        const summary = content.length > 200 ? content.substring(0, 200) + '...' : content;
+        
+        articles.push({
+          title,
+          content,
+          url,
+          imageUrl,
+          source: 'Ynet',
+          publishedAt: new Date(now.getTime() - Math.floor(Math.random() * 12) * 60 * 60 * 1000).toISOString(), // Random time within last 12 hours
+          summary // Longer summary from content
+        });
+      }
     } catch (err) {
       console.error('Error parsing an article:', err);
     }
@@ -107,17 +130,39 @@ function parseYnetArticles(html: string, category: string): NewsArticle[] {
         imageUrl = `https:${imageUrl}`;
       }
       
-      const content = $(element).find('.subtitle, .text').text().trim() || 'כותרת מאתר Ynet';
+      // Get more content when available
+      const subtitle = $(element).find('.subtitle').text().trim();
+      const text = $(element).find('.text').text().trim();
+      const articleText = $(element).find('p').text().trim();
       
-      articles.push({
-        title,
-        content,
-        url,
-        imageUrl,
-        source: 'Ynet',
-        publishedAt: new Date(now.getTime() - Math.floor(Math.random() * 12) * 60 * 60 * 1000).toISOString(),
-        summary: content.substring(0, 100) + '...'
-      });
+      // Combine all texts found
+      let content = [subtitle, text, articleText]
+        .filter(text => text && text.length > 0)
+        .join(' ');
+      
+      // If we still don't have content, use a default
+      if (!content || content.length < 10) {
+        content = title + ' - כותרת מאתר Ynet';
+      }
+      
+      // Check if the content mentions politicians
+      const hasPolitician = /נתניהו|לפיד|גנץ|הרצוג|בנט|סמוטריץ|בן גביר|ליברמן|ממשלה|שר|ראש הממשלה|כנסת|ח"כ|מפלגת|בחירות/i.test(title + ' ' + content);
+      
+      // Only save articles that are likely about politics
+      if (category === 'politics' || hasPolitician) {
+        // Create a summary that's a bit longer to capture more info
+        const summary = content.length > 200 ? content.substring(0, 200) + '...' : content;
+        
+        articles.push({
+          title,
+          content,
+          url,
+          imageUrl,
+          source: 'Ynet',
+          publishedAt: new Date(now.getTime() - Math.floor(Math.random() * 12) * 60 * 60 * 1000).toISOString(),
+          summary // Longer summary from content
+        });
+      }
     } catch (err) {
       console.error('Error parsing an article:', err);
     }
@@ -138,17 +183,33 @@ function parseYnetArticles(html: string, category: string): NewsArticle[] {
         imageUrl = `https:${imageUrl}`;
       }
       
-      const content = $(element).find('p, .abstract, .summary, .subtitle').first().text().trim() || 'תוכן החדשות';
-      
-      articles.push({
-        title,
-        content,
-        url,
-        imageUrl,
-        source: 'Ynet',
-        publishedAt: new Date(now.getTime() - Math.floor(Math.random() * 12) * 60 * 60 * 1000).toISOString(),
-        summary: content.substring(0, Math.min(content.length, 100)) + (content.length > 100 ? '...' : '')
+      // Get all paragraphs and combine them for more content
+      let paragraphs: string[] = [];
+      $(element).find('p, .abstract, .summary, .subtitle, .text').each((i, el) => {
+        const text = $(el).text().trim();
+        if (text) paragraphs.push(text);
       });
+      
+      const content = paragraphs.join(' ') || title;
+      
+      // Check if the content mentions politicians
+      const hasPolitician = /נתניהו|לפיד|גנץ|הרצוג|בנט|סמוטריץ|בן גביר|ליברמן|ממשלה|שר|ראש הממשלה|כנסת|ח"כ|מפלגת|בחירות/i.test(title + ' ' + content);
+      
+      // Only save articles that are likely about politics
+      if (category === 'politics' || hasPolitician) {
+        // Create a summary that's a bit longer to capture more info
+        const summary = content.length > 200 ? content.substring(0, 200) + '...' : content;
+        
+        articles.push({
+          title,
+          content,
+          url,
+          imageUrl,
+          source: 'Ynet',
+          publishedAt: new Date(now.getTime() - Math.floor(Math.random() * 12) * 60 * 60 * 1000).toISOString(),
+          summary
+        });
+      }
     } catch (err) {
       console.error('Error parsing an article with generic selector:', err);
     }

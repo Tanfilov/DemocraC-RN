@@ -95,14 +95,16 @@ function extractPoliticianNamesHeuristic(text: string): string[] {
   const hasHebrew = /[\u0590-\u05FF]/.test(text);
   
   if (hasHebrew) {
-    // Common Israeli politicians (hardcoded list for fallback)
+    // Common Israeli politicians (expanded list for better coverage)
     const commonIsraeliPoliticians = [
       "בנימין נתניהו",
+      "ביבי",
       "יאיר לפיד",
       "בני גנץ",
       "איילת שקד",
       "אביגדור ליברמן",
       "יצחק הרצוג",
+      "בוז'י הרצוג",
       "משה כחלון",
       "נפתלי בנט",
       "מירי רגב",
@@ -121,19 +123,76 @@ function extractPoliticianNamesHeuristic(text: string): string[] {
       "אורנה ברביבאי",
       "יועז הנדל",
       "אלי אבידר",
-      "זאב אלקין"
+      "זאב אלקין",
+      "יובל שטייניץ",
+      "אלון שוסטר",
+      "אבי דיכטר",
+      "דני דנון",
+      "אריה דרעי",
+      "אביגדור קהלני",
+      "אמיר אוחנה",
+      "יפעת שאשא ביטון",
+      "גילה גמליאל",
+      "יעקב ליצמן",
+      "משה גפני",
+      "אורית סטרוק",
+      "צביקה האוזר",
+      "יואב גלנט",
+      "אלעזר שטרן",
+      "אורן חזן",
+      "ציפי לבני",
+      "בוגי יעלון",
+      "שלי יחימוביץ",
+      "עיסאווי פריג",
+      "חילי טרופר",
+      "אבי גבאי",
+      "רון חולדאי",
+      "יוסי כהן",
+      "אהוד אולמרט",
+      "אריאל שרון",
+      "שמעון פרס"
+    ];
+    
+    // Political party names
+    const israeliParties = [
+      "ליכוד",
+      "יש עתיד",
+      "כחול לבן",
+      "הציונות הדתית",
+      "העבודה",
+      "מרצ",
+      "ימינה",
+      "ישראל ביתנו",
+      "רע\"מ",
+      "ש\"ס",
+      "יהדות התורה",
+      "תקווה חדשה",
+      "הרשימה המשותפת"
     ];
     
     // Hebrew patterns - common titles in Hebrew followed by names
     const hebrewTitlePatterns = [
-      /\b(ראש הממשלה|שר|שרת|ח\"כ|חבר כנסת|חברת כנסת|נשיא|נשיאת|סגן|סגנית)\s+([א-ת\s'"]+)\b/g,
-      /\b(יו"ר|ראש|מזכ"ל|מנהיג|מנהיגת)\s+([א-ת\s'"]+)\b/g,
+      /\b(ראש הממשלה|שר|שרת|ח\"כ|חבר(?:ת)? (?:ה)?כנסת|נשיא(?:ת)?|סגן|סגנית)\s+([א-ת\s'"]{2,}(?:\s[א-ת\s'"]{2,})*)\b/g,
+      /\b(יו"ר|ראש|מזכ"ל|מנהיג(?:ת)?)\s+([א-ת\s'"]{2,}(?:\s[א-ת\s'"]{2,})*)\b/g,
+      /\b(השר(?:ה)?|הח"כ)\s+([א-ת\s'"]{2,}(?:\s[א-ת\s'"]{2,})*)\b/g,
     ];
     
     // Check if text contains any of the common politicians
     for (const politician of commonIsraeliPoliticians) {
-      if (text.includes(politician)) {
+      // Using a more flexible search to catch variations with or without quotes
+      const escapedName = politician.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+      const pattern = new RegExp(`\\b${escapedName}\\b`, 'i');
+      if (pattern.test(text)) {
         politicians.push(politician);
+      }
+    }
+    
+    // Check for party references that might indicate political context
+    for (const party of israeliParties) {
+      if (text.includes(party)) {
+        // If a political party is mentioned, the text is more likely to be political
+        // This doesn't add politicians directly but helps with filtering
+        console.log(`Found political party mentioned: ${party}`);
       }
     }
     
@@ -144,7 +203,11 @@ function extractPoliticianNamesHeuristic(text: string): string[] {
         if (match[2]) {
           // Extract name without the title
           const name = match[2].trim();
-          if (name.length > 3) { // Avoid short matches
+          if (name.length > 3 && 
+              !name.includes(" את ") && 
+              !name.includes(" של ") && 
+              !name.includes(" עם ") && 
+              !name.includes(" על ")) {
             politicians.push(name);
           }
         }
@@ -156,8 +219,24 @@ function extractPoliticianNamesHeuristic(text: string): string[] {
     let nameMatch;
     while ((nameMatch = hebrewNamePattern.exec(text)) !== null) {
       const fullName = nameMatch[0].trim();
-      // Minimum length to avoid false positives
-      if (fullName.length > 6 && !fullName.includes(" את ") && !fullName.includes(" של ")) {
+      // More strict filtering to avoid common false positives
+      const commonWords = [
+        "את", "של", "עם", "על", "אבל", "כמו", "אחרי", "לפני", 
+        "בתוך", "מחוץ", "מעל", "מתחת", "בין", "כדי", "ואת", "אולי",
+        "אפשר", "אסור", "מותר", "יכול", "צריך", "רוצה", "אומר", "אין"
+      ];
+      
+      const isProbablyNotName = commonWords.some(word => 
+        fullName.includes(` ${word} `) || 
+        fullName.startsWith(`${word} `) || 
+        fullName.endsWith(` ${word}`)
+      );
+      
+      // Check if the name matches a pattern typical of Israeli names
+      const looksLikeIsraeliName = /^[א-ת]{2,} [א-ת]{2,}(?: [א-ת]{2,})?$/.test(fullName);
+      
+      // Minimum length to avoid false positives, and check structure
+      if (fullName.length > 6 && looksLikeIsraeliName && !isProbablyNotName) {
         politicians.push(fullName);
       }
     }
