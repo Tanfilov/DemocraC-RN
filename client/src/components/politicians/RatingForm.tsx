@@ -1,133 +1,109 @@
 import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { queryClient } from "@/lib/queryClient";
-import { Label } from "@/components/ui/label";
+import StarRating from "./StarRating";
+import { Loader2 } from "lucide-react";
 
 interface RatingFormProps {
   politicianId: number;
-  politicianName: string;
-  onClose?: () => void;
+  initialRating?: number;
+  onSuccess?: () => void;
 }
 
-export default function RatingForm({ politicianId, politicianName, onClose }: RatingFormProps) {
-  const [rating, setRating] = useState<number>(0);
+export default function RatingForm({ politicianId, initialRating = 0, onSuccess }: RatingFormProps) {
+  const [rating, setRating] = useState<number>(initialRating);
   const [comment, setComment] = useState<string>("");
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (rating === 0) {
-      toast({
-        title: "Error",
-        description: "Please select a rating before submitting",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    setIsSubmitting(true);
-    
-    try {
-      const data = await apiRequest(
-        `/api/politicians/${politicianId}/rate`,
-        "POST",
-        { rating, comment }
-      );
+  const { mutate, isPending } = useMutation({
+    mutationFn: async () => {
+      if (!rating) {
+        throw new Error("בחר דירוג");
+      }
       
+      return fetch(`/api/politicians/${politicianId}/rate`, {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          rating,
+          comment: comment || null
+        })
+      }).then(res => {
+        if (!res.ok) {
+          throw new Error(`ארעה שגיאה: ${res.status}`);
+        }
+        return res.json();
+      });
+    },
+    onSuccess: () => {
       toast({
-        title: "Rating submitted",
-        description: `You rated ${politicianName} ${rating} stars.`,
+        title: "הדירוג נשלח בהצלחה",
+        description: "תודה על הדירוג שלך",
       });
       
       // Invalidate queries to refresh data
       queryClient.invalidateQueries({ queryKey: ['/api/politicians'] });
       queryClient.invalidateQueries({ queryKey: ['/api/politicians/top'] });
-      queryClient.invalidateQueries({ queryKey: [`/api/politicians/${politicianId}`] });
       
-      // Reset form
-      setRating(0);
-      setComment("");
-      
-      // Close dialog if needed
-      if (onClose) onClose();
-    } catch (error) {
+      // Call onSuccess callback
+      onSuccess?.();
+    },
+    onError: (error: any) => {
       toast({
-        title: "Error",
-        description: "Failed to submit rating. Please try again.",
+        title: "שגיאה",
+        description: error.message || "אירעה שגיאה בשליחת הדירוג",
         variant: "destructive",
       });
-    } finally {
-      setIsSubmitting(false);
-    }
+    },
+  });
+  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    mutate();
   };
   
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="text-center">
-        <h3 className="text-lg font-medium">
-          Rate {politicianName}
-        </h3>
-        <p className="text-sm text-gray-500">
-          Rate this politician based on their performance and policies
-        </p>
-      </div>
-      
-      <div className="flex justify-center p-2">
-        <div className="flex items-center space-x-1 rtl:space-x-reverse">
-          {[1, 2, 3, 4, 5].map((value) => (
-            <button
-              key={value}
-              type="button"
-              onClick={() => setRating(value)}
-              className="focus:outline-none"
-            >
-              <span 
-                className={`material-icons text-2xl transition-colors ${
-                  value <= rating ? 'text-yellow-400' : 'text-gray-300'
-                } hover:text-yellow-400`}
-              >
-                {value <= rating ? 'star' : 'star_border'}
-              </span>
-            </button>
-          ))}
-        </div>
-      </div>
-      
-      <div className="space-y-2">
-        <Label htmlFor="comment">Your comment (optional)</Label>
-        <Textarea
-          id="comment"
-          placeholder="Share your thoughts about this politician..."
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          className="h-20"
-          dir="auto"
+    <form onSubmit={handleSubmit} className="w-full space-y-4">
+      <div className="flex flex-col items-center space-y-2">
+        <div className="text-sm text-gray-500 mb-1">הדירוג שלך</div>
+        <StarRating
+          value={rating} 
+          onChange={setRating}
+          size="lg"
         />
       </div>
       
-      <div className="flex justify-end space-x-2 rtl:space-x-reverse">
-        {onClose && (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onClose}
-            disabled={isSubmitting}
-          >
-            Cancel
-          </Button>
-        )}
-        <Button
-          type="submit"
-          disabled={rating === 0 || isSubmitting}
-        >
-          {isSubmitting ? "Submitting..." : "Submit Rating"}
-        </Button>
+      <div className="space-y-2">
+        <div className="text-sm text-gray-500">תגובה (אופציונלי)</div>
+        <Textarea
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+          placeholder="הוסף תגובה על הפוליטיקאי..."
+          className="resize-none h-24"
+          dir="rtl"
+        />
       </div>
+      
+      <Button 
+        type="submit" 
+        className="w-full"
+        disabled={isPending || !rating}
+      >
+        {isPending ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            שולח...
+          </>
+        ) : (
+          "שלח דירוג"
+        )}
+      </Button>
     </form>
   );
 }

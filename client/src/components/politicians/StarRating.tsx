@@ -1,52 +1,79 @@
+import { useState } from "react";
+import { cn } from "@/lib/utils";
+import { Star } from "lucide-react";
+
 interface StarRatingProps {
   value: number;
-  total?: number;
-  showValue?: boolean;
+  onChange?: (rating: number) => void;
+  readOnly?: boolean;
+  count?: number;
   size?: "sm" | "md" | "lg";
+  className?: string;
 }
 
-export default function StarRating({ 
-  value, 
-  total = 5, 
-  showValue = true, 
-  size = "md" 
+export default function StarRating({
+  value,
+  onChange,
+  readOnly = false,
+  count = 5,
+  size = "md",
+  className
 }: StarRatingProps) {
-  const roundedValue = Math.round(value * 10) / 10; // Round to 1 decimal place
+  const [hoverValue, setHoverValue] = useState<number | null>(null);
   
-  // Determine star size based on prop
-  const starClass = {
-    sm: "text-sm",
-    md: "text-base",
-    lg: "text-lg"
-  }[size];
+  const getSizeClasses = () => {
+    switch (size) {
+      case "sm": return "h-4 w-4";
+      case "lg": return "h-7 w-7";
+      default: return "h-6 w-6"; // md
+    }
+  };
+  
+  const handleMouseMove = (index: number) => {
+    if (readOnly) return;
+    setHoverValue(index);
+  };
+  
+  const handleMouseLeave = () => {
+    if (readOnly) return;
+    setHoverValue(null);
+  };
+  
+  const handleClick = (index: number) => {
+    if (readOnly) return;
+    onChange?.(index);
+  };
+  
+  const renderStars = () => {
+    const stars = [];
+    
+    for (let i = 1; i <= count; i++) {
+      const isFilled = hoverValue !== null ? i <= hoverValue : i <= value;
+      
+      stars.push(
+        <Star
+          key={i}
+          className={cn(
+            getSizeClasses(),
+            "cursor-pointer transition-colors",
+            isFilled 
+              ? "fill-yellow-400 text-yellow-400" 
+              : "text-gray-300",
+            !readOnly && "hover:text-yellow-500"
+          )}
+          onMouseMove={() => handleMouseMove(i)}
+          onMouseLeave={handleMouseLeave}
+          onClick={() => handleClick(i)}
+        />
+      );
+    }
+    
+    return stars;
+  };
   
   return (
-    <div className="flex items-center">
-      {Array.from({ length: total }).map((_, i) => (
-        <span
-          key={i}
-          className={`material-icons ${starClass} ${
-            i < Math.floor(value) 
-              ? "text-yellow-400" 
-              : i === Math.floor(value) && value % 1 >= 0.5
-                ? "text-yellow-400" // Would use star_half in a real app
-                : "text-gray-300"
-          }`}
-        >
-          {i < Math.floor(value) 
-            ? "star" 
-            : i === Math.floor(value) && value % 1 >= 0.5
-              ? "star" // Would use star_half in a real app
-              : "star_border"
-          }
-        </span>
-      ))}
-      
-      {showValue && value > 0 && (
-        <span className="text-xs text-gray-500 ml-1">
-          ({roundedValue.toFixed(1)})
-        </span>
-      )}
+    <div className={cn("flex items-center space-x-1", className)}>
+      {renderStars()}
     </div>
   );
 }
