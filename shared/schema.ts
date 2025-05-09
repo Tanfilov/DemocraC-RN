@@ -81,6 +81,7 @@ export const politicianRatings = pgTable("politician_ratings", {
 
 export const insertPoliticianRatingSchema = createInsertSchema(politicianRatings).omit({
   id: true,
+  createdAt: true,
 });
 
 // Define types

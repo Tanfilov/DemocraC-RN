@@ -411,8 +411,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           politicianId: politician.id,
           userId: null,
           rating: 3, // Default middle rating
-          comment: "דירוג ראשוני",
-          createdAt: new Date()
+          comment: "דירוג ראשוני"
         });
       }
       
