@@ -37,6 +37,15 @@ export default function Header() {
                 <h1 className="text-xl font-bold text-gray-800 sm:text-2xl mr-2">חדשות ישראל</h1>
               </a>
             </Link>
+            
+            <div className="hidden lg:flex ml-4 space-x-6">
+              <Link href="/">
+                <a className="text-gray-800 hover:text-primary font-medium">בית</a>
+              </Link>
+              <Link href="/politicians">
+                <a className="text-gray-800 hover:text-primary font-medium">פוליטיקאים</a>
+              </Link>
+            </div>
           </div>
           
           {/* Desktop Search bar */}
@@ -110,24 +119,24 @@ export default function Header() {
                     ))}
                   </ul>
                   
-                  <h3 className="font-semibold text-lg mb-3 text-right">פוליטיקאים מדורגים</h3>
+                  <h3 className="font-semibold text-lg mb-3 text-right">פוליטיקאים</h3>
                   <ul className="space-y-2">
                     <li>
                       <SheetClose asChild>
-                        <Link href="/politicians/top">
+                        <Link href="/politicians">
                           <a className="flex flex-row-reverse items-center text-gray-700 hover:text-primary p-2 rounded-md hover:bg-blue-50 transition">
-                            <span className="material-icons ml-3">star</span>
-                            <span>דירוג גבוה</span>
+                            <span className="material-icons ml-3">people</span>
+                            <span>כל הפוליטיקאים</span>
                           </a>
                         </Link>
                       </SheetClose>
                     </li>
                     <li>
                       <SheetClose asChild>
-                        <Link href="/politicians/my-ratings">
+                        <Link href="/politicians?tab=top">
                           <a className="flex flex-row-reverse items-center text-gray-700 hover:text-primary p-2 rounded-md hover:bg-blue-50 transition">
-                            <span className="material-icons ml-3">star_half</span>
-                            <span>הדירוגים שלי</span>
+                            <span className="material-icons ml-3">star</span>
+                            <span>דירוג גבוה</span>
                           </a>
                         </Link>
                       </SheetClose>
