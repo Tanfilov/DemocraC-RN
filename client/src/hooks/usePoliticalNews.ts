@@ -1,17 +1,19 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/api";
 import { queryClient } from "@/lib/queryClient";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { TopicWithArticles } from "@shared/schema";
 
 export function usePoliticalNews() {
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [page, setPage] = useState(0);
+  const limit = 20; // Increased limit to fetch more articles
   
-  // Fetch only political topics
-  const politicalTopicsQuery = useQuery({
-    queryKey: ["/api/topics", "politics"],
+  // Fetch political topics with pagination
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: ["/api/topics", "politics", page],
     queryFn: async () => {
-      const url = "/api/topics?category=politics";
+      const url = `/api/topics?category=politics&limit=${limit}&offset=${page * limit}`;
       
       const res = await fetch(url, {
         credentials: "include",
@@ -45,12 +47,19 @@ export function usePoliticalNews() {
   });
   
   // Helper function to refresh political news
-  const refreshPoliticalNews = () => {
+  const refreshPoliticalNews = useCallback(() => {
     refreshPoliticalNewsMutation.mutate();
-  };
+  }, [refreshPoliticalNewsMutation]);
   
-  // Extract political topics with politicians
-  const politicalTopics: TopicWithArticles[] = politicalTopicsQuery.data?.topics || [];
+  // Function to load more articles
+  const loadMoreArticles = useCallback(() => {
+    if (!isFetching) {
+      setPage(prevPage => prevPage + 1);
+    }
+  }, [isFetching]);
+
+  // Extract all political topics
+  const politicalTopics: TopicWithArticles[] = data?.topics || [];
   
   // Filter to only include topics that have politicians mentioned
   const topicsWithPoliticians = politicalTopics.filter(
@@ -60,7 +69,9 @@ export function usePoliticalNews() {
   return {
     politicalTopics,
     topicsWithPoliticians,
-    isLoading: politicalTopicsQuery.isLoading,
+    isLoading,
+    isLoadingMore: isFetching && page > 0,
+    loadMoreArticles,
     isRefreshing,
     refreshPoliticalNews,
   };
