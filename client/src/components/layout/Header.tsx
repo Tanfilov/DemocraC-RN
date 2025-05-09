@@ -45,6 +45,9 @@ export default function Header() {
               <Link href="/politicians">
                 <a className="text-gray-800 hover:text-primary font-medium">פוליטיקאים</a>
               </Link>
+              <Link href="/top-politicians">
+                <a className="text-gray-800 hover:text-primary font-medium">פוליטיקאים - עמוד חדש</a>
+              </Link>
             </div>
           </div>
           
@@ -127,6 +130,16 @@ export default function Header() {
                           <a className="flex flex-row-reverse items-center text-gray-700 hover:text-primary p-2 rounded-md hover:bg-blue-50 transition">
                             <span className="material-icons ml-3">people</span>
                             <span>כל הפוליטיקאים</span>
+                          </a>
+                        </Link>
+                      </SheetClose>
+                    </li>
+                    <li>
+                      <SheetClose asChild>
+                        <Link href="/top-politicians">
+                          <a className="flex flex-row-reverse items-center text-gray-700 hover:text-primary p-2 rounded-md hover:bg-blue-50 transition">
+                            <span className="material-icons ml-3">star</span>
+                            <span>עמוד פוליטיקאים חדש</span>
                           </a>
                         </Link>
                       </SheetClose>
