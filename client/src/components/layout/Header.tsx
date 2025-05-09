@@ -6,9 +6,9 @@ export default function Header() {
       <div className="container mx-auto px-4">
         <div className="flex justify-center items-center">
           <Link href="/political-news">
-            <a className="flex items-center">
+            <div className="flex items-center cursor-pointer">
               <h1 className="text-2xl font-bold text-gray-800 mr-2">חדשות פוליטיות</h1>
-            </a>
+            </div>
           </Link>
         </div>
       </div>
