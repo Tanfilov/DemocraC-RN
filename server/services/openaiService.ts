@@ -140,7 +140,18 @@ export function extractPoliticianNamesHeuristic(text: string): string[] {
       "ש\"ס",
       "יהדות התורה",
       "תקווה חדשה",
-      "הרשימה המשותפת"
+      "הרשימה המשותפת",
+      "המחנה הממלכתי",
+      "חד\"ש",
+      "בל\"ד",
+      "תע\"ל",
+      "דגל התורה",
+      "אגודת ישראל",
+      "עוצמה יהודית",
+      "נעם",
+      "עתיד אחד",
+      "צירוף",
+      "זהות"
     ];
     
     // Hebrew patterns - common titles in Hebrew followed by names

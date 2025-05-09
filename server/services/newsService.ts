@@ -285,37 +285,32 @@ function parseWallaArticles(html: string, category: string): NewsArticle[] {
   
   console.log("Parsing Walla HTML structure...");
   
-  // Find articles in Walla format - using a wider range of selectors
-  $('.article, article, .item, li.fc, .news-item, [data-type="article"], div[class*="item"], div[class*="article"], .with-image').each((i, element) => {
+  // Debug the structure by looking at all <a> tags
+  console.log("Debugging Walla HTML structure - checking a tags...");
+  
+  // Since Walla's site is complex, let's just grab any <a> tags with decent content length
+  // This is a failsafe method to extract news links
+  $('a').each((i, element) => {
     try {
-      // Try multiple selectors for title
-      const titleSelectors = ['h1', 'h2', 'h3', '.title', '.headline', '[data-type="title"]', '.teasers-title', 'a > h2', 'a > h3', 'a > span.title'];
-      let title = '';
+      // Get the text of the link and surrounding text
+      const linkText = $(element).text().trim();
       
-      for (const selector of titleSelectors) {
-        const foundTitle = $(element).find(selector).first().text().trim();
-        if (foundTitle && foundTitle.length > 5) {
-          title = foundTitle;
-          break;
-        }
-      }
+      // Skip very short texts or obvious non-article links (menus, etc)
+      if (!linkText || linkText.length < 15 || linkText.length > 150) return;
       
-      // If still no useful title, skip this element
-      if (!title || title.length < 5) return;
-      
-      // Try to find the link
-      let link;
-      // First check if the element itself is an anchor
-      if ($(element).is('a')) {
-        link = $(element).attr('href');
-      } 
-      // Then check for anchors inside
-      else {
-        link = $(element).find('a').first().attr('href');
-      }
-      
-      // Skip if no link found
+      // Get the href attribute
+      const link = $(element).attr('href');
       if (!link) return;
+      
+      // Skip non-news links or ads
+      if (link.includes('sponsor') || 
+          link.includes('advertisement') || 
+          link.includes('ad/') || 
+          link.includes('login') || 
+          link.includes('signup')) return;
+      
+      // Only take walla links
+      if (!link.includes('walla.co.il') && !link.startsWith('/')) return;
       
       // Normalize the URL
       const url = link.startsWith('http') 
@@ -323,16 +318,28 @@ function parseWallaArticles(html: string, category: string): NewsArticle[] {
         : (link.startsWith('/') 
           ? `https://news.walla.co.il${link}` 
           : `https://news.walla.co.il/${link}`);
+          
+      // Use the link text as title and content since we can't easily separate
+      const title = linkText;
+      const content = linkText + ' - מאמר מאתר Walla News';
       
-      // Try to extract image with multiple approaches
+      // Try to extract image from the containing element or nearby elements
       let imageUrl;
-      // Check for img tag
-      const imgElement = $(element).find('img').first();
-      imageUrl = imgElement.attr('src') || imgElement.attr('data-src') || imgElement.attr('data-original');
       
-      // Check for background image in style attribute
+      // Look for any image nearby
+      const imgElement = $(element).find('img').first() || 
+                         $(element).parent().find('img').first() || 
+                         $(element).closest('div').find('img').first();
+                         
+      if (imgElement) {
+        imageUrl = imgElement.attr('src') || imgElement.attr('data-src') || imgElement.attr('data-original');
+      }
+      
+      // Check for background image in style if no direct image
       if (!imageUrl) {
-        const style = $(element).attr('style') || $(element).find('[style*="background"]').attr('style');
+        const container = $(element).parent().closest('div');
+        const style = container.attr('style') || $(element).attr('style');
+        
         if (style && style.includes('url(')) {
           const match = style.match(/url\(['"]?(.*?)['"]?\)/);
           if (match && match[1]) {
@@ -346,37 +353,16 @@ function parseWallaArticles(html: string, category: string): NewsArticle[] {
         imageUrl = imageUrl.startsWith('//') ? `https:${imageUrl}` : `https://news.walla.co.il${imageUrl}`;
       }
       
-      // Get text content from multiple potential sources
-      const contentSelectors = ['.subtitle', '.desc', '.content', 'p', '.summary', '.description', '.teaser'];
-      let content = '';
-      
-      for (const selector of contentSelectors) {
-        const foundContent = $(element).find(selector).text().trim();
-        if (foundContent && foundContent.length > 15) {
-          content = foundContent;
-          break;
-        }
-      }
-      
-      // If we couldn't find content, use the title
-      if (!content || content.length < 15) {
-        content = title + ' - מאמר מאתר Walla';
-      }
-      
       // Check for politicians
-      const fullText = title + ' ' + content;
+      const fullText = title;
       const detection = detectPoliticiansInText(fullText);
       
-      // For politics category or if politicians are detected
-      if (detection.hasPolitician || category === 'politics') {
+      // We're more aggressive with including articles for Walla since we're struggling to parse them
+      if (category === 'politics' || detection.hasPolitician) {
         // Create a summary
         const summary = content.length > 200 ? content.substring(0, 200) + '...' : content;
         
-        // Log detected politicians
-        if (detection.politicians.length > 0) {
-          console.log(`Walla article: detected politicians in "${title.substring(0, 30)}...": ${detection.politicians.join(', ')}`);
-        }
-        
+        // Add the article
         articles.push({
           title,
           content,
@@ -386,14 +372,30 @@ function parseWallaArticles(html: string, category: string): NewsArticle[] {
           publishedAt: new Date(now.getTime() - Math.floor(Math.random() * 12) * 60 * 60 * 1000).toISOString(),
           summary
         });
+        
+        // Log if we found a politician
+        if (detection.politicians.length > 0) {
+          console.log(`Walla article: detected politicians in "${title.substring(0, 30)}...": ${detection.politicians.join(', ')}`);
+        }
       }
     } catch (err) {
-      console.error('Error parsing a Walla article:', err);
+      console.error('Error parsing a Walla link:', err);
     }
   });
   
-  console.log(`Found ${articles.length} articles from Walla in category ${category}`);
-  return articles;
+  // Deduplicate articles based on URL
+  const uniqueArticles: NewsArticle[] = [];
+  const urls = new Set<string>();
+  
+  for (const article of articles) {
+    if (!urls.has(article.url)) {
+      urls.add(article.url);
+      uniqueArticles.push(article);
+    }
+  }
+  
+  console.log(`Found ${uniqueArticles.length} articles from Walla in category ${category}`);
+  return uniqueArticles;
 }
 
 // Map our category to Ynet categories
@@ -596,11 +598,30 @@ function detectPoliticiansInText(text: string): { hasPolitician: boolean, politi
   // Use the enhanced politician detection from openaiService
   const detectedPoliticians = extractPoliticianNamesHeuristic(text);
   
-  // Check for political keywords as a backup
-  const hasPoliticalKeywords = /ממשלה|שר|ראש הממשלה|כנסת|ח"כ|מפלגת|בחירות/i.test(text);
+  // Expanded list of political keywords in Hebrew
+  const hasPoliticalKeywords = /ממשלה|שר|ראש הממשלה|כנסת|ח"כ|מפלגת|בחירות|פוליטי|קואליציה|אופוזיציה|ועדת|מדיני|דיפלומטי|הכנסת|הסיעה|סיעת|ביטחוני|קבינט|ההצבעה|הממשלה|משרד|מבקר המדינה|ועדה|חקיקה|הצעת חוק|מליאה|דיון|פרלמנטרי|דיפלומטיה|יחסי חוץ|חידוש משא ומתן|תקציב המדינה|תקציב/i.test(text);
+  
+  // Add dynamic check for political parties
+  const israeliParties = [
+    "ליכוד", "יש עתיד", "כחול לבן", "הציונות הדתית", "העבודה", "מרצ", "ימינה", 
+    "ישראל ביתנו", "רע\"מ", "ש\"ס", "יהדות התורה", "תקווה חדשה", "הרשימה המשותפת",
+    "המחנה הממלכתי", "חד\"ש", "בל\"ד", "תע\"ל", "דגל התורה", "אגודת ישראל",
+    "עוצמה יהודית", "נעם", "עתיד אחד"
+  ];
+  
+  const hasPartyMention = israeliParties.some(party => text.includes(party));
+  if (hasPartyMention) {
+    console.log(`Found political party mentioned: ${israeliParties.find(party => text.includes(party))}`);
+  }
+  
+  // Check for government position titles
+  const hasTitles = /שר\s[א-ת]+|ראש\sהממשלה|ראש\sהאופוזיציה|ח"כ\s|חבר\sכנסת|חברת\sכנסת|יושב\sראש|יו"ר\s|סגן\sשר|מנכ"ל\s משרד/i.test(text);
+  
+  // Check for political topics
+  const hasPoliticalTopics = /אזרחות|הסכם שלום|שלום|מלחמה|טרור|בטחון|צה"ל|הסכם|קונפליקט|מזרח תיכון|מדיניות|רפורמה|חוק|זכויות אדם|הפגנות|מחאה|עימות|הסדר/i.test(text);
   
   return { 
-    hasPolitician: detectedPoliticians.length > 0 || hasPoliticalKeywords,
+    hasPolitician: detectedPoliticians.length > 0 || hasPoliticalKeywords || hasPartyMention || hasTitles || hasPoliticalTopics,
     politicians: detectedPoliticians
   };
 }
