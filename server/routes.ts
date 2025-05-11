@@ -39,7 +39,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // Add politicians detected in each news item
+      // Add politicians detected in each news item and simplify source names
       const newsWithPoliticians = await Promise.all(news.map(async (item) => {
         const text = `${item.title} ${item.description}`;
         const detectedPoliticians = await politicianRecognitionService.detectPoliticians(text);
@@ -56,8 +56,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return politician;
         });
         
+        // Simplify source name to just "Ynet" or "Mako"
+        let source = item.source;
+        if (source && source.startsWith('Ynet')) {
+          source = 'Ynet';
+        } else if (source && source.startsWith('Mako')) {
+          source = 'Mako';
+        }
+        
         return {
           ...item,
+          source,
           politicians: updatedPoliticians
         };
       }));
