@@ -8,7 +8,7 @@ interface StarRatingProps {
   size?: 'default' | 'large';
 }
 
-export default function StarRating({ rating, onChange, id }: StarRatingProps) {
+export default function StarRating({ rating, onChange, id, size = 'default' }: StarRatingProps) {
   const [hoverRating, setHoverRating] = useState(0);
   const [selectedRating, setSelectedRating] = useState(rating);
 
@@ -28,7 +28,7 @@ export default function StarRating({ rating, onChange, id }: StarRatingProps) {
 
   return (
     <div 
-      className="flex flex-row-reverse justify-end gap-1 rtl:flex-row" 
+      className={`flex flex-row-reverse justify-end ${size === 'large' ? 'gap-3' : 'gap-1'} rtl:flex-row`}
       onMouseLeave={handleMouseLeave}
       dir="rtl"
     >
@@ -36,7 +36,7 @@ export default function StarRating({ rating, onChange, id }: StarRatingProps) {
         <button
           key={`${id}-star-${index}`}
           type="button"
-          className="text-amber-500 flex items-center justify-center focus:outline-none"
+          className={`text-amber-500 flex items-center justify-center focus:outline-none ${size === 'large' ? 'p-2' : 'p-1'}`}
           onMouseEnter={() => handleMouseEnter(index)}
           onClick={() => handleClick(index)}
           aria-label={`דרג ${index} מתוך 5 כוכבים`}
@@ -47,7 +47,7 @@ export default function StarRating({ rating, onChange, id }: StarRatingProps) {
                 ? "currentColor" 
                 : "none"
             }
-            className={`w-5 h-5 ${
+            className={`${size === 'large' ? 'w-8 h-8' : 'w-5 h-5'} ${
               hoverRating >= index
                 ? "text-amber-500"
                 : selectedRating >= index
