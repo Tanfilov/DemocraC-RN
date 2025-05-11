@@ -7,6 +7,19 @@ html {
   direction: rtl;
 }
 
+/* Custom image handling */
+.article-image {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  min-height: 240px;
+  transition: all 0.3s ease-in-out;
+}
+
+.article-image:hover {
+  transform: scale(1.05);
+}
+
 :root {
   --background: 0 0% 100%;
   --foreground: 0 0% 13%;

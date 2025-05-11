@@ -9,7 +9,11 @@ export default function ArticleViewer() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
-  const url = new URL(window.location.href).searchParams.get("url");
+  // Get the URL from the query parameters
+  const urlParam = new URL(window.location.href).searchParams.get("url");
+  // Make sure we have a valid URL
+  const url = urlParam ? decodeURIComponent(urlParam) : null;
+  console.log("Article URL:", url);
 
   // Go back to news feed
   const handleBack = () => {
@@ -18,10 +22,12 @@ export default function ArticleViewer() {
 
   useEffect(() => {
     if (!url) {
+      console.error("No URL provided");
       setError("לא סופקה כתובת URL למאמר");
       setLoading(false);
       return;
     }
+    console.log("Loading article from URL:", url);
   }, [url]);
   
   if (error) {
@@ -79,6 +85,9 @@ export default function ArticleViewer() {
                 setLoading(false);
                 setError("טעינת המאמר נכשלה");
               }}
+              sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+              referrerPolicy="no-referrer"
+              allow="fullscreen"
             />
           )}
         </CardContent>

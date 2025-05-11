@@ -17,7 +17,7 @@ export default function NewsCard({ article }: NewsCardProps) {
           <img 
             src={article.imageUrl} 
             alt={article.title} 
-            className="w-full h-64 object-cover transform hover:scale-105 transition-transform duration-300" 
+            className="article-image" 
           />
         </div>
       )}
@@ -46,12 +46,12 @@ export default function NewsCard({ article }: NewsCardProps) {
             <ExternalLink className="h-4 w-4 mr-1" />
           </Button>
         </a>
-        <Link href={`/article?url=${encodeURIComponent(article.link)}`} className="inline-block">
+        <a href={`/article?url=${encodeURIComponent(article.link)}`} className="inline-block">
           <Button variant="default" size="sm" className="flex items-center gap-1">
             קריאה נוספת
             <ArrowLeft className="h-4 w-4 mr-1" />
           </Button>
-        </Link>
+        </a>
       </CardFooter>
     </Card>
   );
