@@ -63,7 +63,7 @@ export default function PoliticianRatingModal({
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ rating })
+            body: JSON.stringify({ rating, articleId })
           })
         );
       
@@ -71,8 +71,12 @@ export default function PoliticianRatingModal({
       
       // Store ratings in localStorage to persist them
       try {
-        // Save each politician ID that was rated to localStorage
-        const ratedPoliticians = JSON.parse(localStorage.getItem('rated-politicians') || '[]');
+        // Use article-specific keys for localStorage
+        const articleRatedKey = `rated-politicians-${articleId}`;
+        const articleRatingsKey = `politician-ratings-${articleId}`;
+        
+        // Save each politician ID that was rated to localStorage for this specific article
+        const ratedPoliticians = JSON.parse(localStorage.getItem(articleRatedKey) || '[]');
         
         Object.entries(ratings)
           .filter(([_, rating]) => rating > 0)
@@ -83,17 +87,17 @@ export default function PoliticianRatingModal({
             }
           });
           
-        localStorage.setItem('rated-politicians', JSON.stringify(ratedPoliticians));
+        localStorage.setItem(articleRatedKey, JSON.stringify(ratedPoliticians));
         
-        // Also store the actual ratings
-        const storedRatings = JSON.parse(localStorage.getItem('politician-ratings') || '{}');
+        // Also store the actual ratings for this specific article
+        const storedRatings = JSON.parse(localStorage.getItem(articleRatingsKey) || '{}');
         Object.entries(ratings)
           .filter(([_, rating]) => rating > 0)
           .forEach(([politicianId, rating]) => {
             storedRatings[politicianId] = rating;
           });
           
-        localStorage.setItem('politician-ratings', JSON.stringify(storedRatings));
+        localStorage.setItem(articleRatingsKey, JSON.stringify(storedRatings));
       } catch (e) {
         console.error('Error storing rated politicians', e);
       }
