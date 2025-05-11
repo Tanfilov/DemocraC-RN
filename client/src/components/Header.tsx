@@ -31,15 +31,10 @@ export default function Header() {
           <span className="sr-only">רענן</span>
         </Button>
 
-        {/* Center logo with inline data URL to avoid caching issues */}
+        {/* Center logo placeholder - awaiting new logo from user */}
         <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
           <Link href="/" className="flex items-center justify-center">
-            <img 
-              src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABCsAAAEWCAYAAABPFx2FAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAADe4SURBVHhe7d0PdFTlvf/xzzPzT0j+hMSGEEJC00QpKgasgk1BpFSoipXrKj1q19XbRbVapS1e+O2yUG4XLdRbf7dLf3qprf64RdQLBUEoAmKLIsrSQhEQQSFhCRJIyL+ZzDzPs2fmoWwwZBJg8pH3a6058Xn2MyH7GWbmfPZ533P" 
-              alt="democra.C Logo" 
-              className="h-10 object-contain"
-              key="logo-inline-v3"
-            />
+            <h3 className="text-lg font-bold text-gray-700">democra.C</h3>
           </Link>
         </div>
         
