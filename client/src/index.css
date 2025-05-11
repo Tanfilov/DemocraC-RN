@@ -7,18 +7,50 @@ html {
   direction: rtl;
 }
 
+/* Mobile app styles */
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+  padding: 0;
+  margin: 0;
+  touch-action: manipulation;
+}
+
 /* Custom image handling */
 .article-image {
   width: 100% !important;
-  height: 300px !important;
+  height: 220px !important;
   object-fit: cover !important;
-  min-height: 240px !important;
-  transition: all 0.3s ease-in-out !important;
   display: block !important;
 }
 
-.article-image:hover {
-  transform: scale(1.05) !important;
+@media (max-width: 768px) {
+  .container {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+}
+
+/* Mobile app styled cards */
+.mobile-card {
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  margin-bottom: 1rem !important;
+  background: white !important;
+}
+
+.mobile-card .image-container {
+  height: 220px !important;
+  overflow: hidden !important;
+}
+
+.mobile-button {
+  width: 100% !important;
+  border-radius: 8px !important;
+  padding: 0.75rem !important;
+  font-weight: 600 !important;
+  margin-top: 0.5rem !important;
 }
 
 :root {

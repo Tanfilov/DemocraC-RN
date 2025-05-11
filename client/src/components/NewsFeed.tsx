@@ -22,23 +22,20 @@ export default function NewsFeed() {
   if (isLoading) {
     // Show skeleton loading state
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="flex flex-col gap-4 max-w-screen-sm mx-auto">
         {Array(4).fill(null).map((_, i) => (
-          <div key={i} className="border rounded-lg overflow-hidden">
-            <Skeleton className="h-80 w-full" style={{minHeight: "240px"}}/>
+          <div key={i} className="mobile-card">
+            <Skeleton className="h-56 w-full"/>
             <div className="p-4">
-              <div className="flex justify-between mb-2">
+              <div className="flex justify-between mb-3">
                 <Skeleton className="h-4 w-24" />
-                <Skeleton className="h-4 w-16" />
+                <Skeleton className="h-5 w-16" />
               </div>
-              <Skeleton className="h-6 w-full mb-2" />
-              <Skeleton className="h-4 w-full mb-1" />
-              <Skeleton className="h-4 w-3/4 mb-1" />
-              <Skeleton className="h-4 w-5/6 mb-1" />
-              <div className="flex justify-between mt-4 pt-4 border-t">
-                <Skeleton className="h-9 w-20" />
-                <Skeleton className="h-9 w-24" />
-              </div>
+              <Skeleton className="h-7 w-full mb-3" />
+              <Skeleton className="h-4 w-full mb-2" />
+              <Skeleton className="h-4 w-3/4 mb-2" />
+              <Skeleton className="h-4 w-5/6 mb-4" />
+              <Skeleton className="h-10 w-full rounded-lg" />
             </div>
           </div>
         ))}
@@ -101,7 +98,7 @@ export default function NewsFeed() {
           רענן
         </Button>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="flex flex-col gap-4 max-w-screen-sm mx-auto">
         {news.map((article) => (
           <NewsCard key={article.guid} article={article} />
         ))}

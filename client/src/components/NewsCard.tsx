@@ -11,9 +11,9 @@ interface NewsCardProps {
 
 export default function NewsCard({ article }: NewsCardProps) {
   return (
-    <Card className="overflow-hidden flex flex-col h-full hover:shadow-lg transition-shadow">
+    <div className="mobile-card">
       {article.imageUrl && (
-        <div className="w-full overflow-hidden">
+        <div className="image-container">
           <img 
             src={article.imageUrl} 
             alt={article.title} 
@@ -21,8 +21,8 @@ export default function NewsCard({ article }: NewsCardProps) {
           />
         </div>
       )}
-      <CardHeader className="pb-2 text-right">
-        <div className="flex justify-between items-center mb-2">
+      <div className="p-4 text-right">
+        <div className="flex justify-between items-center mb-3">
           <div className="flex items-center text-xs text-muted-foreground">
             <Calendar className="h-3 w-3 ml-1" />
             {article.formattedDate}
@@ -31,22 +31,26 @@ export default function NewsCard({ article }: NewsCardProps) {
             Ynet חדשות
           </Badge>
         </div>
-        <h3 className="font-bold text-lg">{article.title}</h3>
-      </CardHeader>
-      <CardContent className="py-2 flex-grow text-right">
+        <h3 className="font-bold text-xl mb-2">{article.title}</h3>
         <div 
-          className="text-sm text-muted-foreground" 
+          className="text-sm text-muted-foreground mb-4" 
           dangerouslySetInnerHTML={{ __html: article.description }} 
         />
-      </CardContent>
-      <CardFooter className="border-t pt-4 flex justify-center">
-        <a href={article.link} target="_blank" rel="noopener noreferrer" className="inline-block">
-          <Button variant="default" className="flex items-center gap-1 px-6">
+        <a 
+          href={article.link} 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="block w-full"
+        >
+          <Button 
+            variant="default" 
+            className="mobile-button flex items-center justify-center gap-2"
+          >
             קריאה באתר
-            <ExternalLink className="h-4 w-4 mr-1" />
+            <ExternalLink className="h-4 w-4" />
           </Button>
         </a>
-      </CardFooter>
-    </Card>
+      </div>
+    </div>
   );
 }

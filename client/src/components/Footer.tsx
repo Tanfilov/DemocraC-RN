@@ -2,14 +2,13 @@ import { Heart } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="bg-white border-t border-gray-200 py-4 mt-auto">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row justify-between items-center">
-          <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} קורא חדשות Ynet
-          </p>
-          <p className="text-sm text-muted-foreground flex items-center mt-2 md:mt-0">
-            נבנה באהבה <Heart className="h-4 w-4 mx-1 text-red-500" /> לקוראי חדשות
+    <footer className="bg-gray-100 border-t border-gray-200 py-3 mt-auto">
+      <div className="px-4">
+        <div className="flex justify-center items-center">
+          <p className="text-xs text-muted-foreground flex items-center gap-1">
+            <span>&copy; {new Date().getFullYear()}</span>
+            <Heart className="h-3 w-3 text-red-500" /> 
+            <span>קורא חדשות Ynet</span>
           </p>
         </div>
       </div>

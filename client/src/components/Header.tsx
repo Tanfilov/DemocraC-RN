@@ -3,23 +3,21 @@ import { Newspaper } from "lucide-react";
 
 export default function Header() {
   return (
-    <header className="bg-white shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="h-16 flex items-center justify-between">
+    <header className="bg-primary text-white sticky top-0 z-50 shadow-md">
+      <div className="px-4 py-3">
+        <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center">
-            <Newspaper className="h-6 w-6 text-primary ml-2" />
-            <h1 className="text-xl font-bold text-primary">קורא חדשות Ynet</h1>
+            <Newspaper className="h-6 w-6 text-white ml-2" />
+            <h1 className="text-xl font-bold text-white">קורא חדשות Ynet</h1>
           </Link>
-          <div>
-            <a 
-              href="https://www.ynet.co.il" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-sm text-muted-foreground hover:text-primary transition-colors"
-            >
-              לאתר Ynet
-            </a>
-          </div>
+          <a 
+            href="https://www.ynet.co.il" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-sm text-white/80 hover:text-white transition-colors flex items-center"
+          >
+            לאתר Ynet
+          </a>
         </div>
       </div>
     </header>
