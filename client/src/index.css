@@ -72,12 +72,12 @@ h1, h2, h3, h4, h5, h6 {
   --card-foreground: 0 0% 13%;
   --border: 20 5.9% 90%;
   --input: 20 5.9% 90%;
-  --primary: 214 82% 51%;
-  --primary-foreground: 211 100% 99%;
+  --primary: 16 100% 44%; /* Orange/red color like in the "C" of democra.C */
+  --primary-foreground: 0 0% 100%; /* White text on the orange buttons */
   --secondary: 60 4.8% 95.9%;
   --secondary-foreground: 24 9.8% 10%;
-  --accent: 48 95% 50%;
-  --accent-foreground: 24 9.8% 10%;
+  --accent: 16 100% 44%; /* Match accent with primary */
+  --accent-foreground: 0 0% 100%;
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 60 9.1% 97.8%;
   --ring: 20 14.3% 4.1%;
@@ -110,12 +110,12 @@ h1, h2, h3, h4, h5, h6 {
   --card-foreground: 0 0% 98%;
   --border: 240 3.7% 15.9%;
   --input: 240 3.7% 15.9%;
-  --primary: 214 82% 51%;
-  --primary-foreground: 211 100% 99%;
+  --primary: 16 100% 50%; /* Orange/red color for dark mode, slightly brighter */
+  --primary-foreground: 0 0% 100%; /* White text on orange buttons */
   --secondary: 240 3.7% 15.9%;
   --secondary-foreground: 0 0% 98%;
-  --accent: 48 95% 50%;
-  --accent-foreground: 240 5.9% 10%;
+  --accent: 16 100% 50%; /* Match accent with primary */
+  --accent-foreground: 0 0% 100%;
   --destructive: 0 62.8% 30.6%;
   --destructive-foreground: 0 0% 98%;
   --ring: 240 4.9% 83.9%;
@@ -186,21 +186,21 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .star-rating:hover label {
-  color: hsl(var(--accent));
+  color: hsl(16, 100%, 44%); /* Orange/red from democra.C logo */
 }
 
 .star-rating input:checked ~ label {
-  color: hsl(var(--accent));
+  color: hsl(16, 100%, 44%); /* Orange/red from democra.C logo */
 }
 
 .star-rating label:hover,
 .star-rating label:hover ~ label {
-  color: hsl(var(--accent));
+  color: hsl(16, 100%, 44%); /* Orange/red from democra.C logo */
 }
 
 .star-rating input:checked + label:hover,
 .star-rating input:checked ~ label:hover,
 .star-rating label:hover ~ input:checked ~ label,
 .star-rating input:checked ~ label:hover ~ label {
-  color: hsl(var(--accent));
+  color: hsl(16, 100%, 44%); /* Orange/red from democra.C logo */
 }
