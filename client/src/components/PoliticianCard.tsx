@@ -143,11 +143,15 @@ export default function PoliticianCard({ politician, articleId, isCondensed = fa
     <>
       {/* Condensed View - for read articles */}
       {isCondensed && wasRated ? (
-        <div className="inline-flex items-center gap-1 p-1.5 bg-amber-50 dark:bg-amber-900/20 rounded-md border border-amber-100 dark:border-amber-800">
+        <div 
+          className="inline-flex items-center gap-1 p-1.5 bg-amber-50 dark:bg-amber-900/20 rounded-md border border-amber-100 dark:border-amber-800 cursor-pointer hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors"
+          onClick={() => setShowRatingModal(true)}
+        >
           <div className="flex items-center">
             <div className="flex gap-1 items-center">
               <span className="text-xs font-medium text-amber-800 dark:text-amber-300">{politician.name}</span>
-              <Badge className="h-4 text-[10px] px-1 bg-amber-100 text-amber-800 dark:bg-amber-800 dark:text-amber-200">
+              <Badge className="h-4 text-[10px] px-1 bg-amber-100 text-amber-800 dark:bg-amber-800 dark:text-amber-200 flex items-center gap-0.5">
+                <Star className="h-2 w-2 fill-amber-500 text-amber-500 dark:fill-amber-400 dark:text-amber-400 inline-block" />
                 {userRating.toFixed(1)}
               </Badge>
             </div>
@@ -202,14 +206,7 @@ export default function PoliticianCard({ politician, articleId, isCondensed = fa
                 </div>
                 
                 <div className="text-xs">
-                  {showRatingInArticle && averageRating > 0 ? (
-                    <Badge variant="outline" className="gap-1 border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-700 dark:bg-amber-900/40 dark:text-amber-300 h-5 px-2 text-[10px]">
-                      <Star className="h-2.5 w-2.5 fill-amber-500 text-amber-500 dark:fill-amber-400 dark:text-amber-400" />
-                      <span>דירוג ממוצע: {averageRating.toFixed(1)}</span>
-                    </Badge>
-                  ) : (
-                    <span className="text-gray-500 dark:text-gray-400">{politician.party}</span>
-                  )}
+                  <span className="text-gray-500 dark:text-gray-400">{politician.party}</span>
                 </div>
               </div>
               
@@ -217,25 +214,32 @@ export default function PoliticianCard({ politician, articleId, isCondensed = fa
                 <div className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[90px]">{politician.position}</div>
                 
                 {showRatingInArticle ? (
-                  // For rated politicians, show both ratings
+                  // For rated politicians, show badges that open the rating modal when clicked
                   <div className="flex flex-col items-end gap-1">
-                    <div className="flex items-center gap-1">
-                      <span className="text-xs text-gray-600 dark:text-gray-300">הדירוג שלך:</span>
-                      <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-800 dark:text-amber-200 text-xs px-1.5">
-                        {userRating.toFixed(1)}
-                      </Badge>
-                    </div>
                     <div 
-                      className="cursor-pointer" 
+                      className="flex items-center gap-1 cursor-pointer hover:opacity-90 transition-opacity" 
                       onClick={() => setShowRatingModal(true)}
                       title="לחץ לשינוי הדירוג שלך"
                     >
-                      <StarRating
-                        rating={userRating}
-                        onChange={handleRatingChange}
-                        id={`politician-${politician.id}`}
-                      />
+                      <span className="text-xs text-gray-600 dark:text-gray-300">הדירוג שלך:</span>
+                      <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-800 dark:text-amber-200 text-xs px-1.5 flex items-center gap-1 hover:bg-amber-200 dark:hover:bg-amber-700 transition-colors">
+                        <Star className="h-3 w-3 fill-amber-500 text-amber-500 dark:fill-amber-400 dark:text-amber-400" />
+                        {userRating.toFixed(1)}
+                        <Pencil className="h-2.5 w-2.5 ml-0.5" />
+                      </Badge>
                     </div>
+                    {averageRating > 0 && (
+                      <div 
+                        className="flex items-center gap-1 cursor-pointer hover:opacity-90 transition-opacity" 
+                        onClick={() => setShowRatingModal(true)}
+                        title="לחץ לראות דירוג ממוצע"
+                      >
+                        <span className="text-xs text-gray-600 dark:text-gray-300">דירוג ממוצע:</span>
+                        <Badge className="bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 text-xs px-1.5 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                          {averageRating.toFixed(1)}
+                        </Badge>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   // For unrated politicians, show empty stars
