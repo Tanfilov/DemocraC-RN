@@ -112,7 +112,7 @@ export default function PoliticianRatingModal({
         // Reset states after closing
         setIsSubmitting(false);
         setSubmissionComplete(false);
-      }, 1500);
+      }, 800); // Reduced from 1500ms to 800ms for a quicker response
     } catch (error) {
       console.error('Failed to submit ratings:', error);
       setIsSubmitting(false);
@@ -133,13 +133,13 @@ export default function PoliticianRatingModal({
           איך הייתה מדרג את הפעילות שלו המתוארת בכתבה?
         </DialogTitle>
         
-        {/* Success message */}
+        {/* Success message - more lightweight animation */}
         {submissionComplete ? (
-          <div className="py-8 flex flex-col items-center justify-center text-center gap-4 mt-8">
-            <div className="h-16 w-16 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center animate-bounce">
-              <Check className="h-8 w-8 text-green-600 dark:text-green-400" />
+          <div className="py-4 flex flex-col items-center justify-center text-center gap-2 mt-4">
+            <div className="flex items-center justify-center gap-2">
+              <Check className="h-5 w-5 text-green-600 dark:text-green-400" />
+              <span className="text-base font-medium text-green-600 dark:text-green-400">תודה על הדירוג!</span>
             </div>
-            <h3 className="text-lg font-semibold dark:text-gray-100">תודה על הדירוג!</h3>
           </div>
         ) : (
           <div className="py-4 mt-8">

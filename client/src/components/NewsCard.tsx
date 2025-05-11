@@ -37,12 +37,23 @@ export default function NewsCard({ article }: NewsCardProps) {
         wasArticleViewed.current &&
         article.politicians?.length
       ) {
-        // Wait a short time before showing the modal to ensure the app is visible
-        setTimeout(() => {
-          setShowRatingModal(true);
-          // Reset the viewed flag after showing the modal
+        // Check if the user has already rated politicians in this article
+        const articleRatedKey = `rated-politicians-${article.guid}`;
+        const ratedPoliticians = localStorage.getItem(articleRatedKey);
+        const hasRatedBefore = ratedPoliticians ? JSON.parse(ratedPoliticians).length > 0 : false;
+        
+        // Only show the modal if the user hasn't rated any politicians in this article
+        if (!hasRatedBefore) {
+          // Wait a short time before showing the modal to ensure the app is visible
+          setTimeout(() => {
+            setShowRatingModal(true);
+            // Reset the viewed flag after showing the modal
+            wasArticleViewed.current = false;
+          }, 300);
+        } else {
+          // If already rated, just reset the flag without showing the modal
           wasArticleViewed.current = false;
-        }, 300);
+        }
       }
     };
     
@@ -53,11 +64,22 @@ export default function NewsCard({ article }: NewsCardProps) {
       if (hash === `#return-from-${hashedArticleId}` && article.politicians?.length) {
         // Remove the hash so refreshing won't trigger the modal again
         history.replaceState(null, document.title, window.location.pathname);
-        // Show the rating modal
-        setTimeout(() => {
-          setShowRatingModal(true);
+        
+        // Check if the user has already rated politicians in this article
+        const articleRatedKey = `rated-politicians-${article.guid}`;
+        const ratedPoliticians = localStorage.getItem(articleRatedKey);
+        const hasRatedBefore = ratedPoliticians ? JSON.parse(ratedPoliticians).length > 0 : false;
+        
+        // Only show the modal if the user hasn't rated any politicians in this article
+        if (!hasRatedBefore) {
+          setTimeout(() => {
+            setShowRatingModal(true);
+            wasArticleViewed.current = false;
+          }, 300);
+        } else {
+          // If already rated, just reset the flag without showing the modal
           wasArticleViewed.current = false;
-        }, 300);
+        }
       }
     };
     
