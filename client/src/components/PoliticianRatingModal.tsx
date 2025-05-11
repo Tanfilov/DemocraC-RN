@@ -135,19 +135,19 @@ export default function PoliticianRatingModal({
   
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleCancel()}>
-      <DialogContent className="sm:max-w-md w-[90vw] max-h-[80vh] rounded-xl dark:bg-slate-900 dark:border-slate-700" dir="rtl">
+      <DialogContent className="sm:max-w-md w-[90vw] max-h-[90vh] rounded-xl dark:bg-slate-900 dark:border-slate-700" dir="rtl">
         <DialogTitle className="text-lg font-medium pt-4 text-center dark:text-gray-100">
           איך הייתה מדרג את הפעילות שלו המתוארת בכתבה?
         </DialogTitle>
         
-        <div className="py-4 mt-8">
-          <div className="flex flex-col items-center gap-3">
+        <div className="py-2 mt-4">
+          <div className="flex flex-col items-center gap-4">
             {currentPolitician.imageUrl && (
               <div className="relative">
                 <img 
                   src={currentPolitician.imageUrl}
                   alt={currentPolitician.name}
-                  className="h-32 w-32 rounded-full object-cover object-top shadow-md"
+                  className="h-48 w-48 rounded-full object-cover object-top shadow-md"
                 />
               </div>
             )}
