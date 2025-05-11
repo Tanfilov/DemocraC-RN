@@ -32,8 +32,9 @@ export default function PoliticianCard({ politician, articleId }: PoliticianCard
   useEffect(() => {
     console.log(`Politician ${politician.id} has rating: ${politician.rating}`);
   
-    // Check if this politician was rated by the user
-    const ratedPoliticians = localStorage.getItem('rated-politicians');
+    // Check if this politician was rated by the user in this specific article
+    const articleRatedKey = `rated-politicians-${articleId}`;
+    const ratedPoliticians = localStorage.getItem(articleRatedKey);
     let wasRatedLocally = false;
     
     if (ratedPoliticians) {
@@ -42,7 +43,7 @@ export default function PoliticianCard({ politician, articleId }: PoliticianCard
         wasRatedLocally = parsedRated.includes(politician.id);
         setWasRated(wasRatedLocally);
         
-        // If the user has rated this politician, show the overall average
+        // If the user has rated this politician in this article, show the rating
         // Otherwise, don't show any rating (will show stars to let user rate)
         setShowRatingInArticle(wasRatedLocally);
       } catch (e) {
@@ -55,11 +56,12 @@ export default function PoliticianCard({ politician, articleId }: PoliticianCard
       setAverageRating(politician.rating);
     }
     
-    // Only if the user has already rated this politician
+    // Only if the user has already rated this politician in this article
     if (wasRatedLocally) {
       try {
-        // Get the user's personal rating from local storage
-        const storedRatings = localStorage.getItem('politician-ratings');
+        // Get the user's personal rating from article-specific local storage
+        const articleRatingsKey = `politician-ratings-${articleId}`;
+        const storedRatings = localStorage.getItem(articleRatingsKey);
         if (storedRatings) {
           const parsedRatings = JSON.parse(storedRatings);
           if (parsedRatings[politician.id]) {
@@ -81,7 +83,7 @@ export default function PoliticianCard({ politician, articleId }: PoliticianCard
       return apiRequest(
         'POST',
         `/api/politicians/${politician.id}/rate`, 
-        { rating }
+        { rating, articleId }
       );
     },
     onSuccess: (data) => {
@@ -103,7 +105,8 @@ export default function PoliticianCard({ politician, articleId }: PoliticianCard
       setAverageRating(politician.rating || 0);
       
       try {
-        const storedRatings = localStorage.getItem('politician-ratings');
+        const articleRatingsKey = `politician-ratings-${articleId}`;
+        const storedRatings = localStorage.getItem(articleRatingsKey);
         if (storedRatings) {
           const parsedRatings = JSON.parse(storedRatings);
           if (parsedRatings[politician.id]) {
@@ -239,6 +242,7 @@ export default function PoliticianCard({ politician, articleId }: PoliticianCard
         }]}
         isOpen={showRatingModal}
         onClose={handleAfterModalRating}
+        articleId={articleId}
       />
     </>
   );

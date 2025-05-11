@@ -167,6 +167,7 @@ export default function NewsFeed() {
         politicians={articlesWithPoliticians}
         isOpen={showGlobalRatingModal}
         onClose={() => setShowGlobalRatingModal(false)}
+        articleId="global" // Use a special identifier for the global rating modal
       />
     </div>
   );
