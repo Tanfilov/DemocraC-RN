@@ -166,8 +166,11 @@ export default function NewsCard({ article }: NewsCardProps) {
     }
   };
   return (
-    <div className="mobile-card bg-white dark:bg-slate-900 dark:border-slate-800">
-      {article.imageUrl && (
+    <div className={`mobile-card bg-white dark:bg-slate-900 dark:border-slate-800 
+      ${isCondensed ? 'border-r-4 border-primary border-opacity-50 dark:border-opacity-30' : ''}`}>
+      
+      {/* Show image only in full view */}
+      {!isCondensed && article.imageUrl && (
         <div>
           <img 
             src={article.imageUrl} 
@@ -183,49 +186,64 @@ export default function NewsCard({ article }: NewsCardProps) {
           />
         </div>
       )}
-      <div className="p-4 text-right">
-        <div className="flex justify-between items-center mb-3">
-          <div className="flex items-center text-xs text-muted-foreground">
-            <Calendar className="h-3 w-3 ml-1" />
-            {article.formattedDate}
-          </div>
-          <Badge variant="outline" className="bg-primary/10 text-primary dark:bg-primary/20">
+      
+      <div className={`${isCondensed ? 'p-3' : 'p-4'} text-right`}>
+        {/* Header with date and source badge */}
+        <div className="flex justify-between items-center mb-2">
+          {!isCondensed && (
+            <div className="flex items-center text-xs text-muted-foreground">
+              <Calendar className="h-3 w-3 ml-1" />
+              {article.formattedDate}
+            </div>
+          )}
+          <Badge 
+            variant="outline" 
+            className={`${isCondensed ? 'text-xs' : ''} bg-primary/10 text-primary dark:bg-primary/20`}
+          >
             {article.source?.split(' ')[0] || 'חדשות'}
           </Badge>
         </div>
+        
+        {/* Title - smaller in condensed view */}
         <h3 
-          className="font-bold text-xl mb-2 text-gray-900 dark:text-gray-100" 
+          className={`font-bold ${isCondensed ? 'text-lg mb-1' : 'text-xl mb-2'} text-gray-900 dark:text-gray-100`} 
           style={{ 
             fontWeight: 700, 
             lineHeight: 1.2,
-            fontSize: '1.35rem'
+            fontSize: isCondensed ? '1.15rem' : '1.35rem'
           }}
         >
           {article.title}
         </h3>
-        {/* Process description to remove the small image */}
-        <div 
-          className="text-sm md:text-sm text-base text-muted-foreground mb-4 dark:text-gray-400" 
-          style={{ fontSize: 'clamp(1rem, 4vw, 1.125rem)' }} // Responsive font size, larger on mobile
-          dangerouslySetInnerHTML={{ 
-            __html: article.description
-              .replace(/<div>[\s\S]*?<img[\s\S]*?<\/div>/, '') // Remove entire div with image
-              .replace(/<img[^>]*>/g, '') // Remove any remaining img tags
-          }} 
-        />
+        
+        {/* Description - only shown in full view */}
+        {!isCondensed && (
+          <div 
+            className="text-sm md:text-sm text-base text-muted-foreground mb-4 dark:text-gray-400" 
+            style={{ fontSize: 'clamp(1rem, 4vw, 1.125rem)' }} // Responsive font size, larger on mobile
+            dangerouslySetInnerHTML={{ 
+              __html: article.description
+                .replace(/<div>[\s\S]*?<img[\s\S]*?<\/div>/, '') // Remove entire div with image
+                .replace(/<img[^>]*>/g, '') // Remove any remaining img tags
+            }} 
+          />
+        )}
+        
+        {/* Read on website button - always shown, but smaller in condensed view */}
         <a 
           href={article.link} 
           target="_blank" 
           rel="noopener noreferrer" 
-          className="block w-full"
+          className={`block ${isCondensed ? 'w-1/3 mr-auto' : 'w-full'}`}
           onClick={handleArticleClick}
         >
           <Button 
             variant="default" 
-            className="mobile-button flex items-center justify-center gap-2"
+            className={`mobile-button flex items-center justify-center gap-2 ${isCondensed ? 'text-sm py-1 h-8' : ''}`}
+            size={isCondensed ? 'sm' : 'default'}
           >
             קריאה באתר
-            <ExternalLink className="h-4 w-4" />
+            <ExternalLink className={`${isCondensed ? 'h-3 w-3' : 'h-4 w-4'}`} />
           </Button>
         </a>
         
@@ -241,12 +259,14 @@ export default function NewsCard({ article }: NewsCardProps) {
 
         {/* Politicians mentioned in the article */}
         {article.politicians && article.politicians.length > 0 && (
-          <div className="mt-4 border-t dark:border-slate-700 pt-3">
-            <div className="flex items-center text-sm font-semibold mb-2 gap-1 text-right dark:text-gray-300">
-              <Users className="h-4 w-4 ml-1" />
-              פוליטיקאים שמוזכרים בכתבה:
-            </div>
-            <div className="space-y-2">
+          <div className={`${isCondensed ? 'mt-2' : 'mt-4'} border-t dark:border-slate-700 pt-2`}>
+            {!isCondensed && (
+              <div className="flex items-center text-sm font-semibold mb-2 gap-1 text-right dark:text-gray-300">
+                <Users className="h-4 w-4 ml-1" />
+                פוליטיקאים שמוזכרים בכתבה:
+              </div>
+            )}
+            <div className={`${isCondensed ? 'flex flex-wrap gap-2 mt-1' : 'space-y-2'}`}>
               {article.politicians.map((politician) => (
                 <PoliticianCard 
                   key={politician.politicianId} 
@@ -260,6 +280,7 @@ export default function NewsCard({ article }: NewsCardProps) {
                     mentionCount: 0
                   }}
                   articleId={article.guid}
+                  isCondensed={isCondensed}
                 />
               ))}
             </div>
