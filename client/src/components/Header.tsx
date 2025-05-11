@@ -31,10 +31,14 @@ export default function Header() {
           <span className="sr-only">רענן</span>
         </Button>
 
-        {/* Center logo placeholder - awaiting new logo from user */}
+        {/* Center logo - fixed path in public folder */}
         <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
           <Link href="/" className="flex items-center justify-center">
-            <h3 className="text-lg font-bold text-gray-700">democra.C</h3>
+            <img 
+              src="/images/logo-v1.png" 
+              alt="democra.C Logo" 
+              className="h-10 object-contain"
+            />
           </Link>
         </div>
         
