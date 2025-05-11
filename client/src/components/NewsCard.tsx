@@ -25,7 +25,35 @@ export default function NewsCard({ article }: NewsCardProps) {
   const [isCondensed, setIsCondensed] = useState(false);
   // Function to toggle between condensed and expanded view
   const toggleCondensed = () => {
-    setIsCondensed(!isCondensed);
+    if (isCondensed) {
+      // When expanding the card, add a dynamic class for animation
+      const card = document.getElementById(`card-${article.guid}`);
+      if (card) {
+        // Start the animation
+        card.classList.add('expanding');
+        
+        // Fade in content elements with a slight delay
+        const contentElements = card.querySelectorAll('.content-fade-in');
+        setTimeout(() => {
+          contentElements.forEach((el, index) => {
+            const htmlEl = el as HTMLElement;
+            htmlEl.style.transition = `opacity 0.3s ease ${index * 0.05}s, transform 0.3s ease ${index * 0.05}s`;
+            htmlEl.style.opacity = '1';
+            htmlEl.style.transform = 'translateY(0)';
+          });
+        }, 150);
+        
+        // Remove the animation class after it completes
+        setTimeout(() => {
+          card.classList.remove('expanding');
+        }, 650);
+      }
+      
+      setIsCondensed(false);
+      
+      // We're just temporarily expanding the card for viewing
+      // Not changing its "read" status in localStorage
+    }
   };
   
   // Check if article was already read or rated when component mounts
@@ -171,6 +199,7 @@ export default function NewsCard({ article }: NewsCardProps) {
   };
   return (
     <div 
+      id={`card-${article.guid}`}
       className={`mobile-card bg-white dark:bg-slate-900 dark:border-slate-800 
         ${isCondensed ? 'condensed-card border-r-4 border-primary border-opacity-50 dark:border-opacity-30 shadow-sm cursor-pointer' : 'shadow-md'}`}
       onClick={isCondensed ? toggleCondensed : undefined}>
