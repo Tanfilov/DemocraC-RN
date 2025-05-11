@@ -205,9 +205,7 @@ export default function PoliticianCard({ politician, articleId, isCondensed = fa
                   )}
                 </div>
                 
-                <div className="text-xs">
-                  <span className="text-gray-500 dark:text-gray-400">{politician.party}</span>
-                </div>
+                {/* Removed party display as requested */}
               </div>
               
               <div className="flex items-center justify-between w-full mt-1.5">
