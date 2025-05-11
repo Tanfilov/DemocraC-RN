@@ -52,8 +52,27 @@ class RssService {
           minute: '2-digit'
         });
         
-        // Extract image URL if available
-        const imageUrl = item.enclosure?.$?.url;
+        // First try to get enclosure image
+        let imageUrl = item.enclosure?.$?.url;
+        
+        // If no enclosure image, try to extract from description HTML
+        if (!imageUrl && item.description) {
+          const imgMatch = item.description.match(/<img[^>]+src=['"]([^'"]+)['"]/i);
+          if (imgMatch && imgMatch[1]) {
+            imageUrl = imgMatch[1];
+            
+            // Make sure it's an absolute URL (important for Ynet images)
+            if (imageUrl && !imageUrl.startsWith('http')) {
+              imageUrl = 'https:' + imageUrl;
+            }
+          }
+        }
+
+        // Always use a large image format if it's from Ynet
+        if (imageUrl && imageUrl.includes('ynet-pic')) {
+          // Replace medium with large or original in the URL
+          imageUrl = imageUrl.replace('_medium.jpg', '_large.jpg');
+        }
         
         return {
           title: item.title,
