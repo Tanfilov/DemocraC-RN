@@ -5,6 +5,7 @@ interface StarRatingProps {
   rating: number;
   onChange: (rating: number) => void;
   id: string;
+  size?: 'default' | 'large';
 }
 
 export default function StarRating({ rating, onChange, id }: StarRatingProps) {

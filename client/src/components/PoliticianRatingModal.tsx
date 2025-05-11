@@ -123,110 +123,81 @@ export default function PoliticianRatingModal({
 
   if (!isOpen || politicians.length === 0) return null;
 
+  // Only show the first politician in the list for the streamlined UI
+  const currentPolitician = politicians[0];
+  
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-md w-[95vw] max-h-[80vh] overflow-y-auto" dir="rtl">
-        <DialogHeader>
-          <DialogTitle className="text-xl flex items-center gap-2 justify-center">
-            <Award className="h-5 w-5 text-primary" />
-            דרגו את הפוליטיקאים במאמר
+      <DialogContent className="sm:max-w-md w-[95vw] max-h-[80vh]" dir="rtl">
+        <div className="absolute right-4 top-4 flex items-center justify-center">
+          <DialogTitle className="text-lg font-medium mr-auto">
+            איך היית מדרג?
           </DialogTitle>
-          <DialogDescription className="text-center">
-            התרשמתם מהפוליטיקאים שהוזכרו בכתבה? דרגו אותם עכשיו
-          </DialogDescription>
-        </DialogHeader>
+          <Button 
+            variant="ghost" 
+            className="h-6 w-6 p-0 rounded-full" 
+            onClick={onClose}
+          >
+            <span className="sr-only">סגירה</span>
+            ✕
+          </Button>
+        </div>
         
-        {/* Progress indicator */}
-        {!submissionComplete && (
-          <div className="mb-4">
-            <div className="flex justify-between text-xs text-muted-foreground mb-1 font-medium">
-              <span>{Object.values(ratings).filter(r => r > 0).length} דורגו</span>
-              <span>{politicians.length} סה"כ</span>
-            </div>
-            <Progress value={(Object.values(ratings).filter(r => r > 0).length / politicians.length) * 100} />
-          </div>
-        )}
-
         {/* Success message */}
         {submissionComplete ? (
-          <div className="py-8 flex flex-col items-center justify-center text-center gap-4">
-            <div className="h-20 w-20 rounded-full bg-green-100 flex items-center justify-center animate-bounce">
-              <Check className="h-10 w-10 text-green-600" />
+          <div className="py-8 flex flex-col items-center justify-center text-center gap-4 mt-8">
+            <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center animate-bounce">
+              <Check className="h-8 w-8 text-green-600" />
             </div>
-            <h3 className="text-xl font-semibold">תודה על הדירוג!</h3>
-            <p className="text-gray-500">הדירוגים שלך יעזרו לשפר את החוויה עבור כולם</p>
+            <h3 className="text-lg font-semibold">תודה על הדירוג!</h3>
           </div>
         ) : (
-          <div className="space-y-6 py-4">
-            {politicians.map(politician => (
-              <div 
-                key={politician.politicianId} 
-                className="flex flex-col gap-3 p-4 bg-muted/40 rounded-lg border border-muted"
-              >
-                <div className="flex items-center gap-3">
-                  {politician.imageUrl && (
-                    <div className="relative">
-                      <img 
-                        src={politician.imageUrl}
-                        alt={politician.name}
-                        className="h-16 w-16 rounded-lg object-cover border border-muted"
-                      />
-                      {politician.party && (
-                        <Badge variant="secondary" className="absolute -bottom-2 start-1/2 -translate-x-1/2 text-xs whitespace-nowrap">
-                          {politician.party}
-                        </Badge>
-                      )}
-                    </div>
-                  )}
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold">{politician.name}</h3>
-                    <p className="text-sm text-muted-foreground">{politician.position}</p>
-                  </div>
-                </div>
-                
-                <div className="flex flex-col gap-1">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">דרג/י:</span>
-                    {ratings[politician.politicianId] > 0 && (
-                      <Badge variant="outline" className="gap-1 border-amber-200 bg-amber-50 text-amber-700">
-                        <Star className="h-3 w-3 fill-amber-500 text-amber-500" />
-                        <span>{ratings[politician.politicianId]}</span>
-                      </Badge>
-                    )}
-                  </div>
-                  <StarRating
-                    rating={ratings[politician.politicianId] || 0}
-                    onChange={(rating) => handleRatingChange(politician.politicianId, rating)}
-                    id={`modal-politician-${politician.politicianId}`}
+          <div className="py-4 mt-8">
+            <div className="flex flex-col items-center gap-3">
+              {currentPolitician.imageUrl && (
+                <div className="relative">
+                  <img 
+                    src={currentPolitician.imageUrl}
+                    alt={currentPolitician.name}
+                    className="h-20 w-20 rounded-full object-cover border border-muted"
                   />
                 </div>
+              )}
+              <h3 className="text-lg font-semibold text-center">
+                {currentPolitician.name}
+              </h3>
+              
+              <div className="mt-2 py-4">
+                <StarRating
+                  rating={ratings[currentPolitician.politicianId] || 0}
+                  onChange={(rating) => handleRatingChange(currentPolitician.politicianId, rating)}
+                  id={`modal-politician-${currentPolitician.politicianId}`}
+                  size="large"
+                />
               </div>
-            ))}
+            </div>
           </div>
         )}
 
-        <DialogFooter dir="ltr" className="gap-2 sm:gap-0">
+        <DialogFooter dir="rtl" className="gap-2 mt-4">
           {!submissionComplete && (
             <>
-              <Button variant="outline" onClick={onClose} className="flex-1 sm:flex-none">
-                סגירה
-              </Button>
               <Button 
-                onClick={handleSubmit} 
-                disabled={isSubmitting || Object.values(ratings).filter(r => r > 0).length === 0} 
-                className="flex-1 sm:flex-none gap-2"
+                onClick={handleSubmit}
+                disabled={isSubmitting || !ratings[currentPolitician.politicianId]} 
+                className="flex-1 gap-1"
               >
                 {isSubmitting ? (
-                  <>
-                    <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                    שולח...
-                  </>
+                  <>שולח...</>
                 ) : (
                   <>
-                    <ThumbsUp className="h-4 w-4" />
-                    שליחת דירוגים
+                    שליחה
+                    <ThumbsUp className="h-4 w-4 mr-1" />
                   </>
                 )}
+              </Button>
+              <Button variant="outline" onClick={onClose} className="flex-1">
+                ביטול
               </Button>
             </>
           )}
