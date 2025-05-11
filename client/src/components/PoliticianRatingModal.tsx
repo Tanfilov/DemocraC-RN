@@ -105,14 +105,16 @@ export default function PoliticianRatingModal({
       // Force data refresh by invalidating the news query
       queryClient.invalidateQueries({ queryKey: ['/api/news'] });
       
-      // Show completion status briefly before closing
+      // Show animation without showing the separate success screen
       setSubmissionComplete(true);
+      
+      // Close the modal after the animation completes
       setTimeout(() => {
         onClose();
         // Reset states after closing
         setIsSubmitting(false);
         setSubmissionComplete(false);
-      }, 800); // Reduced from 1500ms to 800ms for a quicker response
+      }, 1200); // Give enough time for animation to complete
     } catch (error) {
       console.error('Failed to submit ratings:', error);
       setIsSubmitting(false);
@@ -133,71 +135,66 @@ export default function PoliticianRatingModal({
           איך הייתה מדרג את הפעילות שלו המתוארת בכתבה?
         </DialogTitle>
         
-        {/* Success message - more lightweight animation */}
-        {submissionComplete ? (
-          <div className="py-4 flex flex-col items-center justify-center text-center gap-2 mt-4">
-            <div className="flex items-center justify-center gap-2">
-              <Check className="h-5 w-5 text-green-600 dark:text-green-400" />
-              <span className="text-base font-medium text-green-600 dark:text-green-400">תודה על הדירוג!</span>
-            </div>
-          </div>
-        ) : (
-          <div className="py-4 mt-8">
-            <div className="flex flex-col items-center gap-3">
-              {currentPolitician.imageUrl && (
-                <div className="relative">
-                  <img 
-                    src={currentPolitician.imageUrl}
-                    alt={currentPolitician.name}
-                    className="h-20 w-20 rounded-full object-cover border border-muted dark:border-slate-600"
-                  />
-                </div>
-              )}
-              <h3 className="text-xl font-bold text-center dark:text-gray-100">
-                {currentPolitician.name}
-              </h3>
-              
-              <div className="mt-2 py-4">
-                <StarRating
-                  rating={ratings[currentPolitician.politicianId] || 0}
-                  onChange={(rating) => handleRatingChange(currentPolitician.politicianId, rating)}
-                  id={`modal-politician-${currentPolitician.politicianId}`}
-                  size="large"
+        <div className="py-4 mt-8">
+          <div className="flex flex-col items-center gap-3">
+            {currentPolitician.imageUrl && (
+              <div className="relative">
+                <img 
+                  src={currentPolitician.imageUrl}
+                  alt={currentPolitician.name}
+                  className="h-20 w-20 rounded-full object-cover border border-muted dark:border-slate-600"
                 />
               </div>
+            )}
+            <h3 className="text-xl font-bold text-center dark:text-gray-100">
+              {currentPolitician.name}
+            </h3>
+            
+            <div className="mt-2 py-4">
+              <StarRating
+                rating={ratings[currentPolitician.politicianId] || 0}
+                onChange={(rating) => handleRatingChange(currentPolitician.politicianId, rating)}
+                id={`modal-politician-${currentPolitician.politicianId}`}
+                size="large"
+              />
             </div>
           </div>
-        )}
+        </div>
 
         <div className="flex flex-row gap-3 mt-6 mb-2">
+          <Button 
+            onClick={handleSubmit}
+            disabled={isSubmitting || !ratings[currentPolitician.politicianId] || submissionComplete} 
+            className={`w-[65%] h-12 [&:disabled]:opacity-90 
+              ${submissionComplete ? 'submit-button-animation' : ''}
+              ${!ratings[currentPolitician.politicianId] ? 'bg-primary/95 dark:bg-primary/80' : 'bg-primary dark:bg-primary/90'} 
+              hover:bg-primary/90 dark:hover:bg-primary/80
+              dark:text-white
+              [&:disabled]:dark:bg-primary/70`}
+          >
+            {submissionComplete ? (
+              <>
+                <span className="submit-text">תודה!</span>
+                <Check className="h-5 w-5 text-white check-icon" />
+              </>
+            ) : isSubmitting ? (
+              <>שולח...</>
+            ) : (
+              <>
+                <span>שלח</span>
+                <ThumbsUp className="h-4 w-4 mr-1" />
+              </>
+            )}
+          </Button>
+          
           {!submissionComplete && (
-            <>
-              <Button 
-                onClick={handleSubmit}
-                disabled={isSubmitting || !ratings[currentPolitician.politicianId]} 
-                className={`w-[65%] h-12 [&:disabled]:opacity-90 
-                  ${!ratings[currentPolitician.politicianId] ? 'bg-primary/95 dark:bg-primary/80' : 'bg-primary dark:bg-primary/90'} 
-                  hover:bg-primary/90 dark:hover:bg-primary/80
-                  dark:text-white
-                  [&:disabled]:dark:bg-primary/70`}
-              >
-                {isSubmitting ? (
-                  <>שולח...</>
-                ) : (
-                  <>
-                    שלח
-                    <ThumbsUp className="h-4 w-4 mr-1" />
-                  </>
-                )}
-              </Button>
-              <Button 
-                variant="outline" 
-                onClick={onClose} 
-                className="w-[35%] h-12 dark:border-slate-600 dark:text-gray-300 dark:hover:bg-slate-800"
-              >
-                ביטול
-              </Button>
-            </>
+            <Button 
+              variant="outline" 
+              onClick={onClose} 
+              className="w-[35%] h-12 dark:border-slate-600 dark:text-gray-300 dark:hover:bg-slate-800"
+            >
+              ביטול
+            </Button>
           )}
         </div>
       </DialogContent>

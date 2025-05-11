@@ -369,6 +369,67 @@ h1, h2, h3, h4, h5, h6 {
   transform: scale(0.95);
 }
 
+/* Submit button success animation */
+@keyframes submitSuccess {
+  0% {
+    background-color: var(--primary);
+  }
+  10% {
+    background-color: white;
+    color: var(--primary);
+  }
+  20% {
+    background-color: var(--primary);
+    color: white;
+  }
+  100% {
+    background-color: #6fb07f;
+  }
+}
+
+@keyframes submitDisappear {
+  0% {
+    opacity: 1;
+  }
+  20% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes submitAppear {
+  0% {
+    opacity: 0;
+  }
+  70% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.submit-button-animation {
+  animation: submitSuccess 1s ease-in-out forwards;
+  position: relative;
+  overflow: hidden;
+}
+
+.submit-button-animation .submit-text {
+  animation: submitDisappear 0.5s ease-in-out forwards;
+}
+
+.submit-button-animation .check-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  animation: submitAppear 1s ease-in-out forwards;
+}
+
 /* Special styling for image containers during animation */
 .image-container {
   overflow: hidden;
