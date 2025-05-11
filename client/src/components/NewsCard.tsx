@@ -32,17 +32,6 @@ export default function NewsCard({ article }: NewsCardProps) {
         // Start the animation
         card.classList.add('expanding');
         
-        // Fade in content elements with a slight delay
-        const contentElements = card.querySelectorAll('.content-fade-in');
-        setTimeout(() => {
-          contentElements.forEach((el, index) => {
-            const htmlEl = el as HTMLElement;
-            htmlEl.style.transition = `opacity 0.3s ease ${index * 0.05}s, transform 0.3s ease ${index * 0.05}s`;
-            htmlEl.style.opacity = '1';
-            htmlEl.style.transform = 'translateY(0)';
-          });
-        }, 150);
-        
         // Remove the animation class after it completes
         setTimeout(() => {
           card.classList.remove('expanding');
@@ -206,10 +195,7 @@ export default function NewsCard({ article }: NewsCardProps) {
       
       {/* Show image only in full view */}
       {!isCondensed && article.imageUrl && (
-        <div className="content-fade-in" style={{
-          opacity: '0',
-          transform: 'translateY(10px)',
-        }}>
+        <div>
           <img 
             src={article.imageUrl} 
             alt={article.title} 
@@ -257,12 +243,8 @@ export default function NewsCard({ article }: NewsCardProps) {
         {/* Description - only shown in full view */}
         {!isCondensed && (
           <div 
-            className="text-sm md:text-sm text-base text-muted-foreground mb-4 dark:text-gray-400 content-fade-in" 
-            style={{ 
-              fontSize: 'clamp(1rem, 4vw, 1.125rem)', // Responsive font size, larger on mobile
-              opacity: '0',
-              transform: 'translateY(10px)',
-            }}
+            className="text-sm md:text-sm text-base text-muted-foreground mb-4 dark:text-gray-400" 
+            style={{ fontSize: 'clamp(1rem, 4vw, 1.125rem)' }} // Responsive font size, larger on mobile
             dangerouslySetInnerHTML={{ 
               __html: article.description
                 .replace(/<div>[\s\S]*?<img[\s\S]*?<\/div>/, '') // Remove entire div with image
@@ -277,11 +259,7 @@ export default function NewsCard({ article }: NewsCardProps) {
             href={article.link} 
             target="_blank" 
             rel="noopener noreferrer" 
-            className="block w-full content-fade-in"
-            style={{
-              opacity: '0',
-              transform: 'translateY(10px)',
-            }}
+            className="block w-full"
             onClick={handleArticleClick}
           >
             <Button 
@@ -306,12 +284,7 @@ export default function NewsCard({ article }: NewsCardProps) {
 
         {/* Politicians mentioned in the article */}
         {article.politicians && article.politicians.length > 0 && (
-          <div className={`${isCondensed ? 'mt-2' : 'mt-4'} border-t dark:border-slate-700 pt-2 ${!isCondensed ? 'content-fade-in' : ''}`}
-            style={!isCondensed ? {
-              opacity: '0',
-              transform: 'translateY(10px)',
-            } : {}}
-          >
+          <div className={`${isCondensed ? 'mt-2' : 'mt-4'} border-t dark:border-slate-700 pt-2`}>
             {!isCondensed && (
               <div className="flex items-center text-sm font-semibold mb-2 gap-1 text-right dark:text-gray-300">
                 <Users className="h-4 w-4 ml-1" />
