@@ -128,20 +128,10 @@ export default function PoliticianRatingModal({
   
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-md w-[95vw] max-h-[80vh]" dir="rtl">
-        <div className="absolute right-4 top-4 flex items-center justify-center">
-          <DialogTitle className="text-lg font-medium mr-auto">
-            איך היית מדרג?
-          </DialogTitle>
-          <Button 
-            variant="ghost" 
-            className="h-6 w-6 p-0 rounded-full" 
-            onClick={onClose}
-          >
-            <span className="sr-only">סגירה</span>
-            ✕
-          </Button>
-        </div>
+      <DialogContent className="sm:max-w-md w-[90vw] max-h-[80vh] rounded-xl" dir="rtl">
+        <DialogTitle className="text-lg font-medium pt-4 text-center">
+          איך הייתה מדרג את הפעילות שלו המתוארת בכתבה?
+        </DialogTitle>
         
         {/* Success message */}
         {submissionComplete ? (
@@ -179,13 +169,13 @@ export default function PoliticianRatingModal({
           </div>
         )}
 
-        <DialogFooter dir="rtl" className="gap-2 mt-4">
+        <DialogFooter dir="rtl" className="flex gap-3 justify-between mt-6 mb-2">
           {!submissionComplete && (
             <>
               <Button 
                 onClick={handleSubmit}
                 disabled={isSubmitting || !ratings[currentPolitician.politicianId]} 
-                className="flex-1 gap-1"
+                className="flex-[3] gap-1 h-12"
               >
                 {isSubmitting ? (
                   <>שולח...</>
@@ -196,7 +186,7 @@ export default function PoliticianRatingModal({
                   </>
                 )}
               </Button>
-              <Button variant="outline" onClick={onClose} className="flex-1">
+              <Button variant="outline" onClick={onClose} className="flex-[2] h-12">
                 ביטול
               </Button>
             </>
