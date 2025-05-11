@@ -17,9 +17,11 @@ export default function PoliticianCard({ politician }: PoliticianCardProps) {
   const [isAnimating, setIsAnimating] = useState(false);
   const queryClient = useQueryClient();
 
-  // Check if this politician was previously rated and load the rating from localStorage
+  // Force re-render when politician data changes and handle rating management
   useEffect(() => {
-    // Check if this politician was rated
+    console.log(`Politician ${politician.id} has rating: ${politician.rating}`);
+  
+    // Check if this politician was rated by the user
     const ratedPoliticians = localStorage.getItem('rated-politicians');
     let wasRatedLocally = false;
     
@@ -33,16 +35,16 @@ export default function PoliticianCard({ politician }: PoliticianCardProps) {
       }
     }
     
-    // If rated, get the rating from localStorage
+    // Determine which rating to display
     if (wasRatedLocally) {
       try {
         const storedRatings = localStorage.getItem('politician-ratings');
         if (storedRatings) {
           const parsedRatings = JSON.parse(storedRatings);
           if (parsedRatings[politician.id]) {
-            // Use the locally stored rating value
+            // Use the locally stored rating value - user's own rating
             setCurrentRating(parsedRatings[politician.id]);
-            return; // Skip setting rating from props if we have a local value
+            return;
           }
         }
       } catch (e) {
@@ -50,8 +52,12 @@ export default function PoliticianCard({ politician }: PoliticianCardProps) {
       }
     }
     
-    // Fall back to the rating from props if no local rating is found
-    setCurrentRating(politician.rating || 0);
+    // For initial or unrated display, use the rating from the server/props
+    if (politician.rating && politician.rating > 0) {
+      setCurrentRating(politician.rating);
+    } else {
+      setCurrentRating(0);
+    }
   }, [politician.id, politician.rating]);
 
   // Mutation for rating a politician

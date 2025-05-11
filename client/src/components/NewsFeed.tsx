@@ -18,9 +18,10 @@ export default function NewsFeed() {
   // Fetch news from the API
   const { data: news, isLoading, isError, error, refetch } = useQuery<EnhancedNewsItem[]>({
     queryKey: ["/api/news"],
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true, // Enable refetch when window gets focus
     refetchOnMount: true,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchInterval: 20000, // Poll for updates every 20 seconds
+    staleTime: 10000, // Consider data stale after 10 seconds
   });
   
   // For the global rating modal

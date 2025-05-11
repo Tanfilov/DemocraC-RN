@@ -13,14 +13,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const news = await rssService.fetchRssNews();
       
+      // Fetch current politician ratings
+      const allPoliticians = await db.select().from(politicians);
+      const politicianRatingsMap = new Map<number, {id: number, rating: number}>();
+      
+      // Calculate average ratings for each politician
+      for (const politician of allPoliticians) {
+        // Get all ratings for this politician
+        const politicianRatingsList = await db
+          .select()
+          .from(ratings)
+          .where(eq(ratings.politicianId, politician.id));
+        
+        // Calculate average rating if there are any ratings
+        let averageRating = 0;
+        if (politicianRatingsList.length > 0) {
+          const sum = politicianRatingsList.reduce((acc, rating) => acc + rating.rating, 0);
+          averageRating = sum / politicianRatingsList.length;
+        }
+        
+        // Store in our map for quick lookup
+        politicianRatingsMap.set(politician.id, {
+          id: politician.id,
+          rating: averageRating
+        });
+      }
+      
       // Add politicians detected in each news item
       const newsWithPoliticians = await Promise.all(news.map(async (item) => {
         const text = `${item.title} ${item.description}`;
         const detectedPoliticians = await politicianRecognitionService.detectPoliticians(text);
         
+        // Update with current ratings from database
+        const updatedPoliticians = detectedPoliticians.map(politician => {
+          const ratingInfo = politicianRatingsMap.get(politician.politicianId);
+          if (ratingInfo && ratingInfo.rating > 0) {
+            return {
+              ...politician,
+              rating: ratingInfo.rating
+            };
+          }
+          return politician;
+        });
+        
         return {
           ...item,
-          politicians: detectedPoliticians
+          politicians: updatedPoliticians
         };
       }));
       
