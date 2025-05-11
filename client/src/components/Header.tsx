@@ -7,10 +7,10 @@ export default function Header() {
       <header 
         className="sticky top-0 z-50 shadow-md overflow-hidden cursor-pointer"
         style={{
-          height: "140px", // Taller header to show more of the background
+          height: "80px", // Reduced height
           backgroundImage: `url(${headerBgImage})`,
           backgroundSize: 'cover',
-          backgroundPosition: 'center 30%' // Position to show the logo in center
+          backgroundPosition: 'center 25%' // Adjusted to center the logo better
         }}
       >
         {/* No overlay text needed as the background image contains the logo */}
