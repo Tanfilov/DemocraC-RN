@@ -21,6 +21,27 @@ interface NewsCardProps {
 export default function NewsCard({ article }: NewsCardProps) {
   const [showRatingModal, setShowRatingModal] = useState(false);
   const wasArticleViewed = useRef(false);
+  // State to track if article should be shown in condensed view
+  const [isCondensed, setIsCondensed] = useState(false);
+  
+  // Check if article was already read or rated when component mounts
+  useEffect(() => {
+    const articleId = article.guid || article.link;
+    // Check localStorage to see if this article was read or rated
+    const articleRatedKey = `rated-politicians-${articleId}`;
+    const readArticlesKey = `read-articles`;
+    
+    // Get read articles from localStorage
+    const readArticles = JSON.parse(localStorage.getItem(readArticlesKey) || '[]');
+    const hasBeenRead = readArticles.includes(articleId);
+    
+    // Get rated politicians for this article from localStorage
+    const ratedPoliticians = localStorage.getItem(articleRatedKey);
+    const hasRatedPoliticians = ratedPoliticians ? JSON.parse(ratedPoliticians).length > 0 : false;
+    
+    // Set condensed view if article has been read or rated
+    setIsCondensed(hasBeenRead || hasRatedPoliticians);
+  }, [article.guid, article.link]);
   
   // Listen for visibility changes and hash changes to detect when user returns from article
   useEffect(() => {
@@ -34,24 +55,39 @@ export default function NewsCard({ article }: NewsCardProps) {
       // If the user comes back to our app and had viewed an article
       if (
         document.visibilityState === 'visible' && 
-        wasArticleViewed.current &&
-        article.politicians?.length
+        wasArticleViewed.current
       ) {
-        // Check if the user has already rated politicians in this article
-        const articleRatedKey = `rated-politicians-${article.guid}`;
-        const ratedPoliticians = localStorage.getItem(articleRatedKey);
-        const hasRatedBefore = ratedPoliticians ? JSON.parse(ratedPoliticians).length > 0 : false;
+        // Mark this article as read
+        const readArticlesKey = `read-articles`;
+        const readArticles = JSON.parse(localStorage.getItem(readArticlesKey) || '[]');
+        if (!readArticles.includes(articleId)) {
+          readArticles.push(articleId);
+          localStorage.setItem(readArticlesKey, JSON.stringify(readArticles));
+          // Set to condensed view since it's been read
+          setIsCondensed(true);
+        }
         
-        // Only show the modal if the user hasn't rated any politicians in this article
-        if (!hasRatedBefore) {
-          // Wait a short time before showing the modal to ensure the app is visible
-          setTimeout(() => {
-            setShowRatingModal(true);
-            // Reset the viewed flag after showing the modal
+        // Only show rating modal if there are politicians to rate
+        if (article.politicians?.length) {
+          // Check if the user has already rated politicians in this article
+          const articleRatedKey = `rated-politicians-${article.guid}`;
+          const ratedPoliticians = localStorage.getItem(articleRatedKey);
+          const hasRatedBefore = ratedPoliticians ? JSON.parse(ratedPoliticians).length > 0 : false;
+          
+          // Only show the modal if the user hasn't rated any politicians in this article
+          if (!hasRatedBefore) {
+            // Wait a short time before showing the modal to ensure the app is visible
+            setTimeout(() => {
+              setShowRatingModal(true);
+              // Reset the viewed flag after showing the modal
+              wasArticleViewed.current = false;
+            }, 300);
+          } else {
+            // If already rated, just reset the flag without showing the modal
             wasArticleViewed.current = false;
-          }, 300);
+          }
         } else {
-          // If already rated, just reset the flag without showing the modal
+          // No politicians to rate, just reset the viewed flag
           wasArticleViewed.current = false;
         }
       }
@@ -61,23 +97,39 @@ export default function NewsCard({ article }: NewsCardProps) {
     const handlePopState = () => {
       const hash = window.location.hash;
       // Check if this is returning from this specific article
-      if (hash === `#return-from-${hashedArticleId}` && article.politicians?.length) {
+      if (hash === `#return-from-${hashedArticleId}`) {
         // Remove the hash so refreshing won't trigger the modal again
         history.replaceState(null, document.title, window.location.pathname);
         
-        // Check if the user has already rated politicians in this article
-        const articleRatedKey = `rated-politicians-${article.guid}`;
-        const ratedPoliticians = localStorage.getItem(articleRatedKey);
-        const hasRatedBefore = ratedPoliticians ? JSON.parse(ratedPoliticians).length > 0 : false;
+        // Mark this article as read
+        const readArticlesKey = `read-articles`;
+        const readArticles = JSON.parse(localStorage.getItem(readArticlesKey) || '[]');
+        if (!readArticles.includes(articleId)) {
+          readArticles.push(articleId);
+          localStorage.setItem(readArticlesKey, JSON.stringify(readArticles));
+          // Set to condensed view since it's been read
+          setIsCondensed(true);
+        }
         
-        // Only show the modal if the user hasn't rated any politicians in this article
-        if (!hasRatedBefore) {
-          setTimeout(() => {
-            setShowRatingModal(true);
+        // Only show rating modal if there are politicians to rate
+        if (article.politicians?.length) {
+          // Check if the user has already rated politicians in this article
+          const articleRatedKey = `rated-politicians-${article.guid}`;
+          const ratedPoliticians = localStorage.getItem(articleRatedKey);
+          const hasRatedBefore = ratedPoliticians ? JSON.parse(ratedPoliticians).length > 0 : false;
+          
+          // Only show the modal if the user hasn't rated any politicians in this article
+          if (!hasRatedBefore) {
+            setTimeout(() => {
+              setShowRatingModal(true);
+              wasArticleViewed.current = false;
+            }, 300);
+          } else {
+            // If already rated, just reset the flag without showing the modal
             wasArticleViewed.current = false;
-          }, 300);
+          }
         } else {
-          // If already rated, just reset the flag without showing the modal
+          // No politicians to rate, just reset the viewed flag
           wasArticleViewed.current = false;
         }
       }
@@ -153,7 +205,8 @@ export default function NewsCard({ article }: NewsCardProps) {
         </h3>
         {/* Process description to remove the small image */}
         <div 
-          className="text-sm text-muted-foreground mb-4 dark:text-gray-400" 
+          className="text-sm md:text-sm text-base text-muted-foreground mb-4 dark:text-gray-400" 
+          style={{ fontSize: 'clamp(1rem, 4vw, 1.125rem)' }} // Responsive font size, larger on mobile
           dangerouslySetInnerHTML={{ 
             __html: article.description
               .replace(/<div>[\s\S]*?<img[\s\S]*?<\/div>/, '') // Remove entire div with image
