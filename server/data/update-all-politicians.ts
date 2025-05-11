@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
-import { db } from '../db';
+import { db, pool } from '../db';
 import { politicians } from '@shared/schema';
 import { eq } from 'drizzle-orm';
 
@@ -79,8 +79,8 @@ async function updateAllPoliticians() {
         if (politician.ImageUrl && politician.ImageUrl.startsWith('/attached_assets/')) {
           console.log(`Updating politician ${politician.Name} (ID: ${dbId}) with image: ${politician.ImageUrl}`);
           
-          // Update the database
-          await db.execute(
+          // Update the database using the pool directly
+          await pool.query(
             `UPDATE politicians 
              SET image_url = $1, party = $2, position = $3 
              WHERE id = $4`,
@@ -94,7 +94,7 @@ async function updateAllPoliticians() {
         console.log(`Adding new politician: ${politician.Name} with image: ${politician.ImageUrl || 'no image'}`);
         
         // Insert the new politician
-        await db.execute(
+        await pool.query(
           `INSERT INTO politicians 
            (name, party, position, image_url, mention_count) 
            VALUES ($1, $2, $3, $4, $5)`,
