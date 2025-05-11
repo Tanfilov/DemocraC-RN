@@ -2,7 +2,9 @@ import { Link } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import { RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import logoImage from "../assets/logo_clean.png";
+// Force cache-busting with a version string
+import logoImageSrc from "../assets/logo_clean.png";
+const logoImage = `${logoImageSrc}?v=1.0.1`;
 
 export default function Header() {
   const queryClient = useQueryClient();
@@ -20,6 +22,7 @@ export default function Header() {
             src={logoImage} 
             alt="democra.C Logo" 
             className="h-10 object-contain"
+            key="logo-img-1.0.1"
           />
         </Link>
         
