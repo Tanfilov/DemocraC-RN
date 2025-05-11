@@ -5,6 +5,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { PoliticianMention } from "@/lib/types";
+import PoliticianRatingModal from "./PoliticianRatingModal";
+
+// Extended NewsItem type to include politicians
+interface EnhancedNewsItem extends NewsItem {
+  politicians?: PoliticianMention[];
+}
 
 export default function NewsFeed() {
   // Fetch news from the API
@@ -14,6 +22,54 @@ export default function NewsFeed() {
     refetchOnMount: true,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
+  
+  // For the global rating modal
+  const [showGlobalRatingModal, setShowGlobalRatingModal] = useState(false);
+  const [articlesWithPoliticians, setArticlesWithPoliticians] = useState<PoliticianMention[]>([]);
+  
+  // Check for returning from an article and show the rating modal globally
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const handleHashChange = () => {
+      // Check if we're returning from an article
+      const hash = window.location.hash;
+      if (hash && hash.startsWith('#return-from-') && news) {
+        // Get the last viewed article from sessionStorage
+        const lastArticleId = sessionStorage.getItem('lastViewedArticle');
+        
+        if (lastArticleId && hash === `#${lastArticleId}`) {
+          // Find the article with mentioned politicians
+          const articleWithPoliticians = news.find(article => {
+            const articleId = article.guid || article.link;
+            const hashedArticleId = btoa(articleId).replace(/=/g, '').substring(0, 10);
+            return lastArticleId === `return-from-${hashedArticleId}`;
+          });
+          
+          if (articleWithPoliticians && articleWithPoliticians.politicians?.length) {
+            // Show the global rating modal
+            setArticlesWithPoliticians(articleWithPoliticians.politicians);
+            setTimeout(() => {
+              setShowGlobalRatingModal(true);
+              // Clear the hash to prevent showing the modal again if the page is refreshed
+              history.replaceState(null, document.title, window.location.pathname);
+              // Clear sessionStorage
+              sessionStorage.removeItem('lastViewedArticle');
+            }, 300);
+          }
+        }
+      }
+    };
+    
+    // Listen for hash changes (back button navigation)
+    window.addEventListener('hashchange', handleHashChange);
+    // Check on mount too
+    handleHashChange();
+    
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+    };
+  }, [news]);
 
   const handleRefresh = () => {
     refetch();
@@ -103,6 +159,13 @@ export default function NewsFeed() {
           <NewsCard key={article.guid} article={article} />
         ))}
       </div>
+      
+      {/* Global rating modal - shown when returning from an article via URL hash */}
+      <PoliticianRatingModal
+        politicians={articlesWithPoliticians}
+        isOpen={showGlobalRatingModal}
+        onClose={() => setShowGlobalRatingModal(false)}
+      />
     </div>
   );
 }
