@@ -62,6 +62,7 @@ class PoliticianRecognitionService {
       
       // Convert to our format with aliases
       this.cachedPoliticians = dbPoliticians.map(politician => {
+        // Convert from DB column names to our interface names
         return {
           id: politician.id,
           name: politician.name,

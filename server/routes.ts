@@ -14,15 +14,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const news = await rssService.fetchRssNews();
       
       // Add politicians detected in each news item
-      const newsWithPoliticians = news.map(item => {
+      const newsWithPoliticians = await Promise.all(news.map(async (item) => {
         const text = `${item.title} ${item.description}`;
-        const detectedPoliticians = politicianRecognitionService.detectPoliticians(text);
+        const detectedPoliticians = await politicianRecognitionService.detectPoliticians(text);
         
         return {
           ...item,
           politicians: detectedPoliticians
         };
-      });
+      }));
       
       res.json(newsWithPoliticians);
     } catch (error) {
