@@ -68,8 +68,8 @@ class PoliticianRecognitionService {
           name: politician.name,
           party: politician.party || '',
           position: politician.position || '',
-          imageUrl: politician.image_url || '',
-          mentionCount: politician.mention_count || 0,
+          imageUrl: politician.imageUrl || '',
+          mentionCount: politician.mentionCount || 0,
           aliases: politicianAliases[politician.name] || []
         };
       });
