@@ -6,6 +6,7 @@ import {
   newsletterSubscribers, type NewsletterSubscriber, type InsertNewsletterSubscriber,
   users, type User, type InsertUser
 } from "@shared/schema";
+import { knessetMembers } from "./data/politicians";
 
 export interface IStorage {
   // User methods
@@ -70,60 +71,26 @@ export class MemStorage implements IStorage {
   }
   
   private initializeSampleData() {
-    // Sample politicians
-    const samplePoliticians: InsertPolitician[] = [
-      {
-        name: "President Joe Biden",
-        party: "Democrat",
-        position: "President of the United States",
-        imageUrl: "https://pixabay.com/get/g9079a1bc7cedd5de8828a2d4e1e6085f36c7c33b9e3fffc593500f03dcabc1f75c86be3a6b662200475d442d86abc472534c519f944fc59c4d4e822a0a0233af_1280.jpg"
-      },
-      {
-        name: "Senator Bernie Sanders",
-        party: "Independent",
-        position: "U.S. Senator, Vermont",
-        imageUrl: "https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&h=200"
-      },
-      {
-        name: "Senator Mitch McConnell",
-        party: "Republican",
-        position: "Senate Minority Leader",
-        imageUrl: "https://pixabay.com/get/g20f267eb3e6422a7f4c3a2be1d9f95ca8cec91d32168d43bd1017fea2a6b926364121bd5e14ae24a25ffcc816a439b23b75440c6fd82c7039e36b776fbf39f81_1280.jpg"
-      },
-      {
-        name: "Speaker Nancy Pelosi",
-        party: "Democrat",
-        position: "Speaker of the House",
-        imageUrl: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&h=200"
-      },
-      {
-        name: "Vice President Kamala Harris",
-        party: "Democrat",
-        position: "Vice President",
-        imageUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&h=200"
-      },
-      {
-        name: "Rep. Kevin McCarthy",
-        party: "Republican",
-        position: "House Minority Leader",
-        imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&h=200"
-      },
-      {
-        name: "Sen. Elizabeth Warren",
-        party: "Democrat",
-        position: "U.S. Senator, Massachusetts",
-        imageUrl: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&h=200"
-      },
-      {
-        name: "Sen. Ted Cruz",
-        party: "Republican",
-        position: "U.S. Senator, Texas",
-        imageUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&h=200"
-      }
-    ];
+    // Load politicians from knessetMembers
+    console.log(`Loading ${knessetMembers.length} politicians from JSON file...`);
     
-    for (const politician of samplePoliticians) {
-      this.createPolitician(politician);
+    for (const politician of knessetMembers) {
+      // Convert to InsertPolitician format and add to storage
+      const politicianData: InsertPolitician = {
+        name: politician.name,
+        party: politician.party,
+        position: politician.position,
+        imageUrl: politician.imageUrl
+      };
+      
+      this.politicians.set(politician.id, {
+        ...politicianData,
+        id: politician.id,
+        mentionCount: 0
+      });
+      
+      // Update counter to avoid ID conflicts
+      this.politicianIdCounter = Math.max(this.politicianIdCounter, politician.id + 1);
     }
     
     // Set initial ratings
