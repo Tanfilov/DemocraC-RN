@@ -144,38 +144,38 @@ export default function PoliticianCard({ politician, articleId, isCondensed = fa
       {/* Condensed View - for read articles */}
       {isCondensed && wasRated ? (
         <div 
-          className="inline-flex items-center gap-1 p-1.5 bg-amber-50 dark:bg-amber-900/20 rounded-md border border-amber-100 dark:border-amber-800 cursor-pointer hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors"
+          className="inline-flex items-center gap-1.5 p-1.5 bg-amber-50 dark:bg-amber-900/20 rounded-md border border-amber-100 dark:border-amber-800 cursor-pointer hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors"
           onClick={() => setShowRatingModal(true)}
         >
-          <div className="flex items-center">
-            <div className="flex gap-1 items-center">
-              <span className="text-xs font-medium text-amber-800 dark:text-amber-300">{politician.name}</span>
-              <Badge className="h-4 text-[10px] px-1 bg-amber-100 text-amber-800 dark:bg-amber-800 dark:text-amber-200 flex items-center gap-0.5">
-                <Star className="h-2 w-2 fill-amber-500 text-amber-500 dark:fill-amber-400 dark:text-amber-400 inline-block" />
-                {userRating.toFixed(1)}
-              </Badge>
-            </div>
-          </div>
+          {politician.imageUrl && (
+            <img
+              src={politician.imageUrl}
+              alt={politician.name}
+              className="w-5 h-5 rounded object-cover object-top"
+            />
+          )}
+          <span className="text-xs font-medium text-amber-800 dark:text-amber-300">{politician.name}</span>
+          <Badge className="h-4 text-[10px] px-1 bg-amber-100 text-amber-800 dark:bg-amber-800 dark:text-amber-200 flex items-center gap-0.5">
+            <Star className="h-2 w-2 fill-amber-500 text-amber-500 dark:fill-amber-400 dark:text-amber-400 inline-block" />
+            {userRating.toFixed(1)}
+          </Badge>
         </div>
       ) : (
         // Regular Full View
-        <div className={`flex flex-col items-start mt-2 p-3 rounded-md transition-all 
+        <div className={`mt-2 p-3 rounded-md transition-all 
           ${wasRated 
             ? 'bg-amber-50 border border-amber-100 dark:bg-amber-900/30 dark:border-amber-800' 
             : 'bg-gray-100 dark:bg-slate-700'} 
           ${isAnimating ? 'scale-105' : ''}`}
         >
-          <div className="flex items-center gap-2 w-full">
-            <div className="relative">
+          {/* Top section with image and name */}
+          <div className="flex items-center gap-3 mb-2 w-full">
+            <div className="relative flex-shrink-0">
               {politician.imageUrl && (
                 <img
                   src={politician.imageUrl}
                   alt={politician.name}
-                  className={`w-10 h-10 rounded-lg object-cover object-top border 
-                    ${wasRated 
-                      ? 'border-amber-200 dark:border-amber-700' 
-                      : 'border-gray-200 dark:border-slate-700'}`
-                  }
+                  className={`w-12 h-12 rounded-lg object-cover object-top shadow-sm`}
                 />
               )}
               {wasRated && (
@@ -185,72 +185,67 @@ export default function PoliticianCard({ politician, articleId, isCondensed = fa
               )}
             </div>
             
-            <div className="flex flex-col flex-grow">
-              <div className="flex items-center justify-between w-full">
-                <div className="text-sm font-semibold flex items-center gap-1 dark:text-gray-200">
-                  {politician.name}
-                  {averageRating > 4 && (
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <span>
-                            <Award className="h-3 w-3 text-amber-500 dark:text-amber-400" />
-                          </span>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-xs">דירוג גבוה</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  )}
-                </div>
-                
-                {/* Removed party display as requested */}
+            <div className="flex flex-col flex-grow overflow-hidden">
+              <div className="flex items-center gap-1 dark:text-gray-200">
+                <span className="text-base font-semibold truncate">{politician.name}</span>
+                {averageRating > 4 && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span>
+                          <Award className="h-3 w-3 text-amber-500 dark:text-amber-400 flex-shrink-0" />
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">דירוג גבוה</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
               </div>
               
-              <div className="flex items-center justify-between w-full mt-1.5">
-                <div className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[90px]">{politician.position}</div>
+              {/* Position */}
+              <div className="text-xs text-gray-500 dark:text-gray-400 truncate pr-1">{politician.position}</div>
+            </div>
+          </div>
+          
+          {/* Rating section */}
+          <div className="mt-1 flex flex-wrap justify-end gap-2">
+            {showRatingInArticle ? (
+              // For rated politicians, show badges that open the rating modal when clicked
+              <div 
+                className="flex items-center flex-wrap justify-end gap-x-2 gap-y-1 w-full cursor-pointer" 
+                onClick={() => setShowRatingModal(true)}
+              >
+                {/* Your rating */}
+                <div className="flex items-center gap-1 bg-amber-50 dark:bg-amber-900/30 rounded-full px-2 py-0.5">
+                  <span className="text-xs text-amber-700 dark:text-amber-300 whitespace-nowrap">הדירוג שלך:</span>
+                  <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-800 dark:text-amber-200 text-xs px-1.5 flex items-center gap-1 hover:bg-amber-200 dark:hover:bg-amber-700 transition-colors">
+                    <Star className="h-3 w-3 fill-amber-500 text-amber-500 dark:fill-amber-400 dark:text-amber-400" />
+                    {userRating.toFixed(1)}
+                  </Badge>
+                </div>
                 
-                {showRatingInArticle ? (
-                  // For rated politicians, show badges that open the rating modal when clicked
-                  <div className="flex flex-col items-end gap-1">
-                    <div 
-                      className="flex items-center gap-1 cursor-pointer hover:opacity-90 transition-opacity" 
-                      onClick={() => setShowRatingModal(true)}
-                      title="לחץ לשינוי הדירוג שלך"
-                    >
-                      <span className="text-xs text-gray-600 dark:text-gray-300">הדירוג שלך:</span>
-                      <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-800 dark:text-amber-200 text-xs px-1.5 flex items-center gap-1 hover:bg-amber-200 dark:hover:bg-amber-700 transition-colors">
-                        <Star className="h-3 w-3 fill-amber-500 text-amber-500 dark:fill-amber-400 dark:text-amber-400" />
-                        {userRating.toFixed(1)}
-                        <Pencil className="h-2.5 w-2.5 ml-0.5" />
-                      </Badge>
-                    </div>
-                    {averageRating > 0 && (
-                      <div 
-                        className="flex items-center gap-1 cursor-pointer hover:opacity-90 transition-opacity" 
-                        onClick={() => setShowRatingModal(true)}
-                        title="לחץ לראות דירוג ממוצע"
-                      >
-                        <span className="text-xs text-gray-600 dark:text-gray-300">דירוג ממוצע:</span>
-                        <Badge className="bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 text-xs px-1.5 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
-                          {averageRating.toFixed(1)}
-                        </Badge>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  // For unrated politicians, show empty stars
-                  <div className="cursor-pointer mt-1" onClick={() => setShowRatingModal(true)}>
-                    <StarRating
-                      rating={0}
-                      onChange={handleRatingChange}
-                      id={`politician-${politician.id}-unrated`}
-                    />
+                {/* Average rating - only show if there's a value */}
+                {averageRating > 0 && (
+                  <div className="flex items-center gap-1 bg-gray-50 dark:bg-gray-800/30 rounded-full px-2 py-0.5">
+                    <span className="text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">ממוצע:</span>
+                    <Badge className="bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 text-xs px-1.5">
+                      {averageRating.toFixed(1)}
+                    </Badge>
                   </div>
                 )}
               </div>
-            </div>
+            ) : (
+              // For unrated politicians, show empty stars
+              <div className="cursor-pointer flex justify-center w-full" onClick={() => setShowRatingModal(true)}>
+                <StarRating
+                  rating={0}
+                  onChange={handleRatingChange}
+                  id={`politician-${politician.id}-unrated`}
+                />
+              </div>
+            )}
           </div>
         </div>
       )}
