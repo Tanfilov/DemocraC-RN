@@ -38,7 +38,7 @@ export default function Header() {
               // Dark mode logo
               <div className="h-10 relative">
                 <img 
-                  src="/images/logo-transparent.png"
+                  src="/logo-transparent.png"
                   alt="democra.C Logo" 
                   className="h-10 object-contain logo-dark-mode"
                 />
@@ -46,7 +46,7 @@ export default function Header() {
             ) : (
               // Light mode logo
               <img 
-                src="/images/logo-transparent.png"
+                src="/logo-transparent.png"
                 alt="democra.C Logo" 
                 className="h-10 object-contain"
               />
