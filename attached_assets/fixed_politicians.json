@@ -4,7 +4,7 @@
       "Name": "בנימין נתניהו",
       "Party": "הליכוד",
       "Position": "ראש הממשלה",
-      "ImageUrl": "",
+      "ImageUrl": "/attached_assets/בנימין נתניהו.png",
       "Aliases": [
         "ביבי",
         "נתניהו"
@@ -141,7 +141,7 @@
       "Name": "בנימין נתניהו",
       "Party": "הליכוד",
       "Position": "ראש הממשלה",
-      "ImageUrl": "",
+      "ImageUrl": "/attached_assets/בנימין נתניהו.png",
       "Aliases": [
         "ביבי",
         "נתניהו"
@@ -171,6 +171,83 @@
       "Position": "שר הביטחון",
       "ImageUrl": "",
       "Aliases": []
+    },
+    {
+      "Name": "אמיר אוחנה",
+      "Party": "הליכוד",
+      "Position": "יו״ר הכנסת",
+      "ImageUrl": "/attached_assets/אמיר אוחנה.png",
+      "Aliases": ["אוחנה"]
+    },
+    {
+      "Name": "בני גנץ",
+      "Party": "כחול לבן",
+      "Position": "ח״כ",
+      "ImageUrl": "/attached_assets/בני גנץ.png",
+      "Aliases": ["גנץ"]
+    },
+    {
+      "Name": "אביגדור ליברמן",
+      "Party": "ישראל ביתנו",
+      "Position": "יו״ר האופוזיציה",
+      "ImageUrl": "/attached_assets/אביגדור ליברמן.png",
+      "Aliases": ["ליברמן"]
+    },
+    {
+      "Name": "אריה דרעי",
+      "Party": "ש״ס",
+      "Position": "שר הפנים",
+      "ImageUrl": "/attached_assets/אריה דרעי.png",
+      "Aliases": ["דרעי"]
+    },
+    {
+      "Name": "איתמר בן גביר",
+      "Party": "עוצמה יהודית",
+      "Position": "שר הביטחון הלאומי",
+      "ImageUrl": "/attached_assets/איתמר בן גביר.png",
+      "Aliases": ["בן גביר"]
+    },
+    {
+      "Name": "גדעון סער",
+      "Party": "תקווה חדשה",
+      "Position": "לשעבר שר המשפטים",
+      "ImageUrl": "/attached_assets/גדעון סער.png",
+      "Aliases": ["סער"]
+    },
+    {
+      "Name": "גדי אייזנקוט",
+      "Party": "המחנה הממלכתי",
+      "Position": "ח״כ",
+      "ImageUrl": "/attached_assets/גדי אייזנקוט.png",
+      "Aliases": ["אייזנקוט"]
+    },
+    {
+      "Name": "גילה גמליאל",
+      "Party": "הליכוד",
+      "Position": "השרה להגנת הסביבה",
+      "ImageUrl": "/attached_assets/גילה גמליאל.png",
+      "Aliases": ["גמליאל"]
+    },
+    {
+      "Name": "גלית דיסטל אטבריאן",
+      "Party": "הליכוד",
+      "Position": "ח״כ",
+      "ImageUrl": "/attached_assets/גלית דיסטל אטבריאן.png",
+      "Aliases": ["דיסטל", "אטבריאן"]
+    },
+    {
+      "Name": "אחמד טיבי",
+      "Party": "תע״ל",
+      "Position": "ח״כ",
+      "ImageUrl": "/attached_assets/אחמד טיבי.png",
+      "Aliases": ["טיבי"]
+    },
+    {
+      "Name": "אורית סטרוק",
+      "Party": "הציונות הדתית",
+      "Position": "ח״כ",
+      "ImageUrl": "/attached_assets/אורית סטרוק.png",
+      "Aliases": ["סטרוק"]
     }
   ]
 }
