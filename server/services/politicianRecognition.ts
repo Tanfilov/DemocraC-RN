@@ -1,5 +1,6 @@
 import { db } from '../db';
-import { Politician } from '@shared/schema';
+import { politicians } from '@shared/schema';
+import { eq } from 'drizzle-orm';
 
 // Hard-coded data for politicians and their aliases since our schema doesn't store aliases
 const politicianAliases: Record<string, string[]> = {
@@ -57,12 +58,17 @@ class PoliticianRecognitionService {
     
     try {
       // Fetch politicians from database
-      const dbPoliticians = await db.query.politicians.findMany();
+      const dbPoliticians = await db.select().from(politicians);
       
       // Convert to our format with aliases
       this.cachedPoliticians = dbPoliticians.map(politician => {
         return {
-          ...politician,
+          id: politician.id,
+          name: politician.name,
+          party: politician.party || '',
+          position: politician.position || '',
+          imageUrl: politician.image_url || '',
+          mentionCount: politician.mention_count || 0,
           aliases: politicianAliases[politician.name] || []
         };
       });

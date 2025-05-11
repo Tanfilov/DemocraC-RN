@@ -2,11 +2,17 @@ import { NewsItem } from "@shared/schema";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Calendar, ExternalLink } from "lucide-react";
+import { ArrowLeft, Calendar, ExternalLink, User, Users } from "lucide-react";
 import { Link } from "wouter";
+import { PoliticianMention } from "@/lib/types";
+import PoliticianCard from "./PoliticianCard";
+
+interface EnhancedNewsItem extends NewsItem {
+  politicians?: PoliticianMention[];
+}
 
 interface NewsCardProps {
-  article: NewsItem;
+  article: EnhancedNewsItem;
 }
 
 export default function NewsCard({ article }: NewsCardProps) {
@@ -71,6 +77,32 @@ export default function NewsCard({ article }: NewsCardProps) {
             <ExternalLink className="h-4 w-4" />
           </Button>
         </a>
+
+        {/* Politicians mentioned in the article */}
+        {article.politicians && article.politicians.length > 0 && (
+          <div className="mt-4 border-t pt-3">
+            <div className="flex items-center text-sm font-semibold mb-2 gap-1 text-right">
+              <Users className="h-4 w-4 ml-1" />
+              פוליטיקאים שמוזכרים בכתבה:
+            </div>
+            <div className="space-y-2">
+              {article.politicians.map((politician) => (
+                <PoliticianCard 
+                  key={politician.politicianId} 
+                  politician={{
+                    id: politician.politicianId,
+                    name: politician.name,
+                    party: politician.party,
+                    position: politician.position,
+                    imageUrl: politician.imageUrl,
+                    rating: politician.rating || 0,
+                    mentionCount: 0
+                  }} 
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

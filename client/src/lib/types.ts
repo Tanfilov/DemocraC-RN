@@ -37,3 +37,12 @@ export interface RatingData {
   userId?: number;
   rating: number;
 }
+
+export interface PoliticianMention {
+  politicianId: number;
+  name: string;
+  party: string;
+  position: string;
+  imageUrl: string;
+  rating?: number;
+}
