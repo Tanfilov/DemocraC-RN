@@ -16,6 +16,7 @@ export const ratings = pgTable('ratings', {
   id: serial('id').primaryKey(),
   politicianId: integer('politician_id').references(() => politicians.id).notNull(),
   userId: varchar('user_id', { length: 255 }),
+  articleId: varchar('article_id', { length: 255 }), // Article identifier (GUID)
   rating: integer('rating').notNull(),
   createdAt: timestamp('created_at').defaultNow(),
 });
@@ -46,6 +47,7 @@ export const ratingSchema = z.object({
   id: z.number().optional(),
   politicianId: z.number(),
   userId: z.string().optional(),
+  articleId: z.string().optional(), // Article identifier (GUID)
   rating: z.number().min(1).max(5),
   createdAt: z.date().optional(),
 });

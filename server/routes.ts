@@ -4,7 +4,7 @@ import { rssService } from "./services/rssService";
 import { politicianRecognitionService } from "./services/politicianRecognition";
 import { insertRatingSchema } from "@shared/schema";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { politicians, ratings } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -13,30 +13,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const news = await rssService.fetchRssNews();
       
-      // Fetch current politician ratings
+      // Fetch all politicians
       const allPoliticians = await db.select().from(politicians);
-      const politicianRatingsMap = new Map<number, {id: number, rating: number}>();
       
-      // Calculate average ratings for each politician
-      for (const politician of allPoliticians) {
-        // Get all ratings for this politician
-        const politicianRatingsList = await db
-          .select()
-          .from(ratings)
-          .where(eq(ratings.politicianId, politician.id));
+      // Prepare map for article-specific ratings
+      const politicianRatingsMap = new Map<string, Map<number, {id: number, rating: number, sum: number, count: number}>>();
+      
+      // Fetch ALL ratings for simplicity (in a real app with many ratings, we'd want to optimize this)
+      const allRatings = await db.select().from(ratings);
+      
+      // Group ratings by article and politician
+      for (const rating of allRatings) {
+        const articleId = rating.articleId || 'global';
         
-        // Calculate average rating if there are any ratings
-        let averageRating = 0;
-        if (politicianRatingsList.length > 0) {
-          const sum = politicianRatingsList.reduce((acc, rating) => acc + rating.rating, 0);
-          averageRating = sum / politicianRatingsList.length;
+        // Initialize article map if it doesn't exist
+        if (!politicianRatingsMap.has(articleId)) {
+          politicianRatingsMap.set(articleId, new Map());
         }
         
-        // Store in our map for quick lookup
-        politicianRatingsMap.set(politician.id, {
-          id: politician.id,
-          rating: averageRating
-        });
+        // Get the article's politician map
+        const articlePoliticianMap = politicianRatingsMap.get(articleId)!;
+        
+        // Initialize politician rating if it doesn't exist
+        if (!articlePoliticianMap.has(rating.politicianId)) {
+          articlePoliticianMap.set(rating.politicianId, {
+            id: rating.politicianId,
+            rating: 0,
+            count: 0,
+            sum: 0
+          });
+        }
+        
+        // Update the rating sum and count
+        const politicianRating = articlePoliticianMap.get(rating.politicianId)!;
+        politicianRating.sum = (politicianRating.sum || 0) + rating.rating;
+        politicianRating.count = (politicianRating.count || 0) + 1;
+        politicianRating.rating = politicianRating.sum / politicianRating.count;
       }
       
       // Add politicians detected in each news item and simplify source names
@@ -44,14 +56,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const text = `${item.title} ${item.description}`;
         const detectedPoliticians = await politicianRecognitionService.detectPoliticians(text);
         
-        // Update with current ratings from database
+        // Use article guid as identifier for article-specific ratings
+        const articleId = item.guid;
+        
+        // Get the article-specific rating map, or use global ratings as fallback
+        const articleRatingsMap = politicianRatingsMap.get(articleId) || politicianRatingsMap.get('global');
+        
+        // Update with article-specific ratings from database
         const updatedPoliticians = detectedPoliticians.map(politician => {
-          const ratingInfo = politicianRatingsMap.get(politician.politicianId);
-          if (ratingInfo && ratingInfo.rating > 0) {
-            return {
-              ...politician,
-              rating: ratingInfo.rating
-            };
+          const politicianId = politician.politicianId;
+          // If we have article-specific ratings for this politician
+          if (articleRatingsMap && articleRatingsMap.has(politicianId)) {
+            const ratingInfo = articleRatingsMap.get(politicianId);
+            if (ratingInfo && ratingInfo.rating > 0) {
+              return {
+                ...politician,
+                rating: ratingInfo.rating
+              };
+            }
           }
           return politician;
         });
@@ -117,7 +139,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Validate the rating
       const result = insertRatingSchema.safeParse({
         ...req.body,
-        politicianId: id
+        politicianId: id,
+        articleId: req.body.articleId || null
       });
       
       if (!result.success) {
@@ -137,7 +160,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Politician not found" });
       }
       
-      // Save the rating
+      // Check if user already rated this politician in this article
+      if (req.body.userId && req.body.articleId) {
+        const existingRatings = await db
+          .select()
+          .from(ratings)
+          .where(
+            and(
+              eq(ratings.politicianId, id),
+              eq(ratings.userId, req.body.userId),
+              eq(ratings.articleId, req.body.articleId)
+            )
+          );
+        
+        // If there's an existing rating, update it instead of creating a new one
+        if (existingRatings.length > 0) {
+          const [updatedRating] = await db
+            .update(ratings)
+            .set({ rating: req.body.rating })
+            .where(eq(ratings.id, existingRatings[0].id))
+            .returning();
+            
+          return res.json(updatedRating);
+        }
+      }
+      
+      // Save the new rating
       const [newRating] = await db
         .insert(ratings)
         .values(result.data)

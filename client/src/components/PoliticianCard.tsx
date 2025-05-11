@@ -11,9 +11,10 @@ import PoliticianRatingModal from './PoliticianRatingModal';
 
 interface PoliticianCardProps {
   politician: Politician;
+  articleId: string; // Add articleId to track ratings per article
 }
 
-export default function PoliticianCard({ politician }: PoliticianCardProps) {
+export default function PoliticianCard({ politician, articleId }: PoliticianCardProps) {
   // Using separate states for user's rating and average community rating
   const [averageRating, setAverageRating] = useState(politician.rating || 0);
   const [userRating, setUserRating] = useState(0);
