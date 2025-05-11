@@ -32,15 +32,15 @@ export default function NewsCard({ article }: NewsCardProps) {
         // Start the animation
         card.classList.add('expanding');
         
-        // Set a slight delay before changing state for better animation
+        // Set a delay before changing state for smoother animation
         setTimeout(() => {
           setIsCondensed(false);
-        }, 50);
+        }, 100);
         
         // Remove the animation class after it completes
         setTimeout(() => {
           if (card) card.classList.remove('expanding');
-        }, 450);
+        }, 900); // Longer duration to match our CSS animation timing
       } else {
         // If we can't find the card element, just toggle the state
         setIsCondensed(false);
@@ -201,10 +201,11 @@ export default function NewsCard({ article }: NewsCardProps) {
       
       {/* Show image only in full view */}
       {!isCondensed && article.imageUrl && (
-        <div>
+        <div className="image-container overflow-hidden">
           <img 
             src={article.imageUrl} 
             alt={article.title} 
+            className="fade-in-image"
             style={{
               width: "100%",
               height: "300px",

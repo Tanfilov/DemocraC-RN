@@ -316,7 +316,7 @@ h1, h2, h3, h4, h5, h6 {
     transform: scale(0.98);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   }
-  50% {
+  60% {
     transform: scale(1.01);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
@@ -328,12 +328,48 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Animation specifically for cards being expanded from condensed state */
 .mobile-card.expanding {
-  animation: card-expand 0.4s ease-out forwards;
+  animation: card-expand 0.7s ease-out forwards;
   z-index: 5;
   position: relative;
 }
 
 /* Add a transition for all card elements to make animations smoother */
 .mobile-card * {
-  transition: all 0.3s ease-out;
+  transition: all 0.6s ease-out;
+}
+
+/* Special styling for image containers during animation */
+.image-container {
+  overflow: hidden;
+  position: relative;
+}
+
+/* Special transition for images to make them fade in gradually */
+.mobile-card img {
+  transition: opacity 0.8s ease-in-out, transform 0.8s ease-out;
+}
+
+/* Specific class for fading in images */
+.fade-in-image {
+  animation: img-fade-in 0.8s ease-out forwards;
+  opacity: 0;
+}
+
+/* When card is expanding, make images fade in with a scale effect */
+.mobile-card.expanding img {
+  animation: img-fade-in 0.8s ease-out forwards;
+}
+
+@keyframes img-fade-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  30% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
