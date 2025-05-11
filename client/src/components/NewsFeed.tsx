@@ -145,17 +145,6 @@ export default function NewsFeed() {
 
   return (
     <div>
-      <div className="flex justify-end mb-4 px-2">
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="flex gap-1 items-center rounded-full h-9 w-9 p-0 justify-center" 
-          onClick={handleRefresh}
-        >
-          <RefreshCw className="h-4 w-4" />
-          <span className="sr-only">רענן</span>
-        </Button>
-      </div>
       <div className="flex flex-col gap-4 max-w-screen-sm mx-auto">
         {news.map((article) => (
           <NewsCard key={article.guid} article={article} />
