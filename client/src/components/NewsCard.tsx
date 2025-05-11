@@ -115,7 +115,7 @@ export default function NewsCard({ article }: NewsCardProps) {
             {article.formattedDate}
           </div>
           <Badge variant="outline" className="bg-primary/10 text-primary">
-            Ynet חדשות
+            {article.source || 'חדשות'}
           </Badge>
         </div>
         <h3 

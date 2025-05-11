@@ -15,6 +15,11 @@ interface RssItem {
   };
 }
 
+interface RssSource {
+  url: string;
+  name: string;
+}
+
 interface ParsedRssItem {
   title: string;
   description: string;
@@ -23,15 +28,43 @@ interface ParsedRssItem {
   guid: string;
   imageUrl?: string;
   formattedDate: string;
+  source: string;
+  date: Date; // Actual date object for sorting
 }
 
 class RssService {
-  private rssUrl: string = 'https://www.ynet.co.il/Integration/StoryRss2.xml';
+  private rssSources: RssSource[] = [
+    {
+      url: 'https://www.ynet.co.il/Integration/StoryRss2.xml',
+      name: 'Ynet חדשות'
+    },
+    {
+      url: 'https://rcs.mako.co.il/rss/news-military.xml?Partner=interlink',
+      name: 'Mako צבא וביטחון'
+    }
+  ];
   
   async fetchRssNews(): Promise<ParsedRssItem[]> {
     try {
+      // Fetch all RSS feeds in parallel
+      const allNewsPromises = this.rssSources.map(source => this.fetchFromSource(source));
+      const allNewsArrays = await Promise.all(allNewsPromises);
+      
+      // Combine all news items into a single array
+      const allNews = allNewsArrays.flat();
+      
+      // Sort by date (newest first)
+      return allNews.sort((a, b) => b.date.getTime() - a.date.getTime());
+    } catch (error) {
+      console.error('Error fetching RSS feeds:', error);
+      throw error;
+    }
+  }
+  
+  private async fetchFromSource(source: RssSource): Promise<ParsedRssItem[]> {
+    try {
       // Fetch the RSS feed
-      const response = await axios.get(this.rssUrl);
+      const response = await axios.get(source.url);
       
       // Parse XML to JS object
       const parser = new xml2js.Parser({ explicitArray: false });
@@ -40,11 +73,16 @@ class RssService {
       // Extract items from RSS feed
       const items = result.rss.channel.item;
       
+      // Handle both array and single item cases
+      const itemsArray = Array.isArray(items) ? items : [items];
+      
       // Process each news item
-      return items.map((item: RssItem) => {
-        // Format the date
+      return itemsArray.map((item: RssItem) => {
+        // Parse the date
         const date = new Date(item.pubDate);
-        const formattedDate = date.toLocaleDateString('en-US', {
+        
+        // Format the date for display
+        const formattedDate = date.toLocaleDateString('he-IL', {
           year: 'numeric',
           month: 'short',
           day: 'numeric',
@@ -61,17 +99,22 @@ class RssService {
           if (imgMatch && imgMatch[1]) {
             imageUrl = imgMatch[1];
             
-            // Make sure it's an absolute URL (important for Ynet images)
+            // Make sure it's an absolute URL
             if (imageUrl && !imageUrl.startsWith('http')) {
-              imageUrl = 'https:' + imageUrl;
+              imageUrl = imageUrl.startsWith('//') ? 'https:' + imageUrl : 'https://' + imageUrl;
             }
           }
         }
 
-        // Always use a large image format if it's from Ynet
-        if (imageUrl && imageUrl.includes('ynet-pic')) {
-          // Replace medium with large or original in the URL
-          imageUrl = imageUrl.replace('_medium.jpg', '_large.jpg');
+        // Handle specific image formats based on source
+        if (imageUrl) {
+          if (imageUrl.includes('ynet-pic')) {
+            // Replace medium with large for Ynet images
+            imageUrl = imageUrl.replace('_medium.jpg', '_large.jpg');
+          } else if (imageUrl.includes('mako')) {
+            // Keep the large-sized Mako images
+            imageUrl = imageUrl.replace('/small/', '/large/').replace('/medium/', '/large/');
+          }
         }
         
         return {
@@ -79,14 +122,17 @@ class RssService {
           description: item.description,
           link: item.link,
           pubDate: item.pubDate,
-          guid: item.guid,
+          guid: item.guid || item.link, // Use link as fallback guid
           imageUrl,
-          formattedDate
+          formattedDate,
+          source: source.name,
+          date: date // Keep original Date object for sorting
         };
       });
     } catch (error) {
-      console.error('Error fetching or parsing RSS feed:', error);
-      throw error;
+      console.error(`Error fetching or parsing RSS feed from ${source.url}:`, error);
+      // Return empty array on error for this source instead of failing entirely
+      return [];
     }
   }
 }

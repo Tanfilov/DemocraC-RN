@@ -28,7 +28,8 @@ export const newsItemSchema = z.object({
   pubDate: z.string(),
   guid: z.string(),
   imageUrl: z.string().optional(),
-  formattedDate: z.string()
+  formattedDate: z.string(),
+  source: z.string().optional() // Source of the news (Ynet, Mako, etc.)
 });
 
 // Zod schemas for validation
