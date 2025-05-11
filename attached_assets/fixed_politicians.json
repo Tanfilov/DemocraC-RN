@@ -1,0 +1,176 @@
+{
+  "knesset_members": [
+    {
+      "Name": "בנימין נתניהו",
+      "Party": "הליכוד",
+      "Position": "ראש הממשלה",
+      "ImageUrl": "",
+      "Aliases": [
+        "ביבי",
+        "נתניהו"
+      ]
+    },
+    {
+      "Name": "יריב לוין",
+      "Party": "הליכוד",
+      "Position": "שר המשפטים",
+      "ImageUrl": "",
+      "Aliases": [
+        "לוין"
+      ]
+    },
+    {
+      "Name": "ניר ברקת",
+      "Party": "הליכוד",
+      "Position": "שר הכלכלה",
+      "ImageUrl": "",
+      "Aliases": [
+        "ברקת"
+      ]
+    },
+    {
+      "Name": "ישראל כץ",
+      "Party": "הליכוד",
+      "Position": "שר הביטחון",
+      "ImageUrl": "",
+      "Aliases": []
+    },
+    {
+      "Name": "שלמה קרעי",
+      "Party": "הליכוד",
+      "Position": "",
+      "ImageUrl": "",
+      "Aliases": [
+        "קרעי"
+      ]
+    },
+    {
+      "Name": "יולי אדלשטיין",
+      "Party": "הליכוד",
+      "Position": "",
+      "ImageUrl": "",
+      "Aliases": [
+        "אדלשטיין",
+        "יולי יואל אדלשטיין"
+      ]
+    },
+    {
+      "Name": "יאיר לפיד",
+      "Party": "יש עתיד",
+      "Position": "ראש האופוזיציה",
+      "ImageUrl": "",
+      "Aliases": [
+        "לפיד"
+      ]
+    },
+    {
+      "Name": "שמחה רוטמן",
+      "Party": "הציונות הדתית",
+      "Position": "",
+      "ImageUrl": "",
+      "Aliases": [
+        "רוטמן"
+      ]
+    },
+    {
+      "Name": "צבי סוכות",
+      "Party": "הציונות הדתית",
+      "Position": "",
+      "ImageUrl": "",
+      "Aliases": [
+        "סוכות"
+      ]
+    },
+    {
+      "Name": "עמיחי אליהו",
+      "Party": "עוצמה יהודית",
+      "Position": "",
+      "ImageUrl": "",
+      "Aliases": [
+        "אליהו"
+      ]
+    },
+    {
+      "Name": "נעמה לזימי",
+      "Party": "יש עתיד",
+      "Position": "",
+      "ImageUrl": "",
+      "Aliases": [
+        "לזימי"
+      ]
+    },
+    {
+      "Name": "ניסים ואטורי",
+      "Party": "הליכוד",
+      "Position": "",
+      "ImageUrl": "",
+      "Aliases": [
+        "ואטורי"
+      ]
+    },
+    {
+      "Name": "נאור שירי",
+      "Party": "יש עתיד",
+      "Position": "",
+      "ImageUrl": "",
+      "Aliases": [
+        "שירי"
+      ]
+    },
+    {
+      "Name": "מתן כהנה",
+      "Party": "המחנה הממלכתי",
+      "Position": "",
+      "ImageUrl": "",
+      "Aliases": [
+        "כהנה"
+      ]
+    },
+    {
+      "Name": "קטי שטרית",
+      "Party": "הליכוד",
+      "Position": "",
+      "ImageUrl": "",
+      "Aliases": [
+        "שטרית"
+      ]
+    }
+  ],
+  "government_members": [
+    {
+      "Name": "בנימין נתניהו",
+      "Party": "הליכוד",
+      "Position": "ראש הממשלה",
+      "ImageUrl": "",
+      "Aliases": [
+        "ביבי",
+        "נתניהו"
+      ]
+    },
+    {
+      "Name": "יריב לוין",
+      "Party": "הליכוד",
+      "Position": "שר המשפטים",
+      "ImageUrl": "",
+      "Aliases": [
+        "לוין"
+      ]
+    },
+    {
+      "Name": "ניר ברקת",
+      "Party": "הליכוד",
+      "Position": "שר הכלכלה",
+      "ImageUrl": "",
+      "Aliases": [
+        "ברקת"
+      ]
+    },
+    {
+      "Name": "ישראל כץ",
+      "Party": "הליכוד",
+      "Position": "שר הביטחון",
+      "ImageUrl": "",
+      "Aliases": []
+    }
+  ]
+}
