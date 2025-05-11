@@ -23,6 +23,10 @@ export default function NewsCard({ article }: NewsCardProps) {
   const wasArticleViewed = useRef(false);
   // State to track if article should be shown in condensed view
   const [isCondensed, setIsCondensed] = useState(false);
+  // Function to toggle between condensed and expanded view
+  const toggleCondensed = () => {
+    setIsCondensed(!isCondensed);
+  };
   
   // Check if article was already read or rated when component mounts
   useEffect(() => {
@@ -166,8 +170,10 @@ export default function NewsCard({ article }: NewsCardProps) {
     }
   };
   return (
-    <div className={`mobile-card bg-white dark:bg-slate-900 dark:border-slate-800 
-      ${isCondensed ? 'condensed-card border-r-4 border-primary border-opacity-50 dark:border-opacity-30 shadow-sm' : 'shadow-md'}`}>
+    <div 
+      className={`mobile-card bg-white dark:bg-slate-900 dark:border-slate-800 
+        ${isCondensed ? 'condensed-card border-r-4 border-primary border-opacity-50 dark:border-opacity-30 shadow-sm cursor-pointer' : 'shadow-md'}`}
+      onClick={isCondensed ? toggleCondensed : undefined}>
       
       {/* Show image only in full view */}
       {!isCondensed && article.imageUrl && (
@@ -229,24 +235,15 @@ export default function NewsCard({ article }: NewsCardProps) {
           />
         )}
         
-        {/* Read on website button - always shown, but styled differently in condensed view */}
-        <a 
-          href={article.link} 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          className={`block ${isCondensed ? 'w-auto mr-auto' : 'w-full'}`}
-          onClick={handleArticleClick}
-        >
-          {isCondensed ? (
-            <Button 
-              variant="outline" 
-              className="mobile-button flex items-center justify-center gap-1 text-sm py-1 h-7 border-slate-200 dark:border-slate-700 bg-transparent"
-              size="sm"
-            >
-              קריאה
-              <ExternalLink className="h-3 w-3" />
-            </Button>
-          ) : (
+        {/* Read on website button - only shown in expanded view */}
+        {!isCondensed && (
+          <a 
+            href={article.link} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="block w-full"
+            onClick={handleArticleClick}
+          >
             <Button 
               variant="default" 
               className="mobile-button flex items-center justify-center gap-2"
@@ -254,8 +251,8 @@ export default function NewsCard({ article }: NewsCardProps) {
               קריאה באתר
               <ExternalLink className="h-4 w-4" />
             </Button>
-          )}
-        </a>
+          </a>
+        )}
         
         {/* Rating modal that appears when user returns from article */}
         {article.politicians && article.politicians.length > 0 && (
