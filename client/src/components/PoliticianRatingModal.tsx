@@ -181,7 +181,7 @@ export default function PoliticianRatingModal({
                   <>שולח...</>
                 ) : (
                   <>
-                    שליחה
+                    שלח
                     <ThumbsUp className="h-4 w-4 mr-1" />
                   </>
                 )}

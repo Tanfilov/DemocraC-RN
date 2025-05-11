@@ -1,32 +1,39 @@
 import { Link } from "wouter";
-import { Newspaper } from "lucide-react";
+// Use a direct path to the image
+const logoImagePath = "/assets/logo.png";
 
 export default function Header() {
   return (
-    <header className="bg-primary text-white sticky top-0 z-50 shadow-md">
-      <div className="px-4 py-3">
+    <header className="bg-[#FFB74D]/10 sticky top-0 z-50 shadow-md">
+      <div className="px-4 py-2">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center">
-            <Newspaper className="h-6 w-6 text-white ml-2" />
-            <h1 
-              className="text-xl font-bold text-white"
-              style={{ 
-                fontWeight: 700, 
-                letterSpacing: '-0.03em',
-                fontSize: '1.3rem'
-              }}
-            >
-              קורא חדשות Ynet
-            </h1>
+            <div className="h-12 flex justify-center">
+              <img 
+                src={logoImagePath} 
+                alt="democra.C Logo" 
+                className="h-full object-contain"
+              />
+            </div>
           </Link>
-          <a 
-            href="https://www.ynet.co.il" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="text-sm text-white/80 hover:text-white transition-colors flex items-center"
-          >
-            לאתר Ynet
-          </a>
+          <div className="flex space-x-2 rtl:space-x-reverse">
+            <a 
+              href="https://www.ynet.co.il" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-sm text-gray-600 hover:text-primary transition-colors flex items-center"
+            >
+              לאתר Ynet
+            </a>
+            <a 
+              href="https://www.mako.co.il" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-sm text-gray-600 hover:text-primary transition-colors flex items-center"
+            >
+              לאתר Mako
+            </a>
+          </div>
         </div>
       </div>
     </header>
