@@ -80,13 +80,12 @@ async function updateAllPoliticians() {
           console.log(`Updating politician ${politician.Name} (ID: ${dbId}) with image: ${politician.ImageUrl}`);
           
           // Update the database
-          await db.update(politicians)
-            .set({ 
-              imageUrl: politician.ImageUrl,
-              party: politician.Party,
-              position: politician.Position
-            })
-            .where(eq(politicians.id, dbId));
+          await db.execute(
+            `UPDATE politicians 
+             SET image_url = $1, party = $2, position = $3 
+             WHERE id = $4`,
+            [politician.ImageUrl, politician.Party, politician.Position, dbId]
+          );
             
           updatedCount++;
         }
@@ -95,13 +94,12 @@ async function updateAllPoliticians() {
         console.log(`Adding new politician: ${politician.Name} with image: ${politician.ImageUrl || 'no image'}`);
         
         // Insert the new politician
-        await db.insert(politicians).values({
-          name: politician.Name,
-          party: politician.Party,
-          position: politician.Position,
-          imageUrl: politician.ImageUrl,
-          mentionCount: 0
-        });
+        await db.execute(
+          `INSERT INTO politicians 
+           (name, party, position, image_url, mention_count) 
+           VALUES ($1, $2, $3, $4, $5)`,
+          [politician.Name, politician.Party, politician.Position, politician.ImageUrl, 0]
+        );
         
         addedCount++;
       }
