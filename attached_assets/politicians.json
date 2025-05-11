@@ -1,567 +1,176 @@
 {
-"knesset\_members": \[
-{
-"Name": "בנימין נתניהו",
-"Party": "הליכוד",
-"Position": "ראש הממשלה",
-"ImageUrl": "[https://drive.google.com/thumbnail?id=17Pc5bPtBPYe0\_R32BSkoLGzgN7Xjih\_Y\&sz=w400](https://drive.google.com/thumbnail?id=17Pc5bPtBPYe0_R32BSkoLGzgN7Xjih_Y&sz=w400)",
-"Aliases": \[
-"ביבי",
-"נתניהו",
-]
-},
-{
-"Name": "יריב לוין",
-"Party": "הליכוד",
-"Position": "שר המשפטים",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-"לוין"
-]
-},
-{
-"Name": "אמיר אוחנה",
-"Party": "הליכוד",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-"אוחנה"
-]
-},
-{
-"Name": "ניר ברקת",
-"Party": "הליכוד",
-"Position": "שר הכלכלה",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-"ברקת"
-]
-},
-{
-"Name": "אבי דיכטר",
-"Party": "הליכוד",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-"דיכטר"
-]
-},
-{
-"Name": "ישראל כץ",
-"Party": "הליכוד",
-"Position": "שר הביטחון",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-]
-},
-{
-"Name": "שלמה קרעי",
-"Party": "הליכוד",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-"קרעי"
-]
-},
-{
-"Name": "דוד ביטן",
-"Party": "הליכוד",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-]
-},
-{
-"Name": "יולי אדלשטיין",
-"Party": "הליכוד",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-"אדלשטיין",
-]
-},
-{
-"Name": "אליהו רביבו",
-"Party": "הליכוד",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-"רביבו",
-"אלי רביבו"
-]
-},
-{
-"Name": "יצחק כץ",
-"Party": "הליכוד",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-]
-},
-{
-"Name": "יואל רזבוזוב",
-"Party": "ישראל ביתנו",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[]
-},
-{
-"Name": "אבי מעוז",
-"Party": "עוצמה יהודית",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[]
-},
-{
-"Name": "אופיר כץ",
-"Party": "ליכוד",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-]
-},
-{
-"Name": "נשיא המדינה",
-"Party": "",
-"Position": "",
-"ImageUrl": "",
-"Aliases": \[]
-},
-{
-"Name": "דוד אזולאי",
-"Party": "ש"ס",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[]
-},
-{
-"Name": "אמיר גרשטיין",
-"Party": "עוצמה יהודית",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[]
-},
-{
-"Name": "משה סעדה",
-"Party": "עוצמה יהודית",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-"סעדה"
-]
-},
-{
-"Name": "גילה גמליאל",
-"Party": "הליכוד",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-"גמליאל"
-]
-},
-{
-"Name": "אוריאל בוסו",
-"Party": "ליכוד",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[]
-},
-{
-"Name": "אוריט סטרוק",
-"Party": "הליכוד",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[]
-},
-{
-"Name": "ניצן הורוביץ",
-"Party": "Meretz",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[]
-},
-{
-"Name": "חנוך מילביצקי",
-"Party": "כחול לבן",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-"מילביצקי"
-]
-},
-{
-"Name": "אבי דיכטר",
-"Party": "ליכוד",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-"דיכטר"
-]
-},
-{
-"Name": "משה שומרון",
-"Party": "הליכוד",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[]
-},
-{
-"Name": "אורי מקלב",
-"Party": "יהדות התורה",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-"מקלב"
-]
-},
-{
-"Name": "יוסי פוגל",
-"Party": "ש"ס",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[]
-},
-{
-"Name": "צבי האוזר",
-"Party": "יהדות התורה",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[]
-},
-{
-"Name": "ישראל אייכלר",
-"Party": "יהדות התורה",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[]
-},
-{
-"Name": "חיים ביטון",
-"Party": "ליכוד",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-]
-},
-{
-"Name": "אלי דלל",
-"Party": "הליכוד",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-]
-},
-{
-"Name": "מוטי יוגב",
-"Party": "הציונות הדתית",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[]
-},
-{
-"Name": "עמית הלוי",
-"Party": "ליכוד",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-]
-},
-{
-"Name": "צגה מלקו",
-"Party": "הליכוד",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-]
-},
-{
-"Name": "גלית דיסטל-אטבריאן",
-"Party": "הליכוד",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-"דיסטל-אטבריאן"
-]
-},
-{
-"Name": "חבר הכנסת מתן פלגי",
-"Party": "הליכוד",
-"Position": "",
-"ImageUrl": "",
-"Aliases": \[]
-},
-{
-"Name": "אורית פרקש-הכהן",
-"Party": "הציונות הדתית",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[]
-},
-{
-"Name": "אלי כהן",
-"Party": "הליכוד",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-]
-},
-{
-"Name": "זאב אלקין",
-"Party": "הליכוד",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-"אלקין"
-]
-},
-{
-"Name": "אורי מקלב",
-"Party": "יהדות התורה",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-"מקלב"
-]
-},
-{
-"Name": "גלעד קריב",
-"Party": "העבודה",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[]
-},
-{
-"Name": "יעקב ליצמן",
-"Party": "יהדות התורה",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[]
-},
-{
-"Name": "ינון אזולאי",
-"Party": "הליכוד",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[]
-},
-{
-"Name": "יואב קיש",
-"Party": "הליכוד",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-"קיש"
-]
-},
-{
-"Name": "מיקי זוהר",
-"Party": "הליכוד",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-]
-},
-{
-"Name": "מוטי יחיאל",
-"Party": "הליכוד",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[]
-},
-{
-"Name": "אבי מעוז",
-"Party": "עוצמה יהודית",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[]
-},
-{
-"Name": "אביגדור ליברמן",
-"Party": "ישראל ביתנו",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-"ליברמן",
-"איווט"
-]
-},
-{
-"Name": "דודי אמסלם",
-"Party": "הליכוד",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[]
-},
-{
-"Name": "תמוס כהן",
-"Party": "כחול לבן",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[]
-},
-{
-"Name": "גבי אשכנזי",
-"Party": "כחול לבן",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[]
-},
-{
-"Name": "בני גנץ",
-"Party": "כחול לבן",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-"גנץ",
-"בנימין גנץ"
-]
-},
-{
-"Name": "יעל גרמן",
-"Party": "כחול לבן",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[]
-},
-{
-"Name": "יעל ארד",
-"Party": "כחול לבן",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[]
-},
-{
-"Name": "דורון שפר",
-"Party": "סיעת העבודה",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[]
-},
-{
-"Name": "רונן הלל",
-"Party": "כחול לבן",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[]
-},
-{
-"Name": "יוסי יונה",
-"Party": "כחול לבן",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[]
-},
-{
-"Name": "שרן השכל",
-"Party": "תקווה חדשה",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-]
-},
-{
-"Name": "צמוטריץ' בצלאל",
-"Party": "הציונות הדתית",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-"סמוטריץ'",
-"בצלאל סמוטריץ",
-"סמוטריץ"
-]
-},
-{
-"Name": "רגע קבעי",
-"Party": "ועדת הפנים והגנת הסביבה",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[]
-},
-{
-"Name": "אוטו מילר",
-"Party": "",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[]
+  "knesset_members": [
+    {
+      "Name": "בנימין נתניהו",
+      "Party": "הליכוד",
+      "Position": "ראש הממשלה",
+      "ImageUrl": "",
+      "Aliases": [
+        "ביבי",
+        "נתניהו"
+      ]
+    },
+    {
+      "Name": "יריב לוין",
+      "Party": "הליכוד",
+      "Position": "שר המשפטים",
+      "ImageUrl": "/attached_assets/יריב לוין.png",
+      "Aliases": [
+        "לוין"
+      ]
+    },
+    {
+      "Name": "ניר ברקת",
+      "Party": "הליכוד",
+      "Position": "שר הכלכלה",
+      "ImageUrl": "/attached_assets/ניר ברקת.png",
+      "Aliases": [
+        "ברקת"
+      ]
+    },
+    {
+      "Name": "ישראל כץ",
+      "Party": "הליכוד",
+      "Position": "שר הביטחון",
+      "ImageUrl": "",
+      "Aliases": []
+    },
+    {
+      "Name": "שלמה קרעי",
+      "Party": "הליכוד",
+      "Position": "",
+      "ImageUrl": "/attached_assets/שלמה קרעי.png",
+      "Aliases": [
+        "קרעי"
+      ]
+    },
+    {
+      "Name": "יולי אדלשטיין",
+      "Party": "הליכוד",
+      "Position": "",
+      "ImageUrl": "",
+      "Aliases": [
+        "אדלשטיין",
+        "יולי יואל אדלשטיין"
+      ]
+    },
+    {
+      "Name": "יאיר לפיד",
+      "Party": "יש עתיד",
+      "Position": "ראש האופוזיציה",
+      "ImageUrl": "/attached_assets/יאיר לפיד.png",
+      "Aliases": [
+        "לפיד"
+      ]
+    },
+    {
+      "Name": "שמחה רוטמן",
+      "Party": "הציונות הדתית",
+      "Position": "",
+      "ImageUrl": "/attached_assets/שמחה רוטמן.png",
+      "Aliases": [
+        "רוטמן"
+      ]
+    },
+    {
+      "Name": "צבי סוכות",
+      "Party": "הציונות הדתית",
+      "Position": "",
+      "ImageUrl": "/attached_assets/צבי סוכות.png",
+      "Aliases": [
+        "סוכות"
+      ]
+    },
+    {
+      "Name": "עמיחי אליהו",
+      "Party": "עוצמה יהודית",
+      "Position": "",
+      "ImageUrl": "/attached_assets/עמיחי אליהו.png",
+      "Aliases": [
+        "אליהו"
+      ]
+    },
+    {
+      "Name": "נעמה לזימי",
+      "Party": "יש עתיד",
+      "Position": "",
+      "ImageUrl": "/attached_assets/נעמה לזימי.png",
+      "Aliases": [
+        "לזימי"
+      ]
+    },
+    {
+      "Name": "ניסים ואטורי",
+      "Party": "הליכוד",
+      "Position": "",
+      "ImageUrl": "/attached_assets/ניסים ואטורי.png",
+      "Aliases": [
+        "ואטורי"
+      ]
+    },
+    {
+      "Name": "נאור שירי",
+      "Party": "יש עתיד",
+      "Position": "",
+      "ImageUrl": "/attached_assets/נאור שירי.png",
+      "Aliases": [
+        "שירי"
+      ]
+    },
+    {
+      "Name": "מתן כהנה",
+      "Party": "המחנה הממלכתי",
+      "Position": "",
+      "ImageUrl": "/attached_assets/מתן כהנה.png",
+      "Aliases": [
+        "כהנה"
+      ]
+    },
+    {
+      "Name": "קטי שטרית",
+      "Party": "הליכוד",
+      "Position": "",
+      "ImageUrl": "/attached_assets/קטי שטרית.png",
+      "Aliases": [
+        "שטרית"
+      ]
+    }
+  ],
+  "government_members": [
+    {
+      "Name": "בנימין נתניהו",
+      "Party": "הליכוד",
+      "Position": "ראש הממשלה",
+      "ImageUrl": "",
+      "Aliases": [
+        "ביבי",
+        "נתניהו"
+      ]
+    },
+    {
+      "Name": "יריב לוין",
+      "Party": "הליכוד",
+      "Position": "שר המשפטים",
+      "ImageUrl": "/attached_assets/יריב לוין.png",
+      "Aliases": [
+        "לוין"
+      ]
+    },
+    {
+      "Name": "ניר ברקת",
+      "Party": "הליכוד",
+      "Position": "שר הכלכלה",
+      "ImageUrl": "/attached_assets/ניר ברקת.png",
+      "Aliases": [
+        "ברקת"
+      ]
+    },
+    {
+      "Name": "ישראל כץ",
+      "Party": "הליכוד",
+      "Position": "שר הביטחון",
+      "ImageUrl": "",
+      "Aliases": []
+    }
+  ]
 }
-],
-"government\_members": \[
-
-{
-"Name": "משה ארבל",
-"Party": "ש"ס",
-"Position": "שר הפנים",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[]
-},
-{
-"Name": "משה אבוטבול",
-"Party": "ש"ס",
-"Position": "סגן שר החקלאות ופיתוח הכפר \[1, 2]",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[]
-},
-{
-"Name": "אוריאל בוסו",
-"Party": "ליכוד",
-"Position": "סגן שר האוצר",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[]
-},
-{
-"Name": "ואדים קריבולסקי",
-"Party": "הליכוד",
-"Position": "ראש הסגל",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[]
-},
-{
-"Name": "איתמר בן גביר",
-"Party": "עוצמה יהודית",
-"Position": "שר הבטחון הלאומי",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-"בן גביר",
-"בן-גביר"
-]
-},
-{
-"Name": "מיכאל מלכיאלי",
-"Party": "ליכוד",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[]
-},
-{
-"Name": "אלמוג כהן",
-"Party": "עוצמה יהודית",
-"Position": "סגן השר במשרד ראש הממשלה \[1, 2]",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-]
-},
-{
-"Name": "משה אבוטבול",
-"Party": "ש"ס",
-"Position": "סגן שר החקלאות ופיתוח הכפר \[1, 2]",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[]
-},
-{
-"Name": "יעקב טסלר",
-"Party": "יהדות התורה",
-"Position": "",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-"טסלר"
-]
-},
-{
-"Name": "מיכל וולדיגר",
-"Party": "מפד"ל – הציונות הדתית",
-"Position": "סגנית שר האוצר \[1, 2]",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-"וולדיגר"
-]
-},

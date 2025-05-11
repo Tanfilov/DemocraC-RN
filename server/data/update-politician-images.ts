@@ -48,7 +48,7 @@ function getImageFiles(): string[] {
 // Function to map politician names to their image files
 function mapPoliticiansToImages(politicianData: PoliticiansJsonFormat): void {
   const imageFiles = getImageFiles();
-  const jsonPath = path.resolve('../../attached_assets/politicians.json');
+  const jsonPath = path.resolve('../../attached_assets/fixed_politicians.json');
   
   // Combine both knesset members and government members
   const allPoliticians = [...politicianData.knesset_members];
@@ -64,11 +64,19 @@ function mapPoliticiansToImages(politicianData: PoliticiansJsonFormat): void {
     const normalizedName = politician.Name.trim();
     
     // Try to find a direct match
-    const matchingFile = imageFiles.find(file => {
+    let matchingFile = imageFiles.find(file => {
       // Remove file extension and normalize
       const fileName = path.basename(file, path.extname(file)).trim();
       return fileName === normalizedName;
     });
+    
+    // If no direct match, try aliases
+    if (!matchingFile && politician.Aliases && politician.Aliases.length > 0) {
+      // Also check for match with יולי יואל אדלשטיין -> יולי אדלשטיין
+      if (normalizedName === "יולי אדלשטיין") {
+        matchingFile = imageFiles.find(file => file.includes("יולי יואל אדלשטיין"));
+      }
+    }
     
     if (matchingFile) {
       // Update the ImageUrl to use the local file

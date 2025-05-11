@@ -32,11 +32,14 @@ interface PoliticiansJsonFormat {
 // Function to load politicians from the JSON file
 function loadPoliticiansFromJson(): Politician[] {
   try {
-    const jsonPath = path.resolve('./attached_assets/politicians.json');
+    // First try to load the fixed JSON with updated image URLs
+    const jsonPath = path.resolve('./attached_assets/fixed_politicians.json');
     const jsonData = fs.readFileSync(jsonPath, 'utf8');
     
     // Parse the JSON data
-    const parsedData = JSON.parse(jsonData.replace(/\\/g, '')) as PoliticiansJsonFormat;
+    const parsedData = JSON.parse(jsonData) as PoliticiansJsonFormat;
+    
+    console.log('Successfully loaded politicians from fixed_politicians.json');
     
     // Combine both knesset members and government members
     const allPoliticians = [...parsedData.knesset_members];
@@ -54,9 +57,38 @@ function loadPoliticiansFromJson(): Politician[] {
       aliases: politician.Aliases || []
     }));
   } catch (error) {
-    console.error('Failed to load politicians from JSON:', error);
-    // Return empty array if there's an error
-    return [];
+    console.error('Failed to load politicians from fixed JSON:', error);
+    
+    try {
+      // Fallback to the original politicians.json file if the fixed one fails
+      const fallbackPath = path.resolve('./attached_assets/politicians.json');
+      const fallbackData = fs.readFileSync(fallbackPath, 'utf8');
+      
+      // Parse the fallback JSON data
+      const parsedFallback = JSON.parse(fallbackData.replace(/\\/g, '')) as PoliticiansJsonFormat;
+      
+      console.log('Successfully loaded politicians from fallback politicians.json');
+      
+      // Combine both knesset members and government members
+      const allFallbackPoliticians = [...parsedFallback.knesset_members];
+      if (parsedFallback.government_members) {
+        allFallbackPoliticians.push(...parsedFallback.government_members);
+      }
+      
+      // Convert to our Politician interface format and add IDs
+      return allFallbackPoliticians.map((politician, index) => ({
+        id: index + 1,
+        name: politician.Name,
+        party: politician.Party,
+        position: politician.Position,
+        imageUrl: politician.ImageUrl || '',
+        aliases: politician.Aliases || []
+      }));
+    } catch (fallbackError) {
+      console.error('Failed to load politicians from fallback JSON:', fallbackError);
+      // Return empty array if both attempts fail
+      return [];
+    }
   }
 }
 
