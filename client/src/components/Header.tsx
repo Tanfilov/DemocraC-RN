@@ -8,7 +8,16 @@ export default function Header() {
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center">
             <Newspaper className="h-6 w-6 text-white ml-2" />
-            <h1 className="text-xl font-bold text-white">קורא חדשות Ynet</h1>
+            <h1 
+              className="text-xl font-bold text-white"
+              style={{ 
+                fontWeight: 700, 
+                letterSpacing: '-0.03em',
+                fontSize: '1.3rem'
+              }}
+            >
+              קורא חדשות Ynet
+            </h1>
           </Link>
           <a 
             href="https://www.ynet.co.il" 

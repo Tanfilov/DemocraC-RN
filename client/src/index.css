@@ -14,6 +14,13 @@ body {
   padding: 0;
   margin: 0;
   touch-action: manipulation;
+  font-family: 'Rubik', sans-serif;
+}
+
+/* Modern Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Rubik', sans-serif;
+  letter-spacing: -0.02em;
 }
 
 /* Custom image handling */

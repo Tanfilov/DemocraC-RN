@@ -38,7 +38,16 @@ export default function NewsCard({ article }: NewsCardProps) {
             Ynet חדשות
           </Badge>
         </div>
-        <h3 className="font-bold text-xl mb-2">{article.title}</h3>
+        <h3 
+          className="font-bold text-xl mb-2" 
+          style={{ 
+            fontWeight: 700, 
+            lineHeight: 1.2,
+            fontSize: '1.35rem'
+          }}
+        >
+          {article.title}
+        </h3>
         {/* Process description to remove the small image */}
         <div 
           className="text-sm text-muted-foreground mb-4" 
