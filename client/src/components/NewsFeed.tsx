@@ -16,7 +16,7 @@ interface EnhancedNewsItem extends NewsItem {
 
 export default function NewsFeed() {
   // Fetch news from the API
-  const { data: news, isLoading, isError, error, refetch } = useQuery<NewsItem[]>({
+  const { data: news, isLoading, isError, error, refetch } = useQuery<EnhancedNewsItem[]>({
     queryKey: ["/api/news"],
     refetchOnWindowFocus: false,
     refetchOnMount: true,
@@ -44,7 +44,7 @@ export default function NewsFeed() {
             const articleId = article.guid || article.link;
             const hashedArticleId = btoa(articleId).replace(/=/g, '').substring(0, 10);
             return lastArticleId === `return-from-${hashedArticleId}`;
-          });
+          }) as EnhancedNewsItem | undefined;
           
           if (articleWithPoliticians && articleWithPoliticians.politicians?.length) {
             // Show the global rating modal
