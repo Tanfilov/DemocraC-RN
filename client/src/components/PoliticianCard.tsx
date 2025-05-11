@@ -14,6 +14,7 @@ interface PoliticianCardProps {
 }
 
 export default function PoliticianCard({ politician }: PoliticianCardProps) {
+  // Using separate states for user's rating and average community rating
   const [averageRating, setAverageRating] = useState(politician.rating || 0);
   const [userRating, setUserRating] = useState(0);
   const [wasRated, setWasRated] = useState(false);
@@ -147,7 +148,7 @@ export default function PoliticianCard({ politician }: PoliticianCardProps) {
             )}
             {wasRated && (
               <div className="absolute -top-2 -right-2 bg-amber-100 rounded-full p-0.5 border border-amber-200">
-                <Star className={`h-3 w-3 ${currentRating > 0 ? 'fill-amber-500 text-amber-500' : 'text-amber-400'}`} />
+                <Star className={`h-3 w-3 ${userRating > 0 ? 'fill-amber-500 text-amber-500' : 'text-amber-400'}`} />
               </div>
             )}
           </div>
@@ -156,7 +157,7 @@ export default function PoliticianCard({ politician }: PoliticianCardProps) {
             <div className="flex items-center justify-between w-full">
               <div className="text-sm font-semibold flex items-center gap-1">
                 {politician.name}
-                {currentRating > 4 && (
+                {averageRating > 4 && (
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -173,10 +174,10 @@ export default function PoliticianCard({ politician }: PoliticianCardProps) {
               </div>
               
               <div className="text-xs">
-                {showRatingInArticle && currentRating > 0 ? (
+                {showRatingInArticle && averageRating > 0 ? (
                   <Badge variant="outline" className="gap-1 border-amber-200 bg-amber-50 text-amber-700 h-5 px-2 text-[10px]">
                     <Star className="h-2.5 w-2.5 fill-amber-500 text-amber-500" />
-                    <span>דירוג: {currentRating.toFixed(1)}</span>
+                    <span>דירוג ממוצע: {averageRating.toFixed(1)}</span>
                   </Badge>
                 ) : (
                   <span className="text-gray-500">{politician.party}</span>
@@ -188,12 +189,26 @@ export default function PoliticianCard({ politician }: PoliticianCardProps) {
               <div className="text-xs text-gray-500 truncate max-w-[90px]">{politician.position}</div>
               
               {showRatingInArticle ? (
-                // For rated politicians, show the star rating
-                <StarRating
-                  rating={currentRating}
-                  onChange={handleRatingChange}
-                  id={`politician-${politician.id}`}
-                />
+                // For rated politicians, show both ratings
+                <div className="flex flex-col items-end gap-1">
+                  <div className="flex items-center gap-1">
+                    <span className="text-xs text-gray-600">הדירוג שלך:</span>
+                    <Badge className="bg-amber-100 text-amber-800 text-xs px-1.5">
+                      {userRating.toFixed(1)}
+                    </Badge>
+                  </div>
+                  <div 
+                    className="cursor-pointer" 
+                    onClick={() => setShowRatingModal(true)}
+                    title="לחץ לשינוי הדירוג שלך"
+                  >
+                    <StarRating
+                      rating={userRating}
+                      onChange={handleRatingChange}
+                      id={`politician-${politician.id}`}
+                    />
+                  </div>
+                </div>
               ) : (
                 // For unrated politicians, show a "Rate" button
                 <Button 
@@ -219,7 +234,7 @@ export default function PoliticianCard({ politician }: PoliticianCardProps) {
           party: politician.party,
           position: politician.position,
           imageUrl: politician.imageUrl,
-          rating: currentRating
+          rating: userRating
         }]}
         isOpen={showRatingModal}
         onClose={handleAfterModalRating}
