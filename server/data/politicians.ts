@@ -1,5 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { fileURLToPath } from 'url';
+
+// Get the current file's directory path
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 interface Politician {
   id: number;
@@ -33,7 +38,7 @@ interface PoliticiansJsonFormat {
 function loadPoliticiansFromJson(): Politician[] {
   try {
     // First try to load the fixed JSON with updated image URLs
-    const jsonPath = path.resolve('./attached_assets/fixed_politicians.json');
+    const jsonPath = path.resolve(__dirname, '../../attached_assets/fixed_politicians.json');
     const jsonData = fs.readFileSync(jsonPath, 'utf8');
     
     // Parse the JSON data
@@ -47,8 +52,13 @@ function loadPoliticiansFromJson(): Politician[] {
       allPoliticians.push(...parsedData.government_members);
     }
     
+    // Remove duplicates (politicians that appear in both lists)
+    const uniquePoliticians = Array.from(
+      new Map(allPoliticians.map(p => [p.Name, p])).values()
+    );
+    
     // Convert to our Politician interface format and add IDs
-    return allPoliticians.map((politician, index) => ({
+    return uniquePoliticians.map((politician, index) => ({
       id: index + 1,
       name: politician.Name,
       party: politician.Party,
@@ -61,7 +71,7 @@ function loadPoliticiansFromJson(): Politician[] {
     
     try {
       // Fallback to the original politicians.json file if the fixed one fails
-      const fallbackPath = path.resolve('./attached_assets/politicians.json');
+      const fallbackPath = path.resolve(__dirname, '../../attached_assets/politicians.json');
       const fallbackData = fs.readFileSync(fallbackPath, 'utf8');
       
       // Parse the fallback JSON data
@@ -75,8 +85,13 @@ function loadPoliticiansFromJson(): Politician[] {
         allFallbackPoliticians.push(...parsedFallback.government_members);
       }
       
+      // Remove duplicates (politicians that appear in both lists)
+      const uniquePoliticians = Array.from(
+        new Map(allFallbackPoliticians.map(p => [p.Name, p])).values()
+      );
+      
       // Convert to our Politician interface format and add IDs
-      return allFallbackPoliticians.map((politician, index) => ({
+      return uniquePoliticians.map((politician, index) => ({
         id: index + 1,
         name: politician.Name,
         party: politician.Party,
