@@ -160,6 +160,7 @@ export default function NewsCard({ article }: NewsCardProps) {
             politicians={article.politicians}
             isOpen={showRatingModal}
             onClose={() => setShowRatingModal(false)}
+            articleId={article.guid}
           />
         )}
 
@@ -182,7 +183,8 @@ export default function NewsCard({ article }: NewsCardProps) {
                     imageUrl: politician.imageUrl,
                     rating: politician.rating || 0,
                     mentionCount: 0
-                  }} 
+                  }}
+                  articleId={article.guid}
                 />
               ))}
             </div>

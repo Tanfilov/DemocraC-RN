@@ -19,12 +19,14 @@ interface PoliticianRatingModalProps {
   politicians: PoliticianMention[];
   isOpen: boolean;
   onClose: () => void;
+  articleId: string; // Add articleId to track ratings per article
 }
 
 export default function PoliticianRatingModal({ 
   politicians, 
   isOpen, 
-  onClose 
+  onClose,
+  articleId
 }: PoliticianRatingModalProps) {
   const [ratings, setRatings] = useState<Record<number, number>>({});
   const queryClient = useQueryClient();
