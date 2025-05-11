@@ -34,11 +34,23 @@ export default function Header() {
         {/* Center logo - fixed path in public folder */}
         <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
           <Link href="/" className="flex items-center justify-center">
-            <img 
-              src="/images/logo-v1.png" 
-              alt="democra.C Logo" 
-              className="h-10 object-contain"
-            />
+            {theme === "dark" ? (
+              // Dark mode logo
+              <div className="h-10 relative">
+                <img 
+                  src="/images/logo-transparent.png"
+                  alt="democra.C Logo" 
+                  className="h-10 object-contain logo-dark-mode"
+                />
+              </div>
+            ) : (
+              // Light mode logo
+              <img 
+                src="/images/logo-transparent.png"
+                alt="democra.C Logo" 
+                className="h-10 object-contain"
+              />
+            )}
           </Link>
         </div>
         

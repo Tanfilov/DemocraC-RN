@@ -217,3 +217,13 @@ h1, h2, h3, h4, h5, h6 {
 .star-rating input:checked ~ label:hover ~ label {
   color: hsl(16, 100%, 44%); /* Orange/red from democra.C logo */
 }
+
+/* Dark mode logo styles */
+.logo-dark-mode {
+  filter: brightness(1.5) contrast(1.1) saturate(1.1);
+  
+  /* Apply a CSS hack to make gray text appear lighter 
+     while keeping the orange 'C' vibrant */
+  opacity: 0.95;
+  mix-blend-mode: lighten;
+}
