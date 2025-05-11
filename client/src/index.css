@@ -218,11 +218,32 @@ h1, h2, h3, h4, h5, h6 {
   color: hsl(16, 100%, 44%); /* Orange/red from democra.C logo */
 }
 
-/* Dark mode logo styles */
+/* Dark mode styles */
+
+/* Logo dark mode styles */
 .logo-dark-mode {
   /* Make the gray "democra" text more visible on dark background */
   filter: brightness(1.7) contrast(1.05) saturate(1.2);
   
   /* Enhance visibility in dark mode */
   opacity: 1;
+}
+
+/* Adjust button colors in dark mode to be less bright */
+.dark button.bg-primary, 
+.dark button.bg-primary\/90, 
+.dark button.bg-primary\/80, 
+.dark button.bg-primary\/70 {
+  background-color: hsl(16, 80%, 35%) !important; 
+}
+
+.dark button.bg-primary:hover {
+  background-color: hsl(16, 85%, 30%) !important;
+}
+
+/* Make the news source badges less bright in dark mode */
+.dark .bg-primary\/10,
+.dark .bg-primary\/20 {
+  background-color: hsl(16, 30%, 20%) !important;
+  color: hsl(16, 60%, 70%) !important;
 }
