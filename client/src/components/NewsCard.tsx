@@ -92,7 +92,7 @@ export default function NewsCard({ article }: NewsCardProps) {
     }
   };
   return (
-    <div className="mobile-card">
+    <div className="mobile-card bg-white dark:bg-slate-900 dark:border-slate-800">
       {article.imageUrl && (
         <div>
           <img 
@@ -115,12 +115,12 @@ export default function NewsCard({ article }: NewsCardProps) {
             <Calendar className="h-3 w-3 ml-1" />
             {article.formattedDate}
           </div>
-          <Badge variant="outline" className="bg-primary/10 text-primary">
+          <Badge variant="outline" className="bg-primary/10 text-primary dark:bg-primary/20">
             {article.source?.split(' ')[0] || 'חדשות'}
           </Badge>
         </div>
         <h3 
-          className="font-bold text-xl mb-2" 
+          className="font-bold text-xl mb-2 text-gray-900 dark:text-gray-100" 
           style={{ 
             fontWeight: 700, 
             lineHeight: 1.2,
@@ -131,7 +131,7 @@ export default function NewsCard({ article }: NewsCardProps) {
         </h3>
         {/* Process description to remove the small image */}
         <div 
-          className="text-sm text-muted-foreground mb-4" 
+          className="text-sm text-muted-foreground mb-4 dark:text-gray-400" 
           dangerouslySetInnerHTML={{ 
             __html: article.description
               .replace(/<div>[\s\S]*?<img[\s\S]*?<\/div>/, '') // Remove entire div with image
@@ -166,8 +166,8 @@ export default function NewsCard({ article }: NewsCardProps) {
 
         {/* Politicians mentioned in the article */}
         {article.politicians && article.politicians.length > 0 && (
-          <div className="mt-4 border-t pt-3">
-            <div className="flex items-center text-sm font-semibold mb-2 gap-1 text-right">
+          <div className="mt-4 border-t dark:border-slate-700 pt-3">
+            <div className="flex items-center text-sm font-semibold mb-2 gap-1 text-right dark:text-gray-300">
               <Users className="h-4 w-4 ml-1" />
               פוליטיקאים שמוזכרים בכתבה:
             </div>
