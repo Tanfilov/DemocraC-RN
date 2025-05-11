@@ -29,18 +29,24 @@ export default function NewsCard({ article }: NewsCardProps) {
       // When expanding the card, add a dynamic class for animation
       const card = document.getElementById(`card-${article.guid}`);
       if (card) {
+        // Make sure scroll position is maintained by scrolling to the card
+        const rect = card.getBoundingClientRect();
+        const scrollOffset = window.pageYOffset;
+        const cardBottomPosition = rect.bottom + scrollOffset;
+        const currentViewportBottom = window.innerHeight + scrollOffset;
+        
         // Start the animation
         card.classList.add('expanding');
         
         // Set a delay before changing state for smoother animation
         setTimeout(() => {
           setIsCondensed(false);
-        }, 100);
+        }, 50);
         
         // Remove the animation class after it completes
         setTimeout(() => {
           if (card) card.classList.remove('expanding');
-        }, 900); // Longer duration to match our CSS animation timing
+        }, 850);
       } else {
         // If we can't find the card element, just toggle the state
         setIsCondensed(false);

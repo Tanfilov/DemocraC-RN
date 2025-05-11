@@ -254,6 +254,15 @@ h1, h2, h3, h4, h5, h6 {
   max-height: none;
   padding-bottom: 0;
   position: relative;
+  transform-origin: bottom center; /* Make the transform happen from the bottom */
+  height: auto;
+  overflow: hidden;
+}
+
+/* Position the card container to enable expanding upward */
+.mobile-card {
+  position: relative;
+  transform-origin: bottom center;
 }
 
 /* Add a subtle animation when condensing a card */
@@ -310,27 +319,31 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-/* Simpler animation for card expansion */
+/* Animation for card expansion from the bottom up */
 @keyframes card-expand {
   0% {
-    transform: scale(0.98);
+    transform: scaleY(0.3) translateY(70%);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   }
-  60% {
-    transform: scale(1.01);
+  40% {
+    transform: scaleY(1.02) translateY(-1%);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
+  70% {
+    transform: scaleY(0.99) translateY(0%);
+  }
   100% {
-    transform: scale(1);
+    transform: scaleY(1) translateY(0);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
 }
 
 /* Animation specifically for cards being expanded from condensed state */
 .mobile-card.expanding {
-  animation: card-expand 0.7s ease-out forwards;
+  animation: card-expand 0.8s cubic-bezier(0.2, 0.7, 0.3, 1.2) forwards;
   z-index: 5;
   position: relative;
+  transform-origin: bottom center;
 }
 
 /* Add a transition for all card elements to make animations smoother */
@@ -363,13 +376,17 @@ h1, h2, h3, h4, h5, h6 {
 @keyframes img-fade-in {
   0% {
     opacity: 0;
-    transform: scale(0.97);
+    transform: scale(0.95) translateY(20%);
   }
-  30% {
-    opacity: 0.5;
+  25% {
+    opacity: 0.2;
+  }
+  60% {
+    opacity: 0.8;
+    transform: scale(1.02) translateY(-1%);
   }
   100% {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(1) translateY(0);
   }
 }
