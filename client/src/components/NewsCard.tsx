@@ -116,7 +116,7 @@ export default function NewsCard({ article }: NewsCardProps) {
             {article.formattedDate}
           </div>
           <Badge variant="outline" className="bg-primary/10 text-primary">
-            {article.source || 'חדשות'}
+            {article.source?.split(' ')[0] || 'חדשות'}
           </Badge>
         </div>
         <h3 
