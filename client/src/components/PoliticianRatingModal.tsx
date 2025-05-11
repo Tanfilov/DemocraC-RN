@@ -13,6 +13,7 @@ import StarRating from './StarRating';
 import { Award, Check, Star, ThumbsUp, Users } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface PoliticianRatingModalProps {
   politicians: PoliticianMention[];
@@ -26,6 +27,7 @@ export default function PoliticianRatingModal({
   onClose 
 }: PoliticianRatingModalProps) {
   const [ratings, setRatings] = useState<Record<number, number>>({});
+  const queryClient = useQueryClient();
 
   // Initialize ratings when politicians change
   useEffect(() => {
@@ -64,6 +66,38 @@ export default function PoliticianRatingModal({
         );
       
       await Promise.all(promises);
+      
+      // Store ratings in localStorage to persist them
+      try {
+        // Save each politician ID that was rated to localStorage
+        const ratedPoliticians = JSON.parse(localStorage.getItem('rated-politicians') || '[]');
+        
+        Object.entries(ratings)
+          .filter(([_, rating]) => rating > 0)
+          .forEach(([politicianId]) => {
+            const id = parseInt(politicianId, 10);
+            if (!ratedPoliticians.includes(id)) {
+              ratedPoliticians.push(id);
+            }
+          });
+          
+        localStorage.setItem('rated-politicians', JSON.stringify(ratedPoliticians));
+        
+        // Also store the actual ratings
+        const storedRatings = JSON.parse(localStorage.getItem('politician-ratings') || '{}');
+        Object.entries(ratings)
+          .filter(([_, rating]) => rating > 0)
+          .forEach(([politicianId, rating]) => {
+            storedRatings[politicianId] = rating;
+          });
+          
+        localStorage.setItem('politician-ratings', JSON.stringify(storedRatings));
+      } catch (e) {
+        console.error('Error storing rated politicians', e);
+      }
+      
+      // Force data refresh by invalidating the news query
+      queryClient.invalidateQueries({ queryKey: ['/api/news'] });
       
       // Show completion status briefly before closing
       setSubmissionComplete(true);

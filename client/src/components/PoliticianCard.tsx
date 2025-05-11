@@ -17,20 +17,40 @@ export default function PoliticianCard({ politician }: PoliticianCardProps) {
   const [isAnimating, setIsAnimating] = useState(false);
   const queryClient = useQueryClient();
 
-  // Check if this politician was previously rated
+  // Check if this politician was previously rated and load the rating from localStorage
   useEffect(() => {
-    // Check localStorage to see if this politician was rated by the user
+    // Check if this politician was rated
     const ratedPoliticians = localStorage.getItem('rated-politicians');
+    let wasRatedLocally = false;
+    
     if (ratedPoliticians) {
       try {
         const parsedRated = JSON.parse(ratedPoliticians);
-        setWasRated(parsedRated.includes(politician.id));
+        wasRatedLocally = parsedRated.includes(politician.id);
+        setWasRated(wasRatedLocally);
       } catch (e) {
         console.error('Error parsing rated politicians', e);
       }
     }
     
-    // If the politician rating changes from outside
+    // If rated, get the rating from localStorage
+    if (wasRatedLocally) {
+      try {
+        const storedRatings = localStorage.getItem('politician-ratings');
+        if (storedRatings) {
+          const parsedRatings = JSON.parse(storedRatings);
+          if (parsedRatings[politician.id]) {
+            // Use the locally stored rating value
+            setCurrentRating(parsedRatings[politician.id]);
+            return; // Skip setting rating from props if we have a local value
+          }
+        }
+      } catch (e) {
+        console.error('Error loading stored ratings', e);
+      }
+    }
+    
+    // Fall back to the rating from props if no local rating is found
     setCurrentRating(politician.rating || 0);
   }, [politician.id, politician.rating]);
 
@@ -44,25 +64,17 @@ export default function PoliticianCard({ politician }: PoliticianCardProps) {
       );
     },
     onSuccess: (data) => {
-      // Track that user rated this politician
-      try {
-        const ratedPoliticians = localStorage.getItem('rated-politicians') || '[]';
-        const parsed = JSON.parse(ratedPoliticians);
-        if (!parsed.includes(politician.id)) {
-          parsed.push(politician.id);
-          localStorage.setItem('rated-politicians', JSON.stringify(parsed));
-          setWasRated(true);
-        }
-      } catch (e) {
-        console.error('Error storing rated politicians', e);
-      }
-      
       // Show animation
       setIsAnimating(true);
       setTimeout(() => setIsAnimating(false), 1000);
       
-      // Invalidate queries to refresh politician data
-      queryClient.invalidateQueries({ queryKey: ['/api/news'] });
+      // Force a reload of news data to update all instances of this politician
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['/api/news'] });
+        
+        // Make sure the parent components re-render
+        queryClient.refetchQueries({ queryKey: ['/api/news'] });
+      }, 300); // Short delay to ensure UI feedback comes first
     },
     onError: (error) => {
       console.error('Failed to rate politician:', error);
@@ -73,6 +85,30 @@ export default function PoliticianCard({ politician }: PoliticianCardProps) {
 
   const handleRatingChange = (newRating: number) => {
     setCurrentRating(newRating);
+    
+    // Store locally immediately (optimistic update)
+    try {
+      // Mark as rated
+      const ratedPoliticians = JSON.parse(localStorage.getItem('rated-politicians') || '[]');
+      if (!ratedPoliticians.includes(politician.id)) {
+        ratedPoliticians.push(politician.id);
+        localStorage.setItem('rated-politicians', JSON.stringify(ratedPoliticians));
+        setWasRated(true);
+      }
+      
+      // Store the rating value
+      const storedRatings = JSON.parse(localStorage.getItem('politician-ratings') || '{}');
+      storedRatings[politician.id] = newRating;
+      localStorage.setItem('politician-ratings', JSON.stringify(storedRatings));
+      
+      // Visual feedback
+      setIsAnimating(true);
+      setTimeout(() => setIsAnimating(false), 1000);
+    } catch (e) {
+      console.error('Error storing rating locally', e);
+    }
+    
+    // Send to server
     mutation.mutate(newRating);
   };
 
