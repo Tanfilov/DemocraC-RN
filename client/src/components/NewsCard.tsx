@@ -11,6 +11,7 @@ import PoliticianRatingModal from "./PoliticianRatingModal";
 
 interface EnhancedNewsItem extends NewsItem {
   politicians?: PoliticianMention[];
+  source?: string; // Source of the news (Ynet, Mako, etc.)
 }
 
 interface NewsCardProps {

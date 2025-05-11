@@ -12,6 +12,7 @@ import PoliticianRatingModal from "./PoliticianRatingModal";
 // Extended NewsItem type to include politicians
 interface EnhancedNewsItem extends NewsItem {
   politicians?: PoliticianMention[];
+  source?: string; // Source of the news (Ynet, Mako, etc.)
 }
 
 export default function NewsFeed() {
