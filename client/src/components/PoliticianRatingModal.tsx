@@ -128,18 +128,18 @@ export default function PoliticianRatingModal({
   
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-md w-[90vw] max-h-[80vh] rounded-xl" dir="rtl">
-        <DialogTitle className="text-lg font-medium pt-4 text-center">
+      <DialogContent className="sm:max-w-md w-[90vw] max-h-[80vh] rounded-xl dark:bg-slate-900 dark:border-slate-700" dir="rtl">
+        <DialogTitle className="text-lg font-medium pt-4 text-center dark:text-gray-100">
           איך הייתה מדרג את הפעילות שלו המתוארת בכתבה?
         </DialogTitle>
         
         {/* Success message */}
         {submissionComplete ? (
           <div className="py-8 flex flex-col items-center justify-center text-center gap-4 mt-8">
-            <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center animate-bounce">
-              <Check className="h-8 w-8 text-green-600" />
+            <div className="h-16 w-16 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center animate-bounce">
+              <Check className="h-8 w-8 text-green-600 dark:text-green-400" />
             </div>
-            <h3 className="text-lg font-semibold">תודה על הדירוג!</h3>
+            <h3 className="text-lg font-semibold dark:text-gray-100">תודה על הדירוג!</h3>
           </div>
         ) : (
           <div className="py-4 mt-8">
@@ -149,11 +149,11 @@ export default function PoliticianRatingModal({
                   <img 
                     src={currentPolitician.imageUrl}
                     alt={currentPolitician.name}
-                    className="h-20 w-20 rounded-full object-cover border border-muted"
+                    className="h-20 w-20 rounded-full object-cover border border-muted dark:border-slate-600"
                   />
                 </div>
               )}
-              <h3 className="text-xl font-bold text-center">
+              <h3 className="text-xl font-bold text-center dark:text-gray-100">
                 {currentPolitician.name}
               </h3>
               
@@ -175,7 +175,11 @@ export default function PoliticianRatingModal({
               <Button 
                 onClick={handleSubmit}
                 disabled={isSubmitting || !ratings[currentPolitician.politicianId]} 
-                className={`w-[65%] h-12 [&:disabled]:opacity-90 ${!ratings[currentPolitician.politicianId] ? 'bg-primary/95' : 'bg-primary'} hover:bg-primary/90`}
+                className={`w-[65%] h-12 [&:disabled]:opacity-90 
+                  ${!ratings[currentPolitician.politicianId] ? 'bg-primary/95 dark:bg-primary/80' : 'bg-primary dark:bg-primary/90'} 
+                  hover:bg-primary/90 dark:hover:bg-primary/80
+                  dark:text-white
+                  [&:disabled]:dark:bg-primary/70`}
               >
                 {isSubmitting ? (
                   <>שולח...</>
@@ -186,7 +190,11 @@ export default function PoliticianRatingModal({
                   </>
                 )}
               </Button>
-              <Button variant="outline" onClick={onClose} className="w-[35%] h-12">
+              <Button 
+                variant="outline" 
+                onClick={onClose} 
+                className="w-[35%] h-12 dark:border-slate-600 dark:text-gray-300 dark:hover:bg-slate-800"
+              >
                 ביטול
               </Button>
             </>

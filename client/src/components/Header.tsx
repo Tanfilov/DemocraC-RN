@@ -24,7 +24,7 @@ export default function Header() {
         <Button 
           variant="outline" 
           size="sm" 
-          className="flex gap-1 items-center rounded-full h-9 w-9 p-0 justify-center" 
+          className="flex gap-1 items-center rounded-full h-9 w-9 p-0 justify-center dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-gray-300" 
           onClick={handleRefresh}
         >
           <RefreshCw className="h-4 w-4" />

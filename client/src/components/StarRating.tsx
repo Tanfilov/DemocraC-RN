@@ -49,10 +49,10 @@ export default function StarRating({ rating, onChange, id, size = 'default' }: S
             }
             className={`${size === 'large' ? 'w-8 h-8' : 'w-5 h-5'} ${
               hoverRating >= index
-                ? "text-amber-500"
+                ? "text-amber-500 dark:text-amber-400"
                 : selectedRating >= index
-                ? "text-amber-500" 
-                : "text-gray-300"
+                ? "text-amber-500 dark:text-amber-400" 
+                : "text-gray-300 dark:text-gray-600"
             }`}
           />
         </button>
