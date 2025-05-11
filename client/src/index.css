@@ -7,6 +7,13 @@ html {
   direction: rtl;
 }
 
+/* Respect system color scheme by default */
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+}
+
 /* Mobile app styles */
 body {
   max-width: 100%;
@@ -46,6 +53,12 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: 1rem !important;
   background: white !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+:root.dark .mobile-card {
+  background: hsl(230, 14%, 10%) !important; /* Dark slate background */
+  border: 1px solid hsl(230, 14%, 16%) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
 }
 
 .mobile-card .image-container {

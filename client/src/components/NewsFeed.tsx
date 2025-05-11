@@ -82,18 +82,18 @@ export default function NewsFeed() {
     return (
       <div className="flex flex-col gap-4 max-w-screen-sm mx-auto">
         {Array(4).fill(null).map((_, i) => (
-          <div key={i} className="mobile-card">
-            <Skeleton className="h-[300px] w-full" style={{borderTopLeftRadius: "12px", borderTopRightRadius: "12px"}}/>
+          <div key={i} className="mobile-card bg-white dark:bg-slate-900 dark:border-slate-800">
+            <Skeleton className="h-[300px] w-full dark:bg-slate-800" style={{borderTopLeftRadius: "12px", borderTopRightRadius: "12px"}}/>
             <div className="p-4">
               <div className="flex justify-between mb-3">
-                <Skeleton className="h-4 w-24" />
-                <Skeleton className="h-5 w-16" />
+                <Skeleton className="h-4 w-24 dark:bg-slate-800" />
+                <Skeleton className="h-5 w-16 dark:bg-slate-800" />
               </div>
-              <Skeleton className="h-7 w-full mb-3" />
-              <Skeleton className="h-4 w-full mb-2" />
-              <Skeleton className="h-4 w-3/4 mb-2" />
-              <Skeleton className="h-4 w-5/6 mb-4" />
-              <Skeleton className="h-10 w-full rounded-lg" />
+              <Skeleton className="h-7 w-full mb-3 dark:bg-slate-800" />
+              <Skeleton className="h-4 w-full mb-2 dark:bg-slate-800" />
+              <Skeleton className="h-4 w-3/4 mb-2 dark:bg-slate-800" />
+              <Skeleton className="h-4 w-5/6 mb-4 dark:bg-slate-800" />
+              <Skeleton className="h-10 w-full rounded-lg dark:bg-slate-800" />
             </div>
           </div>
         ))}
@@ -103,7 +103,7 @@ export default function NewsFeed() {
 
   if (isError) {
     return (
-      <Alert variant="destructive" className="mb-6 text-right">
+      <Alert variant="destructive" className="mb-6 text-right dark:bg-red-950 dark:text-red-200 dark:border-red-800">
         <AlertCircle className="h-4 w-4" />
         <AlertTitle>שגיאה</AlertTitle>
         <AlertDescription className="flex flex-col gap-2 items-end">
@@ -111,7 +111,7 @@ export default function NewsFeed() {
           <Button 
             variant="outline" 
             size="sm" 
-            className="flex gap-2 items-center" 
+            className="flex gap-2 items-center dark:border-red-800 dark:text-red-200 dark:hover:bg-red-900" 
             onClick={handleRefresh}
           >
             <RefreshCw className="h-4 w-4 ml-1" />
@@ -124,15 +124,15 @@ export default function NewsFeed() {
 
   if (!news || news.length === 0) {
     return (
-      <Alert className="mb-6 text-right">
+      <Alert className="mb-6 text-right dark:bg-slate-900 dark:border-slate-800 dark:text-gray-300">
         <AlertCircle className="h-4 w-4" />
-        <AlertTitle>אין חדשות זמינות</AlertTitle>
+        <AlertTitle className="dark:text-gray-200">אין חדשות זמינות</AlertTitle>
         <AlertDescription className="flex flex-col gap-2 items-end">
           <p>אין כרגע מאמרי חדשות זמינים.</p>
           <Button 
             variant="outline" 
             size="sm" 
-            className="flex gap-2 items-center" 
+            className="flex gap-2 items-center dark:border-slate-700 dark:text-gray-300 dark:hover:bg-slate-800" 
             onClick={handleRefresh}
           >
             <RefreshCw className="h-4 w-4 ml-1" />
