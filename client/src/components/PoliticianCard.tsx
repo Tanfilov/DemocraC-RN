@@ -14,7 +14,8 @@ interface PoliticianCardProps {
 }
 
 export default function PoliticianCard({ politician }: PoliticianCardProps) {
-  const [currentRating, setCurrentRating] = useState(politician.rating || 0);
+  const [averageRating, setAverageRating] = useState(politician.rating || 0);
+  const [userRating, setUserRating] = useState(0);
   const [wasRated, setWasRated] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const queryClient = useQueryClient();
@@ -47,29 +48,28 @@ export default function PoliticianCard({ politician }: PoliticianCardProps) {
       }
     }
     
-    // Determine which rating to display (only if user has already rated)
+    // Set the average rating from the server
+    if (politician.rating && politician.rating > 0) {
+      setAverageRating(politician.rating);
+    }
+    
+    // Only if the user has already rated this politician
     if (wasRatedLocally) {
-      // Show server-side average rating (from all users)
-      if (politician.rating && politician.rating > 0) {
-        setCurrentRating(politician.rating);
-      } else {
-        // Fallback if no average rating is available yet
-        try {
-          const storedRatings = localStorage.getItem('politician-ratings');
-          if (storedRatings) {
-            const parsedRatings = JSON.parse(storedRatings);
-            if (parsedRatings[politician.id]) {
-              // Use the locally stored rating as fallback
-              setCurrentRating(parsedRatings[politician.id]);
-            }
+      try {
+        // Get the user's personal rating from local storage
+        const storedRatings = localStorage.getItem('politician-ratings');
+        if (storedRatings) {
+          const parsedRatings = JSON.parse(storedRatings);
+          if (parsedRatings[politician.id]) {
+            setUserRating(parsedRatings[politician.id]);
           }
-        } catch (e) {
-          console.error('Error loading stored ratings', e);
         }
+      } catch (e) {
+        console.error('Error loading stored ratings', e);
       }
     } else {
-      // For unrated politicians, just set to 0 (will show empty stars)
-      setCurrentRating(0);
+      // For unrated politicians, just set user rating to 0
+      setUserRating(0);
     }
   }, [politician.id, politician.rating]);
 
@@ -97,46 +97,30 @@ export default function PoliticianCard({ politician }: PoliticianCardProps) {
     },
     onError: (error) => {
       console.error('Failed to rate politician:', error);
-      // Revert to the previous rating if there was an error
-      setCurrentRating(politician.rating || 0);
+      // Revert to the previous ratings if there was an error
+      setAverageRating(politician.rating || 0);
+      
+      try {
+        const storedRatings = localStorage.getItem('politician-ratings');
+        if (storedRatings) {
+          const parsedRatings = JSON.parse(storedRatings);
+          if (parsedRatings[politician.id]) {
+            setUserRating(parsedRatings[politician.id]);
+          } else {
+            setUserRating(0);
+          }
+        }
+      } catch (e) {
+        console.error('Error loading stored ratings', e);
+        setUserRating(0);
+      }
     },
   });
 
   const handleRatingChange = (newRating: number) => {
-    // If the user hasn't rated this politician yet, show the modal instead
-    if (!wasRated) {
-      setShowRatingModal(true);
-      return;
-    }
-    
-    // Otherwise, proceed with direct rating (only for already rated politicians)
-    setCurrentRating(newRating);
-    
-    // Store locally immediately (optimistic update)
-    try {
-      // Mark as rated
-      const ratedPoliticians = JSON.parse(localStorage.getItem('rated-politicians') || '[]');
-      if (!ratedPoliticians.includes(politician.id)) {
-        ratedPoliticians.push(politician.id);
-        localStorage.setItem('rated-politicians', JSON.stringify(ratedPoliticians));
-        setWasRated(true);
-        setShowRatingInArticle(true);
-      }
-      
-      // Store the rating value
-      const storedRatings = JSON.parse(localStorage.getItem('politician-ratings') || '{}');
-      storedRatings[politician.id] = newRating;
-      localStorage.setItem('politician-ratings', JSON.stringify(storedRatings));
-      
-      // Visual feedback
-      setIsAnimating(true);
-      setTimeout(() => setIsAnimating(false), 1000);
-    } catch (e) {
-      console.error('Error storing rating locally', e);
-    }
-    
-    // Send to server
-    mutation.mutate(newRating);
+    // Always show the modal when clicking on stars, whether it's first rating or changing existing rating
+    setShowRatingModal(true);
+    return;
   };
   
   // Handle after modal rating
@@ -192,7 +176,7 @@ export default function PoliticianCard({ politician }: PoliticianCardProps) {
                 {showRatingInArticle && currentRating > 0 ? (
                   <Badge variant="outline" className="gap-1 border-amber-200 bg-amber-50 text-amber-700 h-5 px-2 text-[10px]">
                     <Star className="h-2.5 w-2.5 fill-amber-500 text-amber-500" />
-                    <span>{currentRating.toFixed(1)}</span>
+                    <span>דירוג: {currentRating.toFixed(1)}</span>
                   </Badge>
                 ) : (
                   <span className="text-gray-500">{politician.party}</span>
