@@ -39,9 +39,14 @@ export default function NewsCard({ article }: NewsCardProps) {
           </Badge>
         </div>
         <h3 className="font-bold text-xl mb-2">{article.title}</h3>
+        {/* Process description to remove the small image */}
         <div 
           className="text-sm text-muted-foreground mb-4" 
-          dangerouslySetInnerHTML={{ __html: article.description }} 
+          dangerouslySetInnerHTML={{ 
+            __html: article.description
+              .replace(/<div>[\s\S]*?<img[\s\S]*?<\/div>/, '') // Remove entire div with image
+              .replace(/<img[^>]*>/g, '') // Remove any remaining img tags
+          }} 
         />
         <a 
           href={article.link} 
