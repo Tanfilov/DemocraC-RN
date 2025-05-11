@@ -171,7 +171,7 @@ export default function PoliticianCard({ politician, articleId, isCondensed = fa
                 <img
                   src={politician.imageUrl}
                   alt={politician.name}
-                  className={`w-10 h-10 rounded-lg object-cover border 
+                  className={`w-10 h-10 rounded-lg object-cover object-top border 
                     ${wasRated 
                       ? 'border-amber-200 dark:border-amber-700' 
                       : 'border-gray-200 dark:border-slate-700'}`
