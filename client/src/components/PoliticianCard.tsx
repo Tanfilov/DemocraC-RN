@@ -169,13 +169,13 @@ export default function PoliticianCard({ politician, articleId, isCondensed = fa
           ${isAnimating ? 'scale-105' : ''}`}
         >
           {/* Top section with image and name */}
-          <div className="flex items-center gap-3 mb-2 w-full">
+          <div className="flex items-center gap-4 mb-3 w-full">
             <div className="relative flex-shrink-0">
               {politician.imageUrl && (
                 <img
                   src={politician.imageUrl}
                   alt={politician.name}
-                  className={`w-12 h-12 rounded-lg object-cover object-top shadow-sm`}
+                  className={`w-16 h-16 rounded-lg object-cover object-top shadow-sm`}
                 />
               )}
               {wasRated && (

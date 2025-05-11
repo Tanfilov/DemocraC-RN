@@ -39,6 +39,11 @@ export default function PoliticianRatingModal({
     });
     setRatings(initialRatings);
   }, [politicians]);
+  
+  // Handle cancel - resets the temporary ratings without saving
+  const handleCancel = () => {
+    onClose();
+  };
 
   const handleRatingChange = (politicianId: number, rating: number) => {
     setRatings(prev => ({
@@ -129,7 +134,7 @@ export default function PoliticianRatingModal({
   const currentPolitician = politicians[0];
   
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && handleCancel()}>
       <DialogContent className="sm:max-w-md w-[90vw] max-h-[80vh] rounded-xl dark:bg-slate-900 dark:border-slate-700" dir="rtl">
         <DialogTitle className="text-lg font-medium pt-4 text-center dark:text-gray-100">
           איך הייתה מדרג את הפעילות שלו המתוארת בכתבה?
@@ -181,7 +186,7 @@ export default function PoliticianRatingModal({
           
           <Button 
             variant="outline" 
-            onClick={onClose} 
+            onClick={handleCancel} 
             className="w-[35%] h-12 dark:border-slate-600 dark:text-gray-300 dark:hover:bg-slate-800"
           >
             ביטול
