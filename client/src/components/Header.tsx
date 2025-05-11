@@ -18,7 +18,7 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 shadow-sm bg-white dark:bg-slate-950">
+    <header className="sticky top-0 z-50 shadow-sm bg-white dark:bg-slate-900">
       <div className="max-w-screen-xl mx-auto px-4 py-2 flex justify-between items-center">
         {/* Left button (refresh) */}
         <Button 

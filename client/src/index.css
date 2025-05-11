@@ -56,9 +56,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 :root.dark .mobile-card {
-  background: hsl(230, 14%, 10%) !important; /* Dark slate background */
-  border: 1px solid hsl(230, 14%, 16%) !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+  background: hsl(218, 23%, 15%) !important; /* Lighter dark blue background for cards */
+  border: 1px solid hsl(218, 24%, 20%) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
 }
 
 .mobile-card .image-container {

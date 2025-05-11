@@ -142,8 +142,8 @@ export default function PoliticianCard({ politician, articleId }: PoliticianCard
     <>
       <div className={`flex flex-col items-start mt-2 p-3 rounded-md transition-all 
         ${wasRated 
-          ? 'bg-amber-50 border border-amber-100 dark:bg-amber-900/20 dark:border-amber-800' 
-          : 'bg-gray-100 dark:bg-slate-800'} 
+          ? 'bg-amber-50 border border-amber-100 dark:bg-amber-900/30 dark:border-amber-800' 
+          : 'bg-gray-100 dark:bg-slate-700'} 
         ${isAnimating ? 'scale-105' : ''}`}
       >
         <div className="flex items-center gap-2 w-full">
