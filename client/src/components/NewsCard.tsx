@@ -32,13 +32,19 @@ export default function NewsCard({ article }: NewsCardProps) {
         // Start the animation
         card.classList.add('expanding');
         
+        // Set a slight delay before changing state for better animation
+        setTimeout(() => {
+          setIsCondensed(false);
+        }, 50);
+        
         // Remove the animation class after it completes
         setTimeout(() => {
-          card.classList.remove('expanding');
-        }, 650);
+          if (card) card.classList.remove('expanding');
+        }, 450);
+      } else {
+        // If we can't find the card element, just toggle the state
+        setIsCondensed(false);
       }
-      
-      setIsCondensed(false);
       
       // We're just temporarily expanding the card for viewing
       // Not changing its "read" status in localStorage

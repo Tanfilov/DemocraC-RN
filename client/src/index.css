@@ -264,10 +264,14 @@ h1, h2, h3, h4, h5, h6 {
 /* Add hover effect to indicate clickability */
 .mobile-card.condensed-card:hover {
   background-color: rgba(253, 240, 230, 0.5);
+  transform: translateY(-1px) scale(1.005);
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
 }
 
 .dark .mobile-card.condensed-card:hover {
   background-color: rgba(59, 46, 44, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* Show an expand icon on hover */
@@ -306,68 +310,30 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-/* Animation for when card is expanded */
+/* Simpler animation for card expansion */
 @keyframes card-expand {
   0% {
-    opacity: 0.85;
     transform: scale(0.98);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    background-color: rgba(253, 240, 230, 0.5);
   }
-  40% {
-    transform: scale(1.03);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  }
-  60% {
+  50% {
     transform: scale(1.01);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
   100% {
-    opacity: 1;
     transform: scale(1);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    background-color: white;
   }
-}
-
-/* Dark mode animation variant */
-@keyframes card-expand-dark {
-  0% {
-    opacity: 0.85;
-    transform: scale(0.98);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    background-color: rgba(59, 46, 44, 0.3);
-  }
-  40% {
-    transform: scale(1.03);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-  }
-  60% {
-    transform: scale(1.01);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    background-color: rgb(15, 23, 42); /* slate-900 */
-  }
-}
-
-/* Add animation to expanded cards */
-.mobile-card:not(.condensed-card) {
-  transition: all 0.5s ease-out;
 }
 
 /* Animation specifically for cards being expanded from condensed state */
 .mobile-card.expanding {
-  animation: card-expand 0.6s cubic-bezier(0.25, 0.1, 0.25, 1.4) forwards;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  z-index: 10;
+  animation: card-expand 0.4s ease-out forwards;
+  z-index: 5;
   position: relative;
-  border-radius: 8px; /* Add slight rounding during animation */
 }
 
-/* Enhanced animation for dark mode */
-.dark .mobile-card.expanding {
-  animation: card-expand-dark 0.6s cubic-bezier(0.25, 0.1, 0.25, 1.4) forwards;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+/* Add a transition for all card elements to make animations smoother */
+.mobile-card * {
+  transition: all 0.3s ease-out;
 }
