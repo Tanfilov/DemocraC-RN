@@ -25,7 +25,7 @@ export default function NewsFeed() {
       <div className="flex flex-col gap-4 max-w-screen-sm mx-auto">
         {Array(4).fill(null).map((_, i) => (
           <div key={i} className="mobile-card">
-            <Skeleton className="h-56 w-full"/>
+            <Skeleton className="h-[300px] w-full" style={{borderTopLeftRadius: "12px", borderTopRightRadius: "12px"}}/>
             <div className="p-4">
               <div className="flex justify-between mb-3">
                 <Skeleton className="h-4 w-24" />
@@ -87,15 +87,15 @@ export default function NewsFeed() {
 
   return (
     <div>
-      <div className="flex justify-start mb-4">
+      <div className="flex justify-end mb-4 px-2">
         <Button 
           variant="outline" 
           size="sm" 
-          className="flex gap-2 items-center" 
+          className="flex gap-1 items-center rounded-full h-9 w-9 p-0 justify-center" 
           onClick={handleRefresh}
         >
-          <RefreshCw className="h-4 w-4 ml-1" />
-          רענן
+          <RefreshCw className="h-4 w-4" />
+          <span className="sr-only">רענן</span>
         </Button>
       </div>
       <div className="flex flex-col gap-4 max-w-screen-sm mx-auto">

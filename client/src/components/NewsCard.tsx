@@ -13,12 +13,15 @@ export default function NewsCard({ article }: NewsCardProps) {
   return (
     <div className="mobile-card">
       {article.imageUrl && (
-        <div className="image-container">
-          <img 
-            src={article.imageUrl} 
-            alt={article.title} 
-            className="article-image" 
-          />
+        <div style={{
+          width: "100%",
+          height: "300px",
+          backgroundImage: `url(${article.imageUrl})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          borderTopLeftRadius: "12px",
+          borderTopRightRadius: "12px"
+        }}>
         </div>
       )}
       <div className="p-4 text-right">
