@@ -9,8 +9,29 @@ export default function Header() {
   const { theme, setTheme } = useTheme();
 
   const handleRefresh = () => {
-    // Invalidate and refetch news
+    // Invalidate and refetch news - add both refetch and invalidation for reliability
     queryClient.invalidateQueries({ queryKey: ["/api/news"] });
+    
+    // Add direct fetch call to ensure refresh happens
+    fetch('/api/news', { 
+      method: 'GET',
+      headers: { 'Cache-Control': 'no-cache' } 
+    })
+    .then(response => response.json())
+    .then(() => {
+      // After fetching fresh data, force a refetch in the query client
+      queryClient.refetchQueries({ queryKey: ["/api/news"] });
+      
+      // Visual feedback for refresh action
+      const refreshBtn = document.querySelector('.refresh-btn');
+      if (refreshBtn) {
+        refreshBtn.classList.add('refreshing');
+        setTimeout(() => {
+          refreshBtn.classList.remove('refreshing');
+        }, 1000);
+      }
+    })
+    .catch(err => console.error('Refresh failed:', err));
   };
 
   const toggleTheme = () => {
@@ -24,7 +45,7 @@ export default function Header() {
         <Button 
           variant="outline" 
           size="sm" 
-          className="flex gap-1 items-center rounded-full h-9 w-9 p-0 justify-center dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-gray-300" 
+          className="refresh-btn flex gap-1 items-center rounded-full h-9 w-9 p-0 justify-center dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-gray-300" 
           onClick={handleRefresh}
         >
           <RefreshCw className="h-4 w-4" />
