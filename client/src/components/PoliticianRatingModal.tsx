@@ -174,8 +174,8 @@ export default function PoliticianRatingModal({
             <>
               <Button 
                 onClick={handleSubmit}
-                disabled={isSubmitting} 
-                className="w-[65%] h-12 opacity-100 bg-primary hover:bg-primary/90"
+                disabled={isSubmitting || !ratings[currentPolitician.politicianId]} 
+                className={`w-[65%] h-12 [&:disabled]:opacity-90 ${!ratings[currentPolitician.politicianId] ? 'bg-primary/95' : 'bg-primary'} hover:bg-primary/90`}
               >
                 {isSubmitting ? (
                   <>שולח...</>
