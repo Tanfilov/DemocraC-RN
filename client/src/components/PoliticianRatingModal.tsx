@@ -187,15 +187,13 @@ export default function PoliticianRatingModal({
             )}
           </Button>
           
-          {!submissionComplete && (
-            <Button 
-              variant="outline" 
-              onClick={onClose} 
-              className="w-[35%] h-12 dark:border-slate-600 dark:text-gray-300 dark:hover:bg-slate-800"
-            >
-              ביטול
-            </Button>
-          )}
+          <Button 
+            variant="outline" 
+            onClick={onClose} 
+            className="w-[35%] h-12 dark:border-slate-600 dark:text-gray-300 dark:hover:bg-slate-800"
+          >
+            ביטול
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
