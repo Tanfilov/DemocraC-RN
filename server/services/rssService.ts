@@ -36,11 +36,15 @@ class RssService {
   private rssSources: RssSource[] = [
     {
       url: 'https://www.ynet.co.il/Integration/StoryRss2.xml',
-      name: 'Ynet חדשות'
+      name: 'Ynet'
     },
     {
       url: 'https://rcs.mako.co.il/rss/news-military.xml?Partner=interlink',
-      name: 'Mako צבא וביטחון'
+      name: 'Mako'
+    },
+    {
+      url: 'https://rcs.mako.co.il/rss/news-law.xml?Partner=interlink',
+      name: 'Mako'
     }
   ];
   
