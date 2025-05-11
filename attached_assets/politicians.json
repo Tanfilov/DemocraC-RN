@@ -1,7 +1,3 @@
-Great. I will collect additional Hebrew-language aliases for each person in your list, using only Israeli news sources. This includes full names, nicknames, and commonly used references as found in news headlines and articles.
-I'll let you know once the list is complete and ready for review.
-
-
 {
 "knesset\_members": \[
 {
@@ -12,13 +8,12 @@ I'll let you know once the list is complete and ready for review.
 "Aliases": \[
 "ביבי",
 "נתניהו",
-"בנימין ביבי נתניהו"
 ]
 },
 {
 "Name": "יריב לוין",
 "Party": "הליכוד",
-"Position": "סגן ראש הממשלה ושר המשפטים",
+"Position": "שר המשפטים",
 "ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
 "Aliases": \[
 "לוין"
@@ -54,11 +49,9 @@ I'll let you know once the list is complete and ready for review.
 {
 "Name": "ישראל כץ",
 "Party": "הליכוד",
-"Position": "חבר הכנסת מטעם הליכוד",
+"Position": "שר הביטחון",
 "ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
 "Aliases": \[
-"כץ",
-"ישראל כץ"
 ]
 },
 {
@@ -76,7 +69,6 @@ I'll let you know once the list is complete and ready for review.
 "Position": "",
 "ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
 "Aliases": \[
-"ביטן"
 ]
 },
 {
@@ -86,7 +78,6 @@ I'll let you know once the list is complete and ready for review.
 "ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
 "Aliases": \[
 "אדלשטיין",
-"יולי-יואל אדלשטיין"
 ]
 },
 {
@@ -105,8 +96,6 @@ I'll let you know once the list is complete and ready for review.
 "Position": "",
 "ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
 "Aliases": \[
-"כץ",
-"ישראל כץ"
 ]
 },
 {
@@ -129,7 +118,6 @@ I'll let you know once the list is complete and ready for review.
 "Position": "",
 "ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
 "Aliases": \[
-"כץ"
 ]
 },
 {
@@ -253,7 +241,6 @@ I'll let you know once the list is complete and ready for review.
 "Position": "",
 "ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
 "Aliases": \[
-"ביטון"
 ]
 },
 {
@@ -262,7 +249,6 @@ I'll let you know once the list is complete and ready for review.
 "Position": "",
 "ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
 "Aliases": \[
-"דלל"
 ]
 },
 {
@@ -278,7 +264,6 @@ I'll let you know once the list is complete and ready for review.
 "Position": "",
 "ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
 "Aliases": \[
-"הלוי"
 ]
 },
 {
@@ -287,7 +272,6 @@ I'll let you know once the list is complete and ready for review.
 "Position": "",
 "ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
 "Aliases": \[
-"מלקו"
 ]
 },
 {
@@ -319,7 +303,6 @@ I'll let you know once the list is complete and ready for review.
 "Position": "",
 "ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
 "Aliases": \[
-"כהן"
 ]
 },
 {
@@ -376,7 +359,6 @@ I'll let you know once the list is complete and ready for review.
 "Position": "",
 "ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
 "Aliases": \[
-"זוהר"
 ]
 },
 {
@@ -475,7 +457,6 @@ I'll let you know once the list is complete and ready for review.
 "Position": "",
 "ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
 "Aliases": \[
-"השכל"
 ]
 },
 {
@@ -505,26 +486,7 @@ I'll let you know once the list is complete and ready for review.
 }
 ],
 "government\_members": \[
-{
-"Name": "בנימין נתניהו",
-"Party": "הליכוד",
-"Position": "ראש הממשלה",
-"ImageUrl": "[https://drive.google.com/thumbnail?id=17Pc5bPtBPYe0\_R32BSkoLGzgN7Xjih\_Y\&sz=w400](https://drive.google.com/thumbnail?id=17Pc5bPtBPYe0_R32BSkoLGzgN7Xjih_Y&sz=w400)",
-"Aliases": \[
-"ביבי",
-"נתניהו",
-"בנימין ביבי נתניהו"
-]
-},
-{
-"Name": "יריב לוין",
-"Party": "הליכוד",
-"Position": "סגן ראש הממשלה ושר המשפטים",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-"לוין"
-]
-},
+
 {
 "Name": "משה ארבל",
 "Party": "ש"ס",
@@ -576,7 +538,6 @@ I'll let you know once the list is complete and ready for review.
 "Position": "סגן השר במשרד ראש הממשלה \[1, 2]",
 "ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
 "Aliases": \[
-"כהן"
 ]
 },
 {
@@ -604,14 +565,3 @@ I'll let you know once the list is complete and ready for review.
 "וולדיגר"
 ]
 },
-{
-"Name": "שרן מרים השכל",
-"Party": "תקווה חדשה",
-"Position": "סגנית שר החוץ \[1]",
-"ImageUrl": "[https://drive.google.com/uc?export=view\&id=YOUR\_FILE\_ID](https://drive.google.com/uc?export=view&id=YOUR_FILE_ID)",
-"Aliases": \[
-"השכל"
-]
-}
-]
-}
