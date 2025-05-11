@@ -22,10 +22,10 @@ export default function NewsFeed() {
   if (isLoading) {
     // Show skeleton loading state
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {Array(6).fill(null).map((_, i) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {Array(4).fill(null).map((_, i) => (
           <div key={i} className="border rounded-lg overflow-hidden">
-            <Skeleton className="h-48 w-full" />
+            <Skeleton className="h-64 w-full" />
             <div className="p-4">
               <div className="flex justify-between mb-2">
                 <Skeleton className="h-4 w-24" />
@@ -101,7 +101,7 @@ export default function NewsFeed() {
           רענן
         </Button>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {news.map((article) => (
           <NewsCard key={article.guid} article={article} />
         ))}

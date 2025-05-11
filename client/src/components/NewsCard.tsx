@@ -17,7 +17,7 @@ export default function NewsCard({ article }: NewsCardProps) {
           <img 
             src={article.imageUrl} 
             alt={article.title} 
-            className="w-full object-cover transform hover:scale-105 transition-transform duration-300" 
+            className="w-full h-64 object-cover transform hover:scale-105 transition-transform duration-300" 
           />
         </div>
       )}
