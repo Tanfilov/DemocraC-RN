@@ -206,7 +206,10 @@ export default function NewsCard({ article }: NewsCardProps) {
       
       {/* Show image only in full view */}
       {!isCondensed && article.imageUrl && (
-        <div>
+        <div className="content-fade-in" style={{
+          opacity: '0',
+          transform: 'translateY(10px)',
+        }}>
           <img 
             src={article.imageUrl} 
             alt={article.title} 
@@ -254,8 +257,12 @@ export default function NewsCard({ article }: NewsCardProps) {
         {/* Description - only shown in full view */}
         {!isCondensed && (
           <div 
-            className="text-sm md:text-sm text-base text-muted-foreground mb-4 dark:text-gray-400" 
-            style={{ fontSize: 'clamp(1rem, 4vw, 1.125rem)' }} // Responsive font size, larger on mobile
+            className="text-sm md:text-sm text-base text-muted-foreground mb-4 dark:text-gray-400 content-fade-in" 
+            style={{ 
+              fontSize: 'clamp(1rem, 4vw, 1.125rem)', // Responsive font size, larger on mobile
+              opacity: '0',
+              transform: 'translateY(10px)',
+            }}
             dangerouslySetInnerHTML={{ 
               __html: article.description
                 .replace(/<div>[\s\S]*?<img[\s\S]*?<\/div>/, '') // Remove entire div with image
@@ -270,7 +277,11 @@ export default function NewsCard({ article }: NewsCardProps) {
             href={article.link} 
             target="_blank" 
             rel="noopener noreferrer" 
-            className="block w-full"
+            className="block w-full content-fade-in"
+            style={{
+              opacity: '0',
+              transform: 'translateY(10px)',
+            }}
             onClick={handleArticleClick}
           >
             <Button 
@@ -295,7 +306,12 @@ export default function NewsCard({ article }: NewsCardProps) {
 
         {/* Politicians mentioned in the article */}
         {article.politicians && article.politicians.length > 0 && (
-          <div className={`${isCondensed ? 'mt-2' : 'mt-4'} border-t dark:border-slate-700 pt-2`}>
+          <div className={`${isCondensed ? 'mt-2' : 'mt-4'} border-t dark:border-slate-700 pt-2 ${!isCondensed ? 'content-fade-in' : ''}`}
+            style={!isCondensed ? {
+              opacity: '0',
+              transform: 'translateY(10px)',
+            } : {}}
+          >
             {!isCondensed && (
               <div className="flex items-center text-sm font-semibold mb-2 gap-1 text-right dark:text-gray-300">
                 <Users className="h-4 w-4 ml-1" />
