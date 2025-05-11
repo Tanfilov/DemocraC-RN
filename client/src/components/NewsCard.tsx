@@ -39,17 +39,11 @@ export default function NewsCard({ article }: NewsCardProps) {
           dangerouslySetInnerHTML={{ __html: article.description }} 
         />
       </CardContent>
-      <CardFooter className="border-t pt-4 flex justify-between">
-        <a href={article.link} target="_blank" rel="noopener noreferrer">
-          <Button variant="ghost" size="sm" className="flex items-center gap-1">
-            למקור
+      <CardFooter className="border-t pt-4 flex justify-center">
+        <a href={article.link} target="_blank" rel="noopener noreferrer" className="inline-block">
+          <Button variant="default" className="flex items-center gap-1 px-6">
+            קריאה באתר
             <ExternalLink className="h-4 w-4 mr-1" />
-          </Button>
-        </a>
-        <a href={`/article?url=${encodeURIComponent(article.link)}`} className="inline-block">
-          <Button variant="default" size="sm" className="flex items-center gap-1">
-            קריאה נוספת
-            <ArrowLeft className="h-4 w-4 mr-1" />
           </Button>
         </a>
       </CardFooter>

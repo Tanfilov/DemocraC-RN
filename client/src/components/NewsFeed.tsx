@@ -25,7 +25,7 @@ export default function NewsFeed() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {Array(4).fill(null).map((_, i) => (
           <div key={i} className="border rounded-lg overflow-hidden">
-            <Skeleton className="h-64 w-full" />
+            <Skeleton className="h-80 w-full" style={{minHeight: "240px"}}/>
             <div className="p-4">
               <div className="flex justify-between mb-2">
                 <Skeleton className="h-4 w-24" />

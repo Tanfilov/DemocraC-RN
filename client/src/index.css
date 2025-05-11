@@ -9,15 +9,16 @@ html {
 
 /* Custom image handling */
 .article-image {
-  width: 100%;
-  height: 300px;
-  object-fit: cover;
-  min-height: 240px;
-  transition: all 0.3s ease-in-out;
+  width: 100% !important;
+  height: 300px !important;
+  object-fit: cover !important;
+  min-height: 240px !important;
+  transition: all 0.3s ease-in-out !important;
+  display: block !important;
 }
 
 .article-image:hover {
-  transform: scale(1.05);
+  transform: scale(1.05) !important;
 }
 
 :root {
