@@ -172,19 +172,11 @@ export default function PoliticianRatingModal({
               dark:text-white
               [&:disabled]:dark:bg-primary/70`}
           >
-            {submissionComplete ? (
-              <>
-                <span className="submit-text">תודה!</span>
-                <Check className="h-5 w-5 text-white check-icon" />
-              </>
-            ) : isSubmitting ? (
-              <>שולח...</>
-            ) : (
-              <>
-                <span>שלח</span>
-                <ThumbsUp className="h-4 w-4 mr-1" />
-              </>
-            )}
+            <div className="flex items-center justify-center gap-1 relative">
+              <span className={submissionComplete ? "submit-text" : ""}>שלח</span>
+              <ThumbsUp className={`h-4 w-4 ${submissionComplete ? "submit-text" : ""}`} />
+              {submissionComplete && <Check className="h-5 w-5 text-white check-icon absolute" />}
+            </div>
           </Button>
           
           <Button 
