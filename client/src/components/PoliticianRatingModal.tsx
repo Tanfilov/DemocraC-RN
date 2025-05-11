@@ -153,7 +153,7 @@ export default function PoliticianRatingModal({
                   />
                 </div>
               )}
-              <h3 className="text-lg font-semibold text-center">
+              <h3 className="text-xl font-bold text-center">
                 {currentPolitician.name}
               </h3>
               
@@ -169,13 +169,13 @@ export default function PoliticianRatingModal({
           </div>
         )}
 
-        <DialogFooter dir="rtl" className="flex gap-3 justify-between mt-6 mb-2">
+        <div className="flex flex-row gap-3 mt-6 mb-2">
           {!submissionComplete && (
             <>
               <Button 
                 onClick={handleSubmit}
-                disabled={isSubmitting || !ratings[currentPolitician.politicianId]} 
-                className="flex-[3] gap-1 h-12"
+                disabled={isSubmitting} 
+                className="w-[65%] h-12 opacity-100 bg-primary hover:bg-primary/90"
               >
                 {isSubmitting ? (
                   <>שולח...</>
@@ -186,12 +186,12 @@ export default function PoliticianRatingModal({
                   </>
                 )}
               </Button>
-              <Button variant="outline" onClick={onClose} className="flex-[2] h-12">
+              <Button variant="outline" onClick={onClose} className="w-[35%] h-12">
                 ביטול
               </Button>
             </>
           )}
-        </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );
