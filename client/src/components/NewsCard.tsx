@@ -40,7 +40,7 @@ export default function NewsCard({ article }: NewsCardProps) {
         />
       </CardContent>
       <CardFooter className="border-t pt-4 flex justify-between">
-        <Link href={`/article?url=${encodeURIComponent(article.link)}`}>
+        <Link href={`/article?url=${encodeURIComponent(article.link)}`} className="inline-block">
           <Button variant="default" size="sm" className="flex items-center gap-1">
             Read More
             <ArrowRight className="h-4 w-4" />
