@@ -3,10 +3,10 @@ import NewsFeed from "@/components/NewsFeed";
 export default function Home() {
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Latest Ynet News</h1>
+      <div className="mb-6 text-right">
+        <h1 className="text-3xl font-bold mb-2">חדשות Ynet האחרונות</h1>
         <p className="text-muted-foreground">
-          Stay updated with the latest news from Ynet RSS feed
+          הישארו מעודכנים עם החדשות האחרונות מערוץ ה-RSS של Ynet
         </p>
       </div>
       

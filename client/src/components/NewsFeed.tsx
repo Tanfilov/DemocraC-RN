@@ -28,16 +28,16 @@ export default function NewsFeed() {
             <Skeleton className="h-48 w-full" />
             <div className="p-4">
               <div className="flex justify-between mb-2">
-                <Skeleton className="h-4 w-16" />
                 <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-4 w-16" />
               </div>
               <Skeleton className="h-6 w-full mb-2" />
               <Skeleton className="h-4 w-full mb-1" />
               <Skeleton className="h-4 w-3/4 mb-1" />
               <Skeleton className="h-4 w-5/6 mb-1" />
               <div className="flex justify-between mt-4 pt-4 border-t">
-                <Skeleton className="h-9 w-24" />
                 <Skeleton className="h-9 w-20" />
+                <Skeleton className="h-9 w-24" />
               </div>
             </div>
           </div>
@@ -48,19 +48,19 @@ export default function NewsFeed() {
 
   if (isError) {
     return (
-      <Alert variant="destructive" className="mb-6">
+      <Alert variant="destructive" className="mb-6 text-right">
         <AlertCircle className="h-4 w-4" />
-        <AlertTitle>Error</AlertTitle>
-        <AlertDescription className="flex flex-col gap-2">
-          <p>Failed to load news: {(error as Error)?.message || "Unknown error"}</p>
+        <AlertTitle>שגיאה</AlertTitle>
+        <AlertDescription className="flex flex-col gap-2 items-end">
+          <p>טעינת החדשות נכשלה: {(error as Error)?.message || "שגיאה לא ידועה"}</p>
           <Button 
             variant="outline" 
             size="sm" 
-            className="self-start flex gap-2 items-center" 
+            className="flex gap-2 items-center" 
             onClick={handleRefresh}
           >
-            <RefreshCw className="h-4 w-4" />
-            Try Again
+            <RefreshCw className="h-4 w-4 ml-1" />
+            נסה שוב
           </Button>
         </AlertDescription>
       </Alert>
@@ -69,19 +69,19 @@ export default function NewsFeed() {
 
   if (!news || news.length === 0) {
     return (
-      <Alert className="mb-6">
+      <Alert className="mb-6 text-right">
         <AlertCircle className="h-4 w-4" />
-        <AlertTitle>No News Available</AlertTitle>
-        <AlertDescription className="flex flex-col gap-2">
-          <p>There are currently no news articles available.</p>
+        <AlertTitle>אין חדשות זמינות</AlertTitle>
+        <AlertDescription className="flex flex-col gap-2 items-end">
+          <p>אין כרגע מאמרי חדשות זמינים.</p>
           <Button 
             variant="outline" 
             size="sm" 
-            className="self-start flex gap-2 items-center" 
+            className="flex gap-2 items-center" 
             onClick={handleRefresh}
           >
-            <RefreshCw className="h-4 w-4" />
-            Refresh
+            <RefreshCw className="h-4 w-4 ml-1" />
+            רענן
           </Button>
         </AlertDescription>
       </Alert>
@@ -90,15 +90,15 @@ export default function NewsFeed() {
 
   return (
     <div>
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-start mb-4">
         <Button 
           variant="outline" 
           size="sm" 
           className="flex gap-2 items-center" 
           onClick={handleRefresh}
         >
-          <RefreshCw className="h-4 w-4" />
-          Refresh
+          <RefreshCw className="h-4 w-4 ml-1" />
+          רענן
         </Button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

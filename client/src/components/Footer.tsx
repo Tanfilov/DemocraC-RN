@@ -6,10 +6,10 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} Ynet News Reader
+            &copy; {new Date().getFullYear()} קורא חדשות Ynet
           </p>
           <p className="text-sm text-muted-foreground flex items-center mt-2 md:mt-0">
-            Made with <Heart className="h-4 w-4 mx-1 text-red-500" /> for news readers
+            נבנה באהבה <Heart className="h-4 w-4 mx-1 text-red-500" /> לקוראי חדשות
           </p>
         </div>
       </div>

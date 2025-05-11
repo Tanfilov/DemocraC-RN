@@ -7,8 +7,8 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center">
-            <Newspaper className="h-6 w-6 text-primary mr-2" />
-            <h1 className="text-xl font-bold text-primary">Ynet News Reader</h1>
+            <Newspaper className="h-6 w-6 text-primary ml-2" />
+            <h1 className="text-xl font-bold text-primary">קורא חדשות Ynet</h1>
           </Link>
           <div>
             <a 
@@ -17,7 +17,7 @@ export default function Header() {
               rel="noopener noreferrer"
               className="text-sm text-muted-foreground hover:text-primary transition-colors"
             >
-              Visit Ynet Website
+              לאתר Ynet
             </a>
           </div>
         </div>

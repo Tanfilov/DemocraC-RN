@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { ArrowLeft } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 export default function ArticleViewer() {
   const [, setLocation] = useLocation();
@@ -18,7 +18,7 @@ export default function ArticleViewer() {
 
   useEffect(() => {
     if (!url) {
-      setError("No article URL provided");
+      setError("לא סופקה כתובת URL למאמר");
       setLoading(false);
       return;
     }
@@ -26,23 +26,23 @@ export default function ArticleViewer() {
   
   if (error) {
     return (
-      <Card className="max-w-4xl mx-auto mt-8">
+      <Card className="max-w-4xl mx-auto mt-8 text-right">
         <CardHeader>
-          <div className="flex items-center mb-4">
+          <div className="flex items-center mb-4 justify-end">
+            <h2 className="text-2xl font-bold">שגיאה</h2>
             <Button 
               variant="ghost" 
               className="p-2 mr-2" 
               onClick={handleBack}
             >
-              <ArrowLeft className="h-5 w-5" />
+              <ArrowRight className="h-5 w-5" />
             </Button>
-            <h2 className="text-2xl font-bold">Error</h2>
           </div>
         </CardHeader>
         <CardContent>
           <p className="text-destructive">{error}</p>
           <Button className="mt-4" onClick={handleBack}>
-            Back to News Feed
+            חזרה לעמוד החדשות
           </Button>
         </CardContent>
       </Card>
@@ -51,14 +51,14 @@ export default function ArticleViewer() {
 
   return (
     <div className="max-w-4xl mx-auto mt-4 px-4 sm:px-0">
-      <div className="mb-4">
+      <div className="mb-4 flex justify-end">
         <Button 
           variant="outline" 
           className="flex items-center gap-2" 
           onClick={handleBack}
         >
-          <ArrowLeft className="h-4 w-4" />
-          Back to News
+          <ArrowRight className="h-4 w-4 ml-1" />
+          חזרה לחדשות
         </Button>
       </div>
       
@@ -72,12 +72,12 @@ export default function ArticleViewer() {
           {url && (
             <iframe 
               src={url} 
-              title="Article Content" 
+              title="תוכן המאמר" 
               className="w-full h-screen border-0"
               onLoad={() => setLoading(false)}
               onError={() => {
                 setLoading(false);
-                setError("Failed to load the article");
+                setError("טעינת המאמר נכשלה");
               }}
             />
           )}
