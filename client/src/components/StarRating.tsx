@@ -1,5 +1,5 @@
-import { useId } from "react";
-import { Star } from "lucide-react";
+import { useState } from "react";
+import { Star, StarHalf } from "lucide-react";
 
 interface StarRatingProps {
   rating: number;
@@ -8,31 +8,53 @@ interface StarRatingProps {
 }
 
 export default function StarRating({ rating, onChange, id }: StarRatingProps) {
-  const uniqueId = useId();
-  
+  const [hoverRating, setHoverRating] = useState(0);
+  const [selectedRating, setSelectedRating] = useState(rating);
+
+  const handleMouseEnter = (index: number) => {
+    setHoverRating(index);
+  };
+
+  const handleMouseLeave = () => {
+    setHoverRating(0);
+  };
+
+  const handleClick = (index: number) => {
+    const newRating = index;
+    setSelectedRating(newRating);
+    onChange(newRating);
+  };
+
   return (
-    <div className="star-rating flex text-sm mt-2">
-      {[5, 4, 3, 2, 1].map((star) => (
-        <div key={star}>
-          <input
-            type="radio"
-            id={`${id}-${uniqueId}-star-${star}`}
-            name={`${id}-${uniqueId}-rating`}
-            value={star}
-            checked={rating === star}
-            onChange={() => onChange(star)}
-            className="hidden"
+    <div 
+      className="flex flex-row-reverse justify-end gap-1 rtl:flex-row" 
+      onMouseLeave={handleMouseLeave}
+      dir="rtl"
+    >
+      {[5, 4, 3, 2, 1].map((index) => (
+        <button
+          key={`${id}-star-${index}`}
+          type="button"
+          className="text-amber-500 flex items-center justify-center focus:outline-none"
+          onMouseEnter={() => handleMouseEnter(index)}
+          onClick={() => handleClick(index)}
+          aria-label={`דרג ${index} מתוך 5 כוכבים`}
+        >
+          <Star
+            fill={
+              hoverRating >= index || selectedRating >= index
+                ? "currentColor" 
+                : "none"
+            }
+            className={`w-5 h-5 ${
+              hoverRating >= index
+                ? "text-amber-500"
+                : selectedRating >= index
+                ? "text-amber-500" 
+                : "text-gray-300"
+            }`}
           />
-          <label
-            htmlFor={`${id}-${uniqueId}-star-${star}`}
-            className="cursor-pointer"
-          >
-            <Star 
-              className="h-5 w-5" 
-              fill={rating >= star ? "currentColor" : "none"}
-            />
-          </label>
-        </div>
+        </button>
       ))}
     </div>
   );
