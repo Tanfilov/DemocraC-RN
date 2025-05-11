@@ -214,16 +214,14 @@ export default function PoliticianCard({ politician, articleId }: PoliticianCard
                   </div>
                 </div>
               ) : (
-                // For unrated politicians, show a "Rate" button
-                <Button 
-                  size="sm" 
-                  variant="ghost" 
-                  className="h-7 text-xs text-muted-foreground hover:text-primary px-2"
-                  onClick={() => setShowRatingModal(true)}
-                >
-                  <UserPlus className="h-3 w-3 ml-1" />
-                  דרג
-                </Button>
+                // For unrated politicians, show empty stars
+                <div className="cursor-pointer mt-1" onClick={() => setShowRatingModal(true)}>
+                  <StarRating
+                    rating={0}
+                    onChange={handleRatingChange}
+                    id={`politician-${politician.id}-unrated`}
+                  />
+                </div>
               )}
             </div>
           </div>
