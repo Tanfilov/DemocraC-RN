@@ -1,37 +1,20 @@
 import { Link } from "wouter";
-import { useEffect, useRef } from "react";
-// Import the logo image directly
-import logoImage from "../assets/logo.png";
+import headerBgImage from "../assets/header_bg.png";
 
 export default function Header() {
-  const headerRef = useRef<HTMLElement>(null);
-  
-  useEffect(() => {
-    if (headerRef.current) {
-      const headerElement = headerRef.current;
-      const headerRect = headerElement.getBoundingClientRect();
-      console.log('Header dimensions:', {
-        width: Math.round(headerRect.width),
-        height: Math.round(headerRect.height),
-        offsetWidth: headerElement.offsetWidth,
-        offsetHeight: headerElement.offsetHeight
-      });
-    }
-  }, []);
-
   return (
-    <header ref={headerRef} className="bg-white sticky top-0 z-50 shadow-md">
-      <div className="py-2">
-        <div className="flex justify-center">
-          <Link href="/" className="flex items-center">
-            <img 
-              src={logoImage} 
-              alt="democra.C Logo" 
-              className="h-12 w-full object-contain"
-            />
-          </Link>
-        </div>
-      </div>
-    </header>
+    <Link href="/">
+      <header 
+        className="sticky top-0 z-50 shadow-md overflow-hidden cursor-pointer"
+        style={{
+          height: "140px", // Taller header to show more of the background
+          backgroundImage: `url(${headerBgImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center 30%' // Position to show the logo in center
+        }}
+      >
+        {/* No overlay text needed as the background image contains the logo */}
+      </header>
+    </Link>
   );
 }
