@@ -142,11 +142,11 @@ export default function PoliticianRatingModal({
                 <img 
                   src={currentPolitician.imageUrl}
                   alt={currentPolitician.name}
-                  className="h-20 w-20 rounded-full object-cover object-top border border-muted dark:border-slate-600"
+                  className="h-32 w-32 rounded-full object-cover object-top shadow-md"
                 />
               </div>
             )}
-            <h3 className="text-xl font-bold text-center dark:text-gray-100">
+            <h3 className="text-2xl font-bold text-center mt-3 dark:text-gray-100">
               {currentPolitician.name}
             </h3>
             
