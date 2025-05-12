@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { PoliticianMention } from "@/lib/types";
 import PoliticianRatingModal from "./PoliticianRatingModal";
 
@@ -74,31 +74,113 @@ export default function NewsFeed() {
     };
   }, []);
   
-  // Define the response type
-  type NewsResponse = {
+  // Define the response types
+  type RegularNewsResponse = {
     timestamp: number;
     news: EnhancedNewsItem[];
   };
   
+  type MobileRssResponse = {
+    timestamp: number;
+    ynet_data: any;
+    fetch_time: string;
+  };
+  
+  // Combined response type
+  type NewsResponse = RegularNewsResponse | MobileRssResponse;
+  
+  // Check if we're in a mobile app environment
+  const isMobileApp = window.location.href.includes('capacitor') || 
+                     (window.Capacitor && window.Capacitor.isPluginAvailable('App'));
+  
+  console.log('Environment check - Mobile app:', isMobileApp);
+  
+  // Choose the appropriate endpoint based on environment
+  const apiEndpoint = isMobileApp ? "/api/mobile/rss" : "/api/news";
+  console.log('Using API endpoint:', apiEndpoint);
+  
   // Fetch news from the API with updated response format
   const { data: newsResponse, isLoading, isError, error, refetch } = useQuery<NewsResponse>({
-    queryKey: ["/api/news", refreshKey], // Add refreshKey to force refetch
+    queryKey: [apiEndpoint, refreshKey], // Add refreshKey to force refetch
     refetchOnWindowFocus: true, // Enable refetch when window gets focus
     refetchOnMount: true,
-    refetchInterval: 30000, // Poll for updates every 30 seconds
-    staleTime: 15000, // Consider data stale after 15 seconds
+    refetchInterval: isMobileApp ? 10000 : 30000, // More frequent polling for mobile
+    staleTime: isMobileApp ? 5000 : 15000, // Shorter stale time for mobile
+    retry: 3, // Retry failed requests
+    retryDelay: 1000, // Wait 1 second between retries
   });
   
   // Add effect for logging
   useEffect(() => {
     if (newsResponse) {
-      console.log('News fetch succeeded, timestamp:', newsResponse.timestamp, 
-                 'items:', newsResponse.news?.length);
+      console.log('News response received:', newsResponse);
+      
+      // Type guard for narrowing response type
+      const mobileResponse = newsResponse as MobileRssResponse;
+      const regularResponse = newsResponse as RegularNewsResponse;
+      
+      // Type guard to check response type
+      if ('ynet_data' in newsResponse) {
+        console.log('Mobile RSS fetch succeeded, timestamp:', mobileResponse.timestamp, 
+                   'fetch time:', mobileResponse.fetch_time);
+      } else if ('news' in newsResponse) {
+        console.log('News fetch succeeded, timestamp:', regularResponse.timestamp, 
+                   'items:', regularResponse.news?.length);
+      }
     }
   }, [newsResponse]);
   
-  // Extract news array from response
-  const news = newsResponse?.news;
+  // Process mobile RSS or use regular news
+  const news = useMemo(() => {
+    if (!newsResponse) return [];
+    
+    // Type assertion for narrowing
+    const mobileResponse = newsResponse as MobileRssResponse;
+    const regularResponse = newsResponse as RegularNewsResponse;
+    
+    // Handle the response from mobile RSS endpoint - type guard
+    if ('ynet_data' in newsResponse) {
+      try {
+        console.log('Processing mobile RSS data');
+        
+        // Extract items from Ynet RSS format - safely access properties
+        const rssChannel = mobileResponse.ynet_data?.rss?.channel;
+        const rssItems = rssChannel?.item;
+        
+        if (!rssItems) {
+          console.warn('No RSS items found in the response');
+          return [];
+        }
+        
+        // Handle both array and single item cases
+        const itemsArray = Array.isArray(rssItems) ? rssItems : [rssItems];
+        
+        // Convert to our format
+        return itemsArray.map((item: any) => ({
+          title: item.title || '',
+          description: item.description || '',
+          link: item.link || '',
+          guid: item.guid || item.link,
+          pubDate: item.pubDate || '',
+          formattedDate: new Date(item.pubDate).toLocaleDateString('he-IL'),
+          source: 'Ynet',
+          imageUrl: item.enclosure?.$?.url || '',
+          date: new Date(item.pubDate),
+          politicians: [] // No politicians detected yet
+        }));
+      } catch (err) {
+        console.error('Error processing RSS data:', err);
+        return [];
+      }
+    }
+    
+    // Regular news response - type guard
+    if ('news' in newsResponse) {
+      return regularResponse.news || [];
+    }
+    
+    return [];
+  }, [newsResponse]);
   
   // For the global rating modal
   const [showGlobalRatingModal, setShowGlobalRatingModal] = useState(false);

@@ -8,6 +8,60 @@ import { eq, and } from "drizzle-orm";
 import { politicians, ratings } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Simple mobile refresh endpoint - just returns the current time
+  app.get("/api/mobile/ping", (req, res) => {
+    console.log("Mobile ping received");
+    res.json({
+      timestamp: Date.now(),
+      server_time: new Date().toISOString(),
+      status: "ok"
+    });
+  });
+  
+  // Direct RSS fetch endpoint for mobile app - no caching
+  app.get("/api/mobile/rss", async (req, res) => {
+    try {
+      console.log("Mobile RSS fetch requested");
+      
+      // Add cache control headers
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+      
+      // Directly fetch from Ynet RSS feed without using the service
+      const ynetUrl = `https://www.ynet.co.il/Integration/StoryRss2.xml?_t=${Date.now()}`;
+      console.log(`Fetching from ${ynetUrl}`);
+      
+      const axios = require('axios');
+      const xml2js = require('xml2js');
+      
+      const response = await axios.get(ynetUrl, {
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        },
+        timeout: 10000
+      });
+      
+      // Parse XML
+      const parser = new xml2js.Parser({ explicitArray: false });
+      const result = await parser.parseStringPromise(response.data);
+      
+      // Just return the raw parsed data
+      res.json({
+        timestamp: Date.now(),
+        ynet_data: result,
+        fetch_time: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error("Error fetching RSS for mobile:", error);
+      res.status(500).json({
+        error: String(error),
+        timestamp: Date.now()
+      });
+    }
+  });
   // Special endpoint for mobile app to force fresh content
   app.get("/api/news/mobile", async (req, res) => {
     try {
