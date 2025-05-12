@@ -8,24 +8,26 @@ import { eq, and } from "drizzle-orm";
 import { politicians, ratings } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Fetch RSS news with politician detection
-  app.get("/api/news", async (req, res) => {
+  // Special endpoint for mobile app to force fresh content
+  app.get("/api/news/mobile", async (req, res) => {
     try {
+      console.log('Mobile app requested fresh news');
+      
       // Set cache control headers to prevent caching
       res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
       res.setHeader('Pragma', 'no-cache');
       res.setHeader('Expires', '0');
       
-      const news = await rssService.fetchRssNews();
+      // Force a completely fresh fetch by clearing any internal cache
+      await rssService.clearCache();
+      const news = await rssService.fetchRssNews(true); // true = force fresh
       
-      // Fetch all politicians
+      // Fetch all politicians and ratings
       const allPoliticians = await db.select().from(politicians);
+      const allRatings = await db.select().from(ratings);
       
       // Prepare map for article-specific ratings
       const politicianRatingsMap = new Map<string, Map<number, {id: number, rating: number, sum: number, count: number}>>();
-      
-      // Fetch ALL ratings for simplicity (in a real app with many ratings, we'd want to optimize this)
-      const allRatings = await db.select().from(ratings);
       
       // Group ratings by article and politician
       for (const rating of allRatings) {
@@ -53,58 +55,73 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const politicianRating = articlePoliticianMap.get(rating.politicianId)!;
         politicianRating.sum = (politicianRating.sum || 0) + rating.rating;
         politicianRating.count = (politicianRating.count || 0) + 1;
+        
+        // Calculate the average rating
         politicianRating.rating = politicianRating.sum / politicianRating.count;
       }
       
-      // Add politicians detected in each news item and simplify source names
-      const newsWithPoliticians = await Promise.all(news.map(async (item) => {
-        const text = `${item.title} ${item.description}`;
-        const detectedPoliticians = await politicianRecognitionService.detectPoliticians(text);
-        
-        // Use article guid as identifier for article-specific ratings
-        const articleId = item.guid;
-        
-        // Get the article-specific rating map, or use global ratings as fallback
-        const articleRatingsMap = politicianRatingsMap.get(articleId) || politicianRatingsMap.get('global');
-        
-        // Update with article-specific ratings from database
-        const updatedPoliticians = detectedPoliticians.map(politician => {
-          const politicianId = politician.politicianId;
-          // If we have article-specific ratings for this politician
-          if (articleRatingsMap && articleRatingsMap.has(politicianId)) {
-            const ratingInfo = articleRatingsMap.get(politicianId);
-            if (ratingInfo && ratingInfo.rating > 0) {
-              return {
-                ...politician,
-                rating: ratingInfo.rating
-              };
-            }
+      // Process each news item to detect politicians and add ratings
+      const processedNews = await Promise.all(news.map(async (newsItem) => {
+        try {
+          // Combine all text fields for politician detection
+          const fullText = [newsItem.title, newsItem.description].filter(Boolean).join(' ');
+          
+          // Detect politicians
+          const detectedPoliticians = await politicianRecognitionService.detectPoliticians(fullText);
+          
+          // Get article ID
+          const articleId = newsItem.guid || newsItem.link;
+          
+          // Get article-specific ratings map or fall back to global ratings
+          const articleRatingsMap = politicianRatingsMap.get(articleId);
+          const globalRatingsMap = politicianRatingsMap.get('global');
+          
+          // Update politicians with ratings
+          const enhancedPoliticians = detectedPoliticians.map(politician => {
+            const politicianId = politician.politicianId;
+            
+            // Try article-specific rating first, then global rating
+            const articleRating = articleRatingsMap?.get(politicianId)?.rating;
+            const globalRating = globalRatingsMap?.get(politicianId)?.rating;
+            
+            return {
+              ...politician,
+              rating: articleRating || globalRating || undefined
+            };
+          });
+          
+          // Format source name
+          let source = newsItem.source;
+          if (source && source.includes('Ynet')) {
+            source = 'Ynet';
+          } else if (source && source.includes('Mako')) {
+            source = 'Mako';
           }
-          return politician;
-        });
-        
-        // Simplify source name to just "Ynet" or "Mako"
-        let source = item.source;
-        if (source && source.startsWith('Ynet')) {
-          source = 'Ynet';
-        } else if (source && source.startsWith('Mako')) {
-          source = 'Mako';
+          
+          return {
+            ...newsItem,
+            source,
+            politicians: enhancedPoliticians
+          };
+        } catch (error) {
+          console.error('Error processing news item:', error);
+          return newsItem;
         }
-        
-        return {
-          ...item,
-          source,
-          politicians: updatedPoliticians
-        };
       }));
+      
       // Add timestamp to response to force client refresh
       res.json({
         timestamp: Date.now(),
-        news: newsWithPoliticians
+        news: processedNews,
+        forceRefresh: true,
+        mobileFetch: true // Flag to indicate this came from the mobile endpoint
       });
     } catch (error) {
-      console.error("Error fetching RSS news:", error);
-      res.status(500).json({ message: "Failed to fetch news" });
+      console.error("Error fetching RSS news for mobile:", error);
+      res.status(500).json({ 
+        message: "Failed to fetch news",
+        error: String(error)
+      });
     }
   });
 
