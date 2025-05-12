@@ -3,8 +3,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 const config: CapacitorConfig = {
   appId: 'com.democrac.app',
   appName: 'democra.C',
-  webDir: 'dist',
-  bundledWebRuntime: false,
+  webDir: 'dist/public',
   server: {
     androidScheme: 'https',
     cleartext: true
