@@ -16,13 +16,30 @@ interface EnhancedNewsItem extends NewsItem {
 }
 
 export default function NewsFeed() {
+  // State for manual refresh control
+  const [refreshKey, setRefreshKey] = useState(0);
+  
+  // Function to manually trigger refresh
+  const handleManualRefresh = () => {
+    setRefreshKey(prev => prev + 1);
+  };
+  
+  // Auto-refresh timer
+  useEffect(() => {
+    const timer = setInterval(() => {
+      handleManualRefresh();
+    }, 60000); // Check for updates every minute
+    
+    return () => clearInterval(timer);
+  }, []);
+  
   // Fetch news from the API
   const { data: news, isLoading, isError, error, refetch } = useQuery<EnhancedNewsItem[]>({
-    queryKey: ["/api/news"],
+    queryKey: ["/api/news", refreshKey], // Add refreshKey to force refetch
     refetchOnWindowFocus: true, // Enable refetch when window gets focus
     refetchOnMount: true,
-    refetchInterval: 20000, // Poll for updates every 20 seconds
-    staleTime: 10000, // Consider data stale after 10 seconds
+    refetchInterval: 30000, // Poll for updates every 30 seconds
+    staleTime: 15000, // Consider data stale after 15 seconds
   });
   
   // For the global rating modal

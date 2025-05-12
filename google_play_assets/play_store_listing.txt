@@ -1,0 +1,44 @@
+GOOGLE PLAY STORE LISTING INFORMATION
+
+App Name: democra.C
+
+Short Description (80 characters max):
+קורא חדשות ישראלי עם דירוג פוליטיקאים בזמן אמת
+
+Full Description (4000 characters max):
+democra.C הוא יישום לקריאת חדשות המאפשר לך להישאר מעודכן בחדשות האחרונות מישראל, עם מיקוד מיוחד על הפוליטיקה הישראלית.
+
+תכונות עיקריות:
+• הצגת חדשות ממקורות מובילים כמו Ynet ו-Mako
+• זיהוי אוטומטי של פוליטיקאים ישראלים הנזכרים בחדשות
+• אפשרות לדרג פוליטיקאים בהקשר של כתבות ספציפיות
+• ממשק משתמש בעברית מלאה עם תמיכה בRTL
+• תכונת הרחבה/כיווץ לכרטיסי חדשות שכבר נקראו
+• מצב כהה לקריאה נוחה
+
+האפליקציה מאפשרת לך לא רק לצרוך חדשות, אלא גם להביע את דעתך על ביצועי הפוליטיקאים המוזכרים בחדשות, ובכך ליצור מדד ציבורי לאחריותיות פוליטית בישראל.
+
+עם ממשק משתמש אינטואיטיבי ונגיש, democra.C הופכת את צריכת החדשות לחוויה אינטראקטיבית ומעצימה לאזרחים ישראלים.
+
+הצטרפו עכשיו והשפיעו על השיח הציבורי בישראל!
+
+Promotional Text:
+קורא חדשות המאפשר לך להביע את דעתך על פוליטיקאים ישראלים דרך מערכת דירוג ייחודית.
+
+Keywords:
+חדשות, פוליטיקה, ישראל, דירוג, כנסת, דמוקרטיה, מעקב פוליטיקאים, רשת חברתית, אזרחות, אקטיביזם
+
+Category: News & Magazines
+
+Content Rating: Suitable for everyone (may need to be adjusted based on content)
+
+Contact Information:
+Email: your-email@example.com
+Website: https://democrac-app.com (placeholder)
+Privacy Policy URL: https://democrac-app.com/privacy (placeholder)
+
+Initial Release Version: 1.0
+
+Language: Hebrew
+
+Target Countries: Israel, and other countries with significant Hebrew-speaking populations

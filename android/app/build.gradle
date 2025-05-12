@@ -1,5 +1,12 @@
 apply plugin: 'com.android.application'
 
+// Load the signing properties file if it exists
+def signingPropsFile = rootProject.file('signing.properties')
+def signingProps = new Properties()
+if (signingPropsFile.exists()) {
+    signingProps.load(new FileInputStream(signingPropsFile))
+}
+
 android {
     namespace "com.democrac.app"
     compileSdk rootProject.ext.compileSdkVersion
@@ -16,10 +23,26 @@ android {
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    
+    // Signing configuration for release builds
+    signingConfigs {
+        if (signingPropsFile.exists()) {
+            release {
+                storeFile file(signingProps['KEYSTORE_FILE'])
+                storePassword signingProps['KEYSTORE_PASSWORD']
+                keyAlias signingProps['KEY_ALIAS']
+                keyPassword signingProps['KEY_PASSWORD']
+            }
+        }
+    }
+    
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            if (signingPropsFile.exists()) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 }
