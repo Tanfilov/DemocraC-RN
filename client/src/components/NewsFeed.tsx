@@ -21,7 +21,12 @@ export default function NewsFeed() {
   
   // Function to manually trigger refresh
   const handleManualRefresh = () => {
-    setRefreshKey(prev => prev + 1);
+    console.log('Manual refresh triggered, timestamp:', new Date().toISOString());
+    setRefreshKey(prev => {
+      const newKey = prev + 1;
+      console.log(`Refresh key updated: ${prev} -> ${newKey}`);
+      return newKey;
+    });
   };
   
   // Auto-refresh timer and app visibility handling
@@ -69,17 +74,28 @@ export default function NewsFeed() {
     };
   }, []);
   
+  // Define the response type
+  type NewsResponse = {
+    timestamp: number;
+    news: EnhancedNewsItem[];
+  };
+  
   // Fetch news from the API with updated response format
-  const { data: newsResponse, isLoading, isError, error, refetch } = useQuery<{
-    timestamp: number; 
-    news: EnhancedNewsItem[]
-  }>({
+  const { data: newsResponse, isLoading, isError, error, refetch } = useQuery<NewsResponse>({
     queryKey: ["/api/news", refreshKey], // Add refreshKey to force refetch
     refetchOnWindowFocus: true, // Enable refetch when window gets focus
     refetchOnMount: true,
     refetchInterval: 30000, // Poll for updates every 30 seconds
     staleTime: 15000, // Consider data stale after 15 seconds
   });
+  
+  // Add effect for logging
+  useEffect(() => {
+    if (newsResponse) {
+      console.log('News fetch succeeded, timestamp:', newsResponse.timestamp, 
+                 'items:', newsResponse.news?.length);
+    }
+  }, [newsResponse]);
   
   // Extract news array from response
   const news = newsResponse?.news;
@@ -130,7 +146,7 @@ export default function NewsFeed() {
     return () => {
       window.removeEventListener('hashchange', handleHashChange);
     };
-  }, [news]);
+  }, [news, refreshKey]);
 
   const handleRefresh = () => {
     refetch();
@@ -171,7 +187,7 @@ export default function NewsFeed() {
             variant="outline" 
             size="sm" 
             className="flex gap-2 items-center dark:border-red-800 dark:text-red-200 dark:hover:bg-red-900" 
-            onClick={handleRefresh}
+            onClick={handleManualRefresh}
           >
             <RefreshCw className="h-4 w-4 ml-1" />
             נסה שוב
@@ -192,7 +208,7 @@ export default function NewsFeed() {
             variant="outline" 
             size="sm" 
             className="flex gap-2 items-center dark:border-slate-700 dark:text-gray-300 dark:hover:bg-slate-800" 
-            onClick={handleRefresh}
+            onClick={handleManualRefresh}
           >
             <RefreshCw className="h-4 w-4 ml-1" />
             רענן
