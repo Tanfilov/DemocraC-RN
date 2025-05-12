@@ -101,7 +101,11 @@ export default function NewsFeed() {
   type NewsResponse = RegularNewsResponse | MobileRssResponse;
   
   // Check if we're in a mobile app environment with more robust detection
+  const forceMobileMode = window.location.search.includes('mobile=true');
+  
   const isMobileApp = 
+    // Force mobile mode for testing
+    forceMobileMode ||
     // Check URL for capacitor or android indicators
     window.location.href.includes('capacitor') || 
     window.location.href.includes('android') ||
@@ -110,7 +114,14 @@ export default function NewsFeed() {
     // Check for cordova
     (typeof (window as any).cordova !== 'undefined') ||
     // Check for user agent on Android
-    navigator.userAgent.toLowerCase().includes('android');
+    navigator.userAgent.toLowerCase().includes('android') ||
+    // Additional check for mobile browsers
+    /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
+  // Add a console warning if we're in forced mobile mode
+  if (forceMobileMode) {
+    console.warn('FORCED MOBILE MODE ENABLED - Using mobile API endpoints for testing!');
+  }
   
   console.log('Environment check - Mobile app:', isMobileApp);
   
@@ -371,9 +382,45 @@ export default function NewsFeed() {
     );
   }
 
+  // Test mobile endpoints directly
+  const testMobileEndpoints = async () => {
+    try {
+      console.log('Testing mobile endpoints directly...');
+      
+      // 1. Test ping endpoint
+      const pingResponse = await fetch('/api/mobile/ping');
+      const pingData = await pingResponse.json();
+      console.log('Mobile ping response:', pingData);
+      
+      // 2. Test the RSS endpoint with timestamp to bust cache
+      const timestamp = Date.now();
+      const rssResponse = await fetch(`/api/mobile/rss?_t=${timestamp}`);
+      const rssData = await rssResponse.json();
+      console.log('Mobile RSS response:', rssData);
+      
+      // Show success alert
+      alert(`Mobile endpoints tested successfully.\nPing timestamp: ${new Date(pingData.timestamp).toLocaleTimeString()}\nRSS fetch time: ${rssData.fetch_time}`);
+    } catch (error) {
+      console.error('Error testing mobile endpoints:', error);
+      alert(`Error testing mobile endpoints: ${error}`);
+    }
+  };
+
   return (
     <div>
-      <div className="flex justify-end mb-2 max-w-screen-sm mx-auto">
+      <div className="flex justify-between items-center mb-2 max-w-screen-sm mx-auto">
+        {/* Debug controls - visible in development or with debug parameter */}
+        {(process.env.NODE_ENV === 'development' || window.location.search.includes('debug')) && (
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={testMobileEndpoints} 
+            className="text-xs bg-amber-100 text-amber-900 border-amber-300 hover:bg-amber-200"
+          >
+            בדוק מובייל API
+          </Button>
+        )}
+        
         <Button 
           variant="ghost" 
           size="sm" 
