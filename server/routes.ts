@@ -11,6 +11,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Fetch RSS news with politician detection
   app.get("/api/news", async (req, res) => {
     try {
+      // Set cache control headers to prevent caching
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+      
       const news = await rssService.fetchRssNews();
       
       // Fetch all politicians
@@ -92,8 +97,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           politicians: updatedPoliticians
         };
       }));
-      
-      res.json(newsWithPoliticians);
+      // Add timestamp to response to force client refresh
+      res.json({
+        timestamp: Date.now(),
+        news: newsWithPoliticians
+      });
     } catch (error) {
       console.error("Error fetching RSS news:", error);
       res.status(500).json({ message: "Failed to fetch news" });

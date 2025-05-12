@@ -24,23 +24,65 @@ export default function NewsFeed() {
     setRefreshKey(prev => prev + 1);
   };
   
-  // Auto-refresh timer
+  // Auto-refresh timer and app visibility handling
   useEffect(() => {
-    const timer = setInterval(() => {
-      handleManualRefresh();
-    }, 60000); // Check for updates every minute
+    // Function to handle visibility change (when app returns from background)
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        console.log('App became visible, refreshing news...');
+        handleManualRefresh();
+      }
+    };
     
-    return () => clearInterval(timer);
+    // Set up regular refresh timer
+    const timer = setInterval(() => {
+      console.log('Timer refresh triggered');
+      handleManualRefresh();
+    }, 30000); // Check for updates every 30 seconds
+    
+    // Set up visibility change listener for mobile app
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    // Set up Capacitor-specific app state listener if available
+    if (window.Capacitor && window.Capacitor.isPluginAvailable('App')) {
+      console.log('Setting up Capacitor app state listener');
+      // @ts-ignore - Capacitor types might not be available
+      window.Capacitor.Plugins.App.addListener('appStateChange', (state: { isActive: boolean }) => {
+        if (state.isActive) {
+          console.log('App became active via Capacitor, refreshing news...');
+          handleManualRefresh();
+        }
+      });
+    }
+    
+    // Initial refresh
+    handleManualRefresh();
+    
+    // Clean up listeners
+    return () => {
+      clearInterval(timer);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      if (window.Capacitor && window.Capacitor.isPluginAvailable('App')) {
+        // @ts-ignore - Capacitor types might not be available
+        window.Capacitor.Plugins.App.removeAllListeners();
+      }
+    };
   }, []);
   
-  // Fetch news from the API
-  const { data: news, isLoading, isError, error, refetch } = useQuery<EnhancedNewsItem[]>({
+  // Fetch news from the API with updated response format
+  const { data: newsResponse, isLoading, isError, error, refetch } = useQuery<{
+    timestamp: number; 
+    news: EnhancedNewsItem[]
+  }>({
     queryKey: ["/api/news", refreshKey], // Add refreshKey to force refetch
     refetchOnWindowFocus: true, // Enable refetch when window gets focus
     refetchOnMount: true,
     refetchInterval: 30000, // Poll for updates every 30 seconds
     staleTime: 15000, // Consider data stale after 15 seconds
   });
+  
+  // Extract news array from response
+  const news = newsResponse?.news;
   
   // For the global rating modal
   const [showGlobalRatingModal, setShowGlobalRatingModal] = useState(false);
@@ -59,7 +101,7 @@ export default function NewsFeed() {
         
         if (lastArticleId && hash === `#${lastArticleId}`) {
           // Find the article with mentioned politicians
-          const articleWithPoliticians = news.find(article => {
+          const articleWithPoliticians = news?.find(article => {
             const articleId = article.guid || article.link;
             const hashedArticleId = btoa(articleId).replace(/=/g, '').substring(0, 10);
             return lastArticleId === `return-from-${hashedArticleId}`;
