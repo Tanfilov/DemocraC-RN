@@ -231,10 +231,10 @@ export default function NewsFeed() {
                 link: item.link || '',
                 guid: item.guid || item.link,
                 pubDate: item.pubDate || '',
-                formattedDate: new Date(item.pubDate).toLocaleDateString('he-IL'),
+                formattedDate: formatHebrewDate(item.pubDate),
                 source: sourceName,
                 imageUrl: item.enclosure?.$?.url || '',
-                date: new Date(item.pubDate),
+                date: createIsraeliDate(item.pubDate),
                 politicians: item.politicians || [] // Use detected politicians
               }));
             } else {
@@ -265,10 +265,10 @@ export default function NewsFeed() {
                 link: item.link || '',
                 guid: item.guid || item.link,
                 pubDate: item.pubDate || '',
-                formattedDate: new Date(item.pubDate).toLocaleDateString('he-IL'),
+                formattedDate: formatHebrewDate(item.pubDate),
                 source: sourceName,
                 imageUrl: item.enclosure?.$?.url || '',
-                date: new Date(item.pubDate),
+                date: createIsraeliDate(item.pubDate),
                 politicians: [] // No politicians detected yet
               }));
             }
@@ -411,76 +411,42 @@ export default function NewsFeed() {
             onClick={handleManualRefresh}
           >
             <RefreshCw className="h-4 w-4 ml-1" />
-            רענן
+            רענן חדשות
           </Button>
         </AlertDescription>
       </Alert>
     );
   }
 
-  // Test mobile endpoints directly
-  const testMobileEndpoints = async () => {
-    try {
-      console.log('Testing mobile endpoints directly...');
-      
-      // 1. Test ping endpoint
-      const pingResponse = await fetch('/api/mobile/ping');
-      const pingData = await pingResponse.json();
-      console.log('Mobile ping response:', pingData);
-      
-      // 2. Test the RSS endpoint with timestamp to bust cache
-      const timestamp = Date.now();
-      const rssResponse = await fetch(`/api/mobile/rss?_t=${timestamp}`);
-      const rssData = await rssResponse.json();
-      console.log('Mobile RSS response:', rssData);
-      
-      // Show success alert
-      alert(`Mobile endpoints tested successfully.\nPing timestamp: ${new Date(pingData.timestamp).toLocaleTimeString()}\nRSS fetch time: ${rssData.fetch_time}`);
-    } catch (error) {
-      console.error('Error testing mobile endpoints:', error);
-      alert(`Error testing mobile endpoints: ${error}`);
-    }
-  };
-
   return (
-    <div>
-      <div className="flex justify-between items-center mb-2 max-w-screen-sm mx-auto">
-        {/* Debug controls - visible in development or with debug parameter */}
-        {(process.env.NODE_ENV === 'development' || window.location.search.includes('debug')) && (
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={testMobileEndpoints} 
-            className="text-xs bg-amber-100 text-amber-900 border-amber-300 hover:bg-amber-200"
-          >
-            בדוק מובייל API
-          </Button>
-        )}
-        
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={handleManualRefresh} 
-          className="text-xs flex items-center gap-1 hover:bg-slate-100 dark:hover:bg-slate-800"
+    <div className="flex flex-col gap-4 max-w-screen-sm mx-auto">
+      {/* Global rating modal */}
+      <PoliticianRatingModal 
+        isOpen={showGlobalRatingModal} 
+        onClose={() => setShowGlobalRatingModal(false)} 
+        politicians={articlesWithPoliticians}
+        onRated={(politicianId, rating) => {
+          // Handle ratings
+          console.log(`Rating politician ${politicianId} with ${rating} stars`);
+        }}
+      />
+      
+      {/* News cards */}
+      {news.map((item, index) => (
+        <NewsCard key={item.guid || item.link || index} news={item} />
+      ))}
+      
+      {/* Refresh button at bottom */}
+      <div className="flex justify-center my-6">
+        <Button
+          variant="outline"
+          className="flex items-center gap-2 px-6 text-lg dark:bg-slate-900 dark:text-white dark:border-slate-700 dark:hover:bg-slate-800"
+          onClick={handleRefresh}
         >
-          <RefreshCw className="h-3.5 w-3.5" />
-          <span>רענן חדשות</span>
+          <RefreshCw className="h-5 w-5 ml-1" />
+          רענן חדשות
         </Button>
       </div>
-      
-      <div className="flex flex-col gap-4 max-w-screen-sm mx-auto">
-        {news.map((article) => (
-          <NewsCard key={article.guid} article={article} />
-        ))}
-      </div>
-      
-      {/* Global rating modal - shown when returning from an article via URL hash */}
-      <PoliticianRatingModal
-        politicians={articlesWithPoliticians}
-        isOpen={showGlobalRatingModal}
-        onClose={() => setShowGlobalRatingModal(false)}
-        articleId="global" // Use a special identifier for the global rating modal
-      />
     </div>
   );
 }
