@@ -21,44 +21,126 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Direct RSS fetch endpoint for mobile app - no caching
   app.get("/api/mobile/rss", async (req, res) => {
     try {
-      console.log("Mobile RSS fetch requested");
+      console.log("Mobile RSS fetch requested at", new Date().toISOString());
       
       // Add cache control headers
       res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
       res.setHeader('Pragma', 'no-cache');
       res.setHeader('Expires', '0');
       
-      // Directly fetch from Ynet RSS feed without using the service
-      const ynetUrl = `https://www.ynet.co.il/Integration/StoryRss2.xml?_t=${Date.now()}`;
-      console.log(`Fetching from ${ynetUrl}`);
-      
       const axios = require('axios');
       const xml2js = require('xml2js');
       
-      const response = await axios.get(ynetUrl, {
-        headers: {
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache',
-          'Expires': '0'
+      // Define all RSS sources with unique timestamp for cache busting
+      const timestamp = Date.now();
+      const sources = [
+        {
+          url: `https://www.ynet.co.il/Integration/StoryRss2.xml?_t=${timestamp}`,
+          name: 'Ynet'
         },
-        timeout: 10000
-      });
+        {
+          url: `https://rcs.mako.co.il/rss/news-military.xml?Partner=interlink&_t=${timestamp}`,
+          name: 'Mako Military'
+        },
+        {
+          url: `https://rcs.mako.co.il/rss/news-law.xml?Partner=interlink&_t=${timestamp}`,
+          name: 'Mako Law'
+        }
+      ];
       
-      // Parse XML
+      // Create a parser
       const parser = new xml2js.Parser({ explicitArray: false });
-      const result = await parser.parseStringPromise(response.data);
       
-      // Just return the raw parsed data
+      // Fetch from all sources in parallel
+      const results = await Promise.allSettled(sources.map(async (source) => {
+        try {
+          console.log(`Fetching from ${source.name}: ${source.url}`);
+          
+          const response = await axios.get(source.url, {
+            headers: {
+              'Cache-Control': 'no-cache',
+              'Pragma': 'no-cache',
+              'Expires': '0',
+              'User-Agent': 'Mozilla/5.0 (Mobile) DemocraC App'
+            },
+            timeout: 10000
+          });
+          
+          // Parse XML
+          const result = await parser.parseStringPromise(response.data);
+          return {
+            name: source.name,
+            data: result,
+            success: true
+          };
+        } catch (error: any) {
+          console.error(`Error fetching from ${source.name}:`, error?.message || String(error));
+          return {
+            name: source.name,
+            error: error?.message || String(error),
+            success: false
+          };
+        }
+      }));
+      
+      // Process successful results to add politicians
+      const processedResults = await Promise.all(results.map(async (result) => {
+        // Only process successful results
+        if (result.status === 'fulfilled' && result.value?.success) {
+          try {
+            // Get RSS items
+            const rssChannel = result.value.data?.rss?.channel;
+            if (!rssChannel || !rssChannel.item) {
+              return result; // Return as is if no items
+            }
+            
+            // Process items to detect politicians
+            const items = Array.isArray(rssChannel.item) ? rssChannel.item : [rssChannel.item];
+            
+            // Process each item to detect politicians
+            const itemsWithPoliticians = await Promise.all(items.map(async (item: any) => {
+              // Combine title and description for better detection
+              const fullText = `${item.title || ''} ${item.description || ''}`;
+              
+              // Detect politicians
+              const detectedPoliticians = await politicianRecognitionService.detectPoliticians(fullText);
+              
+              // Add politicians to the item
+              return {
+                ...item,
+                politicians: detectedPoliticians
+              };
+            }));
+            
+            // Replace the items with processed ones
+            return {
+              ...result,
+              value: {
+                ...result.value,
+                processedItems: itemsWithPoliticians
+              }
+            };
+          } catch (err: any) {
+            console.error('Error processing RSS items for politicians:', err?.message || String(err));
+            return result; // Return original result on error
+          }
+        }
+        return result;
+      }));
+      
+      // Return processed results
       res.json({
-        timestamp: Date.now(),
-        ynet_data: result,
-        fetch_time: new Date().toISOString()
+        timestamp: timestamp,
+        fetch_time: new Date().toISOString(),
+        results: processedResults,
+        mobile_endpoint: true
       });
-    } catch (error) {
-      console.error("Error fetching RSS for mobile:", error);
+    } catch (error: any) {
+      console.error("Error fetching RSS for mobile:", error?.message || String(error));
       res.status(500).json({
-        error: String(error),
-        timestamp: Date.now()
+        error: error?.message || String(error),
+        timestamp: Date.now(),
+        status: 'error'
       });
     }
   });

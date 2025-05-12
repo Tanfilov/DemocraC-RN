@@ -13,6 +13,7 @@ import PoliticianRatingModal from "./PoliticianRatingModal";
 interface EnhancedNewsItem extends NewsItem {
   politicians?: PoliticianMention[];
   source?: string; // Source of the news (Ynet, Mako, etc.)
+  date?: Date; // Date object for sorting
 }
 
 export default function NewsFeed() {
@@ -82,8 +83,18 @@ export default function NewsFeed() {
   
   type MobileRssResponse = {
     timestamp: number;
-    ynet_data: any;
     fetch_time: string;
+    results: Array<{
+      status: 'fulfilled' | 'rejected';
+      value?: {
+        name: string;
+        data: any;
+        success: boolean;
+        processedItems?: Array<any>; // Items with politicians
+      };
+      reason?: any;
+    }>;
+    mobile_endpoint: boolean;
   };
   
   // Combined response type
@@ -120,9 +131,10 @@ export default function NewsFeed() {
       const regularResponse = newsResponse as RegularNewsResponse;
       
       // Type guard to check response type
-      if ('ynet_data' in newsResponse) {
+      if ('results' in newsResponse) {
         console.log('Mobile RSS fetch succeeded, timestamp:', mobileResponse.timestamp, 
-                   'fetch time:', mobileResponse.fetch_time);
+                   'fetch time:', mobileResponse.fetch_time,
+                   'sources:', mobileResponse.results.length);
       } else if ('news' in newsResponse) {
         console.log('News fetch succeeded, timestamp:', regularResponse.timestamp, 
                    'items:', regularResponse.news?.length);
@@ -138,36 +150,63 @@ export default function NewsFeed() {
     const mobileResponse = newsResponse as MobileRssResponse;
     const regularResponse = newsResponse as RegularNewsResponse;
     
-    // Handle the response from mobile RSS endpoint - type guard
-    if ('ynet_data' in newsResponse) {
+    // Handle the response from mobile RSS endpoint - type guard with new format
+    if ('results' in newsResponse) {
       try {
-        console.log('Processing mobile RSS data');
+        console.log('Processing mobile RSS data from multiple sources');
         
-        // Extract items from Ynet RSS format - safely access properties
-        const rssChannel = mobileResponse.ynet_data?.rss?.channel;
-        const rssItems = rssChannel?.item;
+        // Process all successful results
+        const allNewsItems: EnhancedNewsItem[] = [];
         
-        if (!rssItems) {
-          console.warn('No RSS items found in the response');
-          return [];
-        }
+        newsResponse.results.forEach(result => {
+          if (result.status === 'fulfilled' && result.value?.success) {
+            const sourceName = result.value.name;
+            console.log(`Processing ${sourceName} RSS data`);
+            
+            // Access the RSS channel data
+            const rssChannel = result.value.data?.rss?.channel;
+            if (!rssChannel) {
+              console.warn(`No RSS channel found for ${sourceName}`);
+              return; // Skip this source
+            }
+            
+            // Get items
+            const rssItems = rssChannel.item;
+            if (!rssItems) {
+              console.warn(`No items found for ${sourceName}`);
+              return; // Skip this source
+            }
+            
+            // Handle both array and single item cases
+            const itemsArray = Array.isArray(rssItems) ? rssItems : [rssItems];
+            
+            // Map items to our format
+            const parsedItems = itemsArray.map((item: any) => ({
+              title: item.title || '',
+              description: item.description || '',
+              link: item.link || '',
+              guid: item.guid || item.link,
+              pubDate: item.pubDate || '',
+              formattedDate: new Date(item.pubDate).toLocaleDateString('he-IL'),
+              source: sourceName,
+              imageUrl: item.enclosure?.$?.url || '',
+              date: new Date(item.pubDate),
+              politicians: [] // No politicians detected yet
+            }));
+            
+            // Add to our collection
+            allNewsItems.push(...parsedItems);
+          } else {
+            console.warn('Failed to fetch from source:', result);
+          }
+        });
         
-        // Handle both array and single item cases
-        const itemsArray = Array.isArray(rssItems) ? rssItems : [rssItems];
-        
-        // Convert to our format
-        return itemsArray.map((item: any) => ({
-          title: item.title || '',
-          description: item.description || '',
-          link: item.link || '',
-          guid: item.guid || item.link,
-          pubDate: item.pubDate || '',
-          formattedDate: new Date(item.pubDate).toLocaleDateString('he-IL'),
-          source: 'Ynet',
-          imageUrl: item.enclosure?.$?.url || '',
-          date: new Date(item.pubDate),
-          politicians: [] // No politicians detected yet
-        }));
+        // Sort all items by date, newest first
+        return allNewsItems.sort((a, b) => {
+          const dateA = a.date?.getTime() || 0;
+          const dateB = b.date?.getTime() || 0;
+          return dateB - dateA;
+        });
       } catch (err) {
         console.error('Error processing RSS data:', err);
         return [];
