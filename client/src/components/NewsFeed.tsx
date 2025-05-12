@@ -162,6 +162,18 @@ export default function NewsFeed() {
 
   return (
     <div>
+      <div className="flex justify-end mb-2 max-w-screen-sm mx-auto">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={handleManualRefresh} 
+          className="text-xs flex items-center gap-1 hover:bg-slate-100 dark:hover:bg-slate-800"
+        >
+          <RefreshCw className="h-3.5 w-3.5" />
+          <span>רענן חדשות</span>
+        </Button>
+      </div>
+      
       <div className="flex flex-col gap-4 max-w-screen-sm mx-auto">
         {news.map((article) => (
           <NewsCard key={article.guid} article={article} />

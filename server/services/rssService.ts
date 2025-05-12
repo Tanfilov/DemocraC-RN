@@ -67,8 +67,20 @@ class RssService {
   
   private async fetchFromSource(source: RssSource): Promise<ParsedRssItem[]> {
     try {
-      // Fetch the RSS feed
-      const response = await axios.get(source.url);
+      // Add timestamp to prevent caching
+      const timestamp = Date.now();
+      const urlWithTimestamp = source.url.includes('?') 
+        ? `${source.url}&_t=${timestamp}` 
+        : `${source.url}?_t=${timestamp}`;
+      
+      // Fetch the RSS feed with cache-busting headers
+      const response = await axios.get(urlWithTimestamp, {
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      });
       
       // Parse XML to JS object
       const parser = new xml2js.Parser({ explicitArray: false });
