@@ -16,6 +16,42 @@ interface EnhancedNewsItem extends NewsItem {
   date?: Date; // Date object for sorting
 }
 
+// Function to properly format dates with Israeli timezone
+const formatHebrewDate = (dateString: string): string => {
+  try {
+    // Handle dates with timezone markers like +0300 (Israel Standard Time)
+    // This is crucial because Israel is UTC+3, and our server is in UTC
+    // Without this, we'd see a 3-hour delay in all timestamps
+    const date = new Date(dateString);
+    
+    // Create formatter with Hebrew locale and proper timezone handling
+    const options: Intl.DateTimeFormatOptions = { 
+      timeZone: 'Asia/Jerusalem',
+      year: 'numeric', 
+      month: 'numeric', 
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    };
+    
+    return new Intl.DateTimeFormat('he-IL', options).format(date);
+  } catch (error) {
+    console.error('Error formatting date:', dateString, error);
+    return dateString || '';
+  }
+};
+
+// Function to create a date object with proper timezone handling
+const createIsraeliDate = (dateString: string): Date => {
+  try {
+    // Create a date that respects the timezone in the string
+    return new Date(dateString);
+  } catch (error) {
+    console.error('Error creating date object:', dateString, error);
+    return new Date();
+  }
+};
+
 export default function NewsFeed() {
   // State for manual refresh control
   const [refreshKey, setRefreshKey] = useState(0);
