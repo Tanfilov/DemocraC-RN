@@ -433,7 +433,7 @@ export default function NewsFeed() {
       
       {/* News cards */}
       {news.map((item, index) => (
-        <NewsCard key={item.guid || item.link || index} news={item} />
+        <NewsCard key={item.guid || item.link || index} article={item} />
       ))}
       
       {/* Refresh button at bottom */}
