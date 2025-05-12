@@ -100,9 +100,17 @@ export default function NewsFeed() {
   // Combined response type
   type NewsResponse = RegularNewsResponse | MobileRssResponse;
   
-  // Check if we're in a mobile app environment
-  const isMobileApp = window.location.href.includes('capacitor') || 
-                     (window.Capacitor && window.Capacitor.isPluginAvailable('App'));
+  // Check if we're in a mobile app environment with more robust detection
+  const isMobileApp = 
+    // Check URL for capacitor or android indicators
+    window.location.href.includes('capacitor') || 
+    window.location.href.includes('android') ||
+    // Check for Capacitor global
+    (typeof window.Capacitor !== 'undefined' && window.Capacitor.isPluginAvailable && window.Capacitor.isPluginAvailable('App')) ||
+    // Check for cordova
+    (typeof (window as any).cordova !== 'undefined') ||
+    // Check for user agent on Android
+    navigator.userAgent.toLowerCase().includes('android');
   
   console.log('Environment check - Mobile app:', isMobileApp);
   
@@ -163,36 +171,60 @@ export default function NewsFeed() {
             const sourceName = result.value.name;
             console.log(`Processing ${sourceName} RSS data`);
             
-            // Access the RSS channel data
-            const rssChannel = result.value.data?.rss?.channel;
-            if (!rssChannel) {
-              console.warn(`No RSS channel found for ${sourceName}`);
-              return; // Skip this source
+            let parsedItems: EnhancedNewsItem[] = [];
+            
+            // Check for pre-processed items with politicians
+            if (result.value.processedItems && Array.isArray(result.value.processedItems)) {
+              console.log(`Using pre-processed items for ${sourceName} with politicians`);
+              
+              // Use the pre-processed items
+              parsedItems = result.value.processedItems.map((item: any) => ({
+                title: item.title || '',
+                description: item.description || '',
+                link: item.link || '',
+                guid: item.guid || item.link,
+                pubDate: item.pubDate || '',
+                formattedDate: new Date(item.pubDate).toLocaleDateString('he-IL'),
+                source: sourceName,
+                imageUrl: item.enclosure?.$?.url || '',
+                date: new Date(item.pubDate),
+                politicians: item.politicians || [] // Use detected politicians
+              }));
+            } else {
+              // Fall back to raw RSS data
+              console.log(`No pre-processed items for ${sourceName}, parsing raw RSS data`);
+              
+              // Access the RSS channel data
+              const rssChannel = result.value.data?.rss?.channel;
+              if (!rssChannel) {
+                console.warn(`No RSS channel found for ${sourceName}`);
+                return; // Skip this source
+              }
+              
+              // Get items
+              const rssItems = rssChannel.item;
+              if (!rssItems) {
+                console.warn(`No items found for ${sourceName}`);
+                return; // Skip this source
+              }
+              
+              // Handle both array and single item cases
+              const itemsArray = Array.isArray(rssItems) ? rssItems : [rssItems];
+              
+              // Map items to our format
+              parsedItems = itemsArray.map((item: any) => ({
+                title: item.title || '',
+                description: item.description || '',
+                link: item.link || '',
+                guid: item.guid || item.link,
+                pubDate: item.pubDate || '',
+                formattedDate: new Date(item.pubDate).toLocaleDateString('he-IL'),
+                source: sourceName,
+                imageUrl: item.enclosure?.$?.url || '',
+                date: new Date(item.pubDate),
+                politicians: [] // No politicians detected yet
+              }));
             }
-            
-            // Get items
-            const rssItems = rssChannel.item;
-            if (!rssItems) {
-              console.warn(`No items found for ${sourceName}`);
-              return; // Skip this source
-            }
-            
-            // Handle both array and single item cases
-            const itemsArray = Array.isArray(rssItems) ? rssItems : [rssItems];
-            
-            // Map items to our format
-            const parsedItems = itemsArray.map((item: any) => ({
-              title: item.title || '',
-              description: item.description || '',
-              link: item.link || '',
-              guid: item.guid || item.link,
-              pubDate: item.pubDate || '',
-              formattedDate: new Date(item.pubDate).toLocaleDateString('he-IL'),
-              source: sourceName,
-              imageUrl: item.enclosure?.$?.url || '',
-              date: new Date(item.pubDate),
-              politicians: [] // No politicians detected yet
-            }));
             
             // Add to our collection
             allNewsItems.push(...parsedItems);

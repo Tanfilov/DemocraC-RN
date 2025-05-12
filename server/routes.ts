@@ -6,6 +6,8 @@ import { insertRatingSchema } from "@shared/schema";
 import { db } from "./db";
 import { eq, and } from "drizzle-orm";
 import { politicians, ratings } from "@shared/schema";
+import axios from "axios";
+import * as xml2js from "xml2js";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Simple mobile refresh endpoint - just returns the current time
@@ -23,13 +25,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log("Mobile RSS fetch requested at", new Date().toISOString());
       
-      // Add cache control headers
+      // Add cache control and CORS headers
       res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
       res.setHeader('Pragma', 'no-cache');
       res.setHeader('Expires', '0');
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
       
-      const axios = require('axios');
-      const xml2js = require('xml2js');
+      // Using axios and xml2js imports from the top of the file
       
       // Define all RSS sources with unique timestamp for cache busting
       const timestamp = Date.now();
