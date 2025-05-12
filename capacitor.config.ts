@@ -6,8 +6,7 @@ const config: CapacitorConfig = {
   webDir: 'dist/public',
   server: {
     androidScheme: 'https',
-    cleartext: true, // Allow cleartext traffic for development
-    hostname: 'app', // Use app as the hostname
+    hostname: 'app',
     iosScheme: 'https'
   },
   plugins: {
@@ -16,7 +15,7 @@ const config: CapacitorConfig = {
     },
   },
   android: {
-    webContentsDebuggingEnabled: true, // Enable WebView debugging
+    webContentsDebuggingEnabled: false, // Disable WebView debugging for production
     buildOptions: {
       keystorePath: undefined,
       keystoreAlias: undefined,
