@@ -1,0 +1,227 @@
+/**
+ * WebView Integration Helper
+ * 
+ * This file contains utility functions and JavaScript code injections
+ * to enhance the integration between the WebView and the native app.
+ */
+
+// Inject this JavaScript into the WebView to improve the experience
+export const enhancedWebViewScript = `
+// Set flags to indicate we're in a mobile app
+window.isNativeApp = true;
+window.isAndroidApp = true;
+window.isMobileView = true;
+
+// Force RTL for Hebrew support
+document.documentElement.dir = 'rtl';
+document.documentElement.lang = 'he';
+
+// Add RTL styles for the app
+const rtlStyles = document.createElement('style');
+rtlStyles.innerHTML = `
+  body {
+    direction: rtl;
+    text-align: right;
+  }
+  
+  /* Ensure RTL for elements that may have inline styles */
+  .rtl-force {
+    direction: rtl !important;
+    text-align: right !important;
+  }
+`;
+document.head.appendChild(rtlStyles);
+
+// Disable caching for all API calls
+if (window.fetch) {
+  const originalFetch = window.fetch;
+  window.fetch = function(url, options) {
+    if (!options) options = {};
+    if (!options.headers) options.headers = {};
+    
+    // Add cache-busting for API calls
+    if (typeof url === 'string' && url.includes('/api/')) {
+      const separator = url.includes('?') ? '&' : '?';
+      url = url + separator + 'nocache=' + Date.now();
+    }
+    
+    // Add no-cache headers
+    options.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
+    options.headers['Pragma'] = 'no-cache';
+    options.headers['Expires'] = '0';
+    
+    return originalFetch(url, options);
+  };
+}
+
+// Intercept XMLHttpRequest to add cache-busting
+(function() {
+  const originalOpen = XMLHttpRequest.prototype.open;
+  XMLHttpRequest.prototype.open = function(method, url, ...rest) {
+    if (typeof url === 'string' && url.includes('/api/')) {
+      const separator = url.includes('?') ? '&' : '?';
+      url = url + separator + 'nocache=' + Date.now();
+    }
+    return originalOpen.call(this, method, url, ...rest);
+  };
+})();
+
+// Improve scrolling performance
+document.addEventListener('DOMContentLoaded', function() {
+  const style = document.createElement('style');
+  style.innerHTML = \`
+    * {
+      -webkit-overflow-scrolling: touch;
+    }
+    body {
+      overscroll-behavior-y: none;
+      touch-action: pan-y;
+    }
+  \`;
+  document.head.appendChild(style);
+});
+
+// Add media query for mobile optimizations
+(function() {
+  const meta = document.createElement('meta');
+  meta.name = 'viewport';
+  meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+  document.head.appendChild(meta);
+})();
+
+// Refresh content automatically when app returns to foreground
+window.addEventListener('focus', function() {
+  // Check if there's a refresh function available
+  if (typeof window.manualRefresh === 'function') {
+    window.manualRefresh();
+  } else if (typeof window.refreshNews === 'function') {
+    window.refreshNews();
+  }
+});
+
+// Listen for messages from the React Native side
+window.addEventListener('message', function(event) {
+  try {
+    const message = JSON.parse(event.data);
+    
+    // Handle refresh requests
+    if (message.type === 'refresh') {
+      if (typeof window.manualRefresh === 'function') {
+        window.manualRefresh();
+      } else if (typeof window.refreshNews === 'function') {
+        window.refreshNews();
+      }
+    }
+  } catch (e) {
+    console.error('Error processing message from app:', e);
+  }
+});
+
+// Detect network status changes
+window.addEventListener('online', function() {
+  console.log('Connection restored, refreshing...');
+  if (typeof window.manualRefresh === 'function') {
+    window.manualRefresh();
+  }
+});
+
+// Democra.C specific functions for news refresh
+(function() {
+  // Try to find the refresh functions from the app
+  setTimeout(() => {
+    // Define manual refresh function if it doesn't exist
+    if (typeof window.manualRefresh !== 'function') {
+      window.manualRefresh = function() {
+        console.log('Manual refresh triggered from WebView wrapper');
+        // Try to click any refresh buttons if they exist
+        const refreshButtons = document.querySelectorAll('button[aria-label="refresh"]');
+        if (refreshButtons && refreshButtons.length > 0) {
+          refreshButtons[0].click();
+          return true;
+        }
+        
+        // Try to trigger a refresh event
+        const refreshEvent = new Event('refresh');
+        window.dispatchEvent(refreshEvent);
+        
+        // Try to reset the refreshKey if it exists
+        if (window.refreshKey !== undefined && typeof window.setRefreshKey === 'function') {
+          window.setRefreshKey(Date.now());
+          return true;
+        }
+        
+        // Force reload as last resort
+        location.reload();
+        return true;
+      };
+    }
+    
+    // Override any existing refresh function to ensure it works well in the app
+    const originalRefresh = window.manualRefresh;
+    window.manualRefresh = function() {
+      console.log('Enhanced refresh triggered from WebView wrapper');
+      
+      // Add a timestamp parameter to break cache
+      const timestamp = new Date().toISOString();
+      window.lastRefreshTime = timestamp;
+      
+      // Call the original refresh
+      return originalRefresh.apply(this, arguments);
+    };
+    
+    // Refresh immediately on load
+    setTimeout(() => {
+      if (typeof window.manualRefresh === 'function') {
+        window.manualRefresh();
+      }
+    }, 1000);
+    
+    // Set up periodic refresh for news content
+    setInterval(() => {
+      if (typeof window.manualRefresh === 'function') {
+        window.manualRefresh();
+      }
+    }, 60000); // Every minute
+    
+  }, 1000); // Wait for app to initialize
+})();
+
+// Log to confirm the script has loaded
+console.log('democra.C WebView integration initialized');
+
+true; // Required for injectedJavaScript
+`;
+
+// Methods to expose to the React Native side
+export const webViewMethods = {
+  // Refresh the WebView content
+  refreshContent: (webViewRef: any) => {
+    if (webViewRef && webViewRef.current) {
+      webViewRef.current.injectJavaScript(`
+        if (typeof window.manualRefresh === 'function') {
+          window.manualRefresh(); 
+        } else if (typeof window.refreshNews === 'function') {
+          window.refreshNews();
+        }
+        true;
+      `);
+    }
+  },
+  
+  // Clear WebView cache
+  clearCache: (webViewRef: any) => {
+    if (webViewRef && webViewRef.current) {
+      webViewRef.current.clearCache(true);
+    }
+  },
+  
+  // Post a message to the WebView
+  postMessage: (webViewRef: any, message: any) => {
+    if (webViewRef && webViewRef.current) {
+      webViewRef.current.injectJavaScript(`
+        window.postMessage(${JSON.stringify(JSON.stringify(message))}, '*');
+        true;
+      `);
+    }
+  }
+};
