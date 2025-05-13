@@ -26,12 +26,22 @@ android {
     
     // Signing configuration for release builds
     signingConfigs {
+        // Local signing configuration from properties file
         if (signingPropsFile.exists()) {
             release {
                 storeFile file(signingProps['KEYSTORE_FILE'])
                 storePassword signingProps['KEYSTORE_PASSWORD']
                 keyAlias signingProps['KEY_ALIAS']
                 keyPassword signingProps['KEY_PASSWORD']
+            }
+        }
+        // Codemagic.io CI/CD signing configuration
+        else if (System.getenv("CM_KEYSTORE_PATH")) {
+            release {
+                storeFile file(System.getenv("CM_KEYSTORE_PATH"))
+                storePassword System.getenv("CM_KEYSTORE_PASSWORD")
+                keyAlias System.getenv("CM_KEY_ALIAS")
+                keyPassword System.getenv("CM_KEY_PASSWORD")
             }
         }
     }

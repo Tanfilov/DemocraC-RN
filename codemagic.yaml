@@ -1,0 +1,68 @@
+workflows:
+  android-workflow:
+    name: democra.C Android Workflow
+    instance_type: mac_mini_m1
+    max_build_duration: 60
+    environment:
+      # These are the current compatible versions for the app
+      java: 11
+      node: 16.x
+      npm: 8.x
+      groups:
+        - google_play
+    scripts:
+      - name: Set up environment
+        script: |
+          echo "Setting up environment..."
+          # Ensure correct java version
+          java -version
+          # Ensure correct node version
+          node --version
+          npm --version
+          
+      - name: Install dependencies
+        script: |
+          echo "Installing dependencies..."
+          # Install React Native app dependencies
+          cd DemocraC_RN
+          npm install
+
+      - name: Prepare server environment
+        script: |
+          # Server configuration to ensure the app accesses the correct API endpoint
+          echo "REACT_APP_API_URL=https://democrac.repl.co" > DemocraC_RN/.env
+
+      - name: Build Android app
+        script: |
+          echo "Building Android app..."
+          cd DemocraC_RN
+          
+          # Prepare the build
+          npx expo prebuild --platform android --clean
+          
+          # Build the Release APK and Bundle
+          cd android
+          
+          # Clean any previous builds
+          ./gradlew clean
+          
+          # Build release artifacts
+          ./gradlew bundleRelease
+          ./gradlew assembleRelease
+
+    artifacts:
+      - DemocraC_RN/android/app/build/outputs/bundle/release/app-release.aab
+      - DemocraC_RN/android/app/build/outputs/apk/release/app-release.apk
+      - DemocraC_RN/android/app/build/outputs/mapping/release/mapping.txt
+
+    publishing:
+      email:
+        recipients:
+          - user@example.com
+        notify:
+          success: true
+          failure: true
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal
+        submit_as_draft: true
