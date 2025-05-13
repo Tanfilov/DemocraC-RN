@@ -267,18 +267,41 @@ export default function NewsFeed() {
               console.log(`Using pre-processed items for ${sourceName} with politicians`);
               
               // Use the pre-processed items
-              parsedItems = result.value.processedItems.map((item: any) => ({
-                title: item.title || '',
-                description: item.description || '',
-                link: item.link || '',
-                guid: item.guid || item.link,
-                pubDate: item.pubDate || '',
-                formattedDate: formatHebrewDate(item.pubDate),
-                source: sourceName,
-                imageUrl: item.enclosure?.$?.url || '',
-                date: createIsraeliDate(item.pubDate),
-                politicians: item.politicians || [] // Use detected politicians
-              }));
+              parsedItems = result.value.processedItems.map((item: any) => {
+                // Extract image URL with fallbacks for different formats
+                let imageUrl = '';
+                
+                // Check for enclosure format (standard RSS format)
+                if (item.enclosure?.$?.url) {
+                  imageUrl = item.enclosure.$.url;
+                } 
+                // Check for direct imageUrl property
+                else if (item.imageUrl) {
+                  imageUrl = item.imageUrl;
+                }
+                // Try to extract from description as last resort
+                else if (item.description && typeof item.description === 'string') {
+                  const imgMatch = item.description.match(/<img[^>]+src="([^">]+)"/);
+                  if (imgMatch && imgMatch[1]) {
+                    imageUrl = imgMatch[1];
+                  }
+                }
+                
+                console.log(`Item ${item.title?.substring(0, 20)}... has image URL: ${imageUrl ? 'Yes' : 'No'}`);
+                
+                return {
+                  title: item.title || '',
+                  description: item.description || '',
+                  link: item.link || '',
+                  guid: item.guid || item.link,
+                  pubDate: item.pubDate || '',
+                  formattedDate: formatHebrewDate(item.pubDate),
+                  source: sourceName,
+                  imageUrl: imageUrl,
+                  date: createIsraeliDate(item.pubDate),
+                  politicians: item.politicians || [] // Use detected politicians
+                };
+              });
             } else {
               // Fall back to raw RSS data
               console.log(`No pre-processed items for ${sourceName}, parsing raw RSS data`);
@@ -301,18 +324,49 @@ export default function NewsFeed() {
               const itemsArray = Array.isArray(rssItems) ? rssItems : [rssItems];
               
               // Map items to our format
-              parsedItems = itemsArray.map((item: any) => ({
-                title: item.title || '',
-                description: item.description || '',
-                link: item.link || '',
-                guid: item.guid || item.link,
-                pubDate: item.pubDate || '',
-                formattedDate: formatHebrewDate(item.pubDate),
-                source: sourceName,
-                imageUrl: item.enclosure?.$?.url || '',
-                date: createIsraeliDate(item.pubDate),
-                politicians: [] // No politicians detected yet
-              }));
+              parsedItems = itemsArray.map((item: any) => {
+                // Extract image URL with fallbacks for different formats
+                let imageUrl = '';
+                
+                // Check for enclosure format (standard RSS format)
+                if (item.enclosure?.$?.url) {
+                  imageUrl = item.enclosure.$.url;
+                } 
+                // Check for direct imageUrl property
+                else if (item.imageUrl) {
+                  imageUrl = item.imageUrl;
+                }
+                // Check for media:content format (another RSS standard)
+                else if (item['media:content']?.$?.url) {
+                  imageUrl = item['media:content'].$.url;
+                }
+                // Check for media:thumbnail format
+                else if (item['media:thumbnail']?.$?.url) {
+                  imageUrl = item['media:thumbnail'].$.url;
+                }
+                // Try to extract from description as last resort
+                else if (item.description && typeof item.description === 'string') {
+                  const imgMatch = item.description.match(/<img[^>]+src="([^">]+)"/);
+                  if (imgMatch && imgMatch[1]) {
+                    imageUrl = imgMatch[1];
+                  }
+                }
+                
+                console.log(`Raw RSS item ${item.title?.substring(0, 20)}... has image URL: ${imageUrl ? 'Yes' : 'No'}`);
+                
+                return {
+                  title: item.title || '',
+                  description: item.description || '',
+                  link: item.link || '',
+                  guid: item.guid || item.link,
+                  pubDate: item.pubDate || '',
+                  formattedDate: formatHebrewDate(item.pubDate),
+                  source: sourceName,
+                  imageUrl: imageUrl,
+                  date: createIsraeliDate(item.pubDate),
+                  politicians: [] // No politicians detected yet
+                };
+              });
             }
             
             // Add to our collection
