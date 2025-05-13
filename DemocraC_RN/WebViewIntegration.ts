@@ -296,12 +296,15 @@ window.addEventListener('online', function() {
       }
     }, 1000);
     
-    // Set up periodic refresh for news content
+    // Disable automatic refresh for mobile app
+    // Mobile app users prefer to control when content refreshes
+    /* 
     setInterval(() => {
       if (typeof window.manualRefresh === 'function') {
         window.manualRefresh();
       }
     }, 60000); // Every minute
+    */
     
   }, 1000); // Wait for app to initialize
 })();
