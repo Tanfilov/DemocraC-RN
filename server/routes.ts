@@ -215,10 +215,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
               // Detect politicians
               const detectedPoliticians = await politicianRecognitionService.detectPoliticians(fullText);
               
-              // Add politicians to the item
+              // Extract image URL from item
+              let imageUrl = '';
+              
+              // Check for enclosure format (standard RSS format)
+              if (item.enclosure?.$?.url) {
+                imageUrl = item.enclosure.$.url;
+              } 
+              // Check for direct imageUrl property
+              else if (item.imageUrl) {
+                imageUrl = item.imageUrl;
+              }
+              // Check for media:content format (another RSS standard)
+              else if (item['media:content']?.$?.url) {
+                imageUrl = item['media:content'].$.url;
+              }
+              // Check for media:thumbnail format
+              else if (item['media:thumbnail']?.$?.url) {
+                imageUrl = item['media:thumbnail'].$.url;
+              }
+              // Try to extract from description as last resort
+              else if (item.description && typeof item.description === 'string') {
+                const imgMatch = item.description.match(/<img[^>]+src=['"]([^'"]+)['"]/i);
+                if (imgMatch && imgMatch[1]) {
+                  imageUrl = imgMatch[1];
+                  
+                  // Make sure it's an absolute URL
+                  if (imageUrl && !imageUrl.startsWith('http')) {
+                    imageUrl = imageUrl.startsWith('//') ? 'https:' + imageUrl : 'https://' + imageUrl;
+                  }
+                }
+              }
+              
+              // Handle specific image formats based on source
+              if (imageUrl) {
+                if (imageUrl.includes('ynet-pic')) {
+                  // Replace medium with large for Ynet images
+                  imageUrl = imageUrl.replace('_medium.jpg', '_large.jpg');
+                } else if (imageUrl.includes('mako')) {
+                  // Keep the large-sized Mako images
+                  imageUrl = imageUrl.replace('/small/', '/large/').replace('/medium/', '/large/');
+                }
+              }
+              
+              console.log(`Mobile RSS item "${item.title?.substring(0, 30)}..." has image: ${imageUrl ? 'Yes' : 'No'}`);
+              
+              // Add politicians and imageUrl to the item
               return {
                 ...item,
-                politicians: detectedPoliticians
+                politicians: detectedPoliticians,
+                imageUrl: imageUrl
               };
             }));
             
