@@ -9,12 +9,12 @@ import { enhancedWebViewScript, webViewMethods } from './WebViewIntegration';
 
 // The URL of your democra.C web application
 // This includes the mobile=true parameter to help with server-side detection
-const WEB_APP_URL = 'https://democrac.repl.co/?mobile=true&app=android';
+const WEB_APP_URL = 'https://democrac.repl.co/?mobile=true&app=android&webview=true';
 
 // Fallback URLs in case the main one doesn't work
 const FALLBACK_URLS = [
-  'https://democrac.repl.co/?mobile=true&app=android',  // Primary 
-  'https://democra-c.replit.app/?mobile=true&app=android',  // Secondary (if available)
+  'https://democrac.repl.co/?mobile=true&app=android&webview=true',  // Primary 
+  'https://democra-c.replit.app/?mobile=true&app=android&webview=true',  // Secondary (if available)
 ];
 
 // Splash screen to show while the WebView loads

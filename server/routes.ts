@@ -20,6 +20,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
   
+  // Special endpoint for React Native WebView wrapper
+  app.get("/api/webview/news", async (req, res) => {
+    try {
+      console.log("WebView app news request received");
+      
+      // Set proper JSON content type header
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      
+      // Add cache control headers
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+      
+      // Force a fresh fetch
+      await rssService.clearCache();
+      const news = await rssService.fetchRssNews(true);
+      
+      // Process news items to add politicians
+      const processedNews = await Promise.all(news.map(async (newsItem) => {
+        try {
+          const detectedPoliticians = await politicianRecognitionService.detectPoliticians(
+            `${newsItem.title} ${newsItem.description || ''}`
+          );
+          
+          return {
+            ...newsItem,
+            politicians: detectedPoliticians
+          };
+        } catch (error) {
+          console.error("Error processing news item:", error);
+          return newsItem;
+        }
+      }));
+      
+      // Return a simple, reliable format
+      res.json({
+        status: "success",
+        timestamp: Date.now(),
+        count: processedNews.length,
+        items: processedNews
+      });
+    } catch (error) {
+      console.error("Error in WebView news endpoint:", error);
+      res.status(200).json({
+        status: "error",
+        message: String(error),
+        timestamp: Date.now(),
+        items: []
+      });
+    }
+  });
+  
   // Direct RSS fetch endpoint for mobile app - no caching
   app.get("/api/mobile/rss", async (req, res) => {
     try {

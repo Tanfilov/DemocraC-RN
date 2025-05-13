@@ -138,6 +138,7 @@ export default function NewsFeed() {
   
   // Check if we're in a mobile app environment with more robust detection
   const forceMobileMode = window.location.search.includes('mobile=true');
+  const isWebView = window.location.search.includes('webview=true');
   
   const isMobileApp = 
     // Force mobile mode for testing
@@ -159,10 +160,22 @@ export default function NewsFeed() {
     console.warn('FORCED MOBILE MODE ENABLED - Using mobile API endpoints for testing!');
   }
   
-  console.log('Environment check - Mobile app:', isMobileApp);
+  // Add a console log if we're in WebView mode
+  if (isWebView) {
+    console.log('WEBVIEW MODE DETECTED - Using specialized WebView API endpoint!');
+  }
+  
+  console.log('Environment check - Mobile app:', isMobileApp, 'WebView:', isWebView);
   
   // Choose the appropriate endpoint based on environment
-  const apiEndpoint = isMobileApp ? "/api/mobile/rss" : "/api/news";
+  let apiEndpoint = "/api/news";
+  
+  if (isWebView) {
+    apiEndpoint = "/api/webview/news";
+  } else if (isMobileApp) {
+    apiEndpoint = "/api/mobile/rss";
+  }
+  
   console.log('Using API endpoint:', apiEndpoint);
   
   // Fetch news from the API with updated response format
