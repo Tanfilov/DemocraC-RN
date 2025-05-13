@@ -1,0 +1,50 @@
+PS C:\Users\tanfi\Downloads\DemocraC\DemocraC\android> ./gradlew clean
+Starting a Gradle Daemon, 2 incompatible and 3 stopped Daemons could not be reused, use --status for details
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Unable to start the daemon process.
+This problem might be caused by incorrect configuration of the daemon.
+For example, an unrecognized jvm option is used.For more details on the daemon, please refer to https://docs.gradle.org/8.11.1/userguide/gradle_daemon.html in the Gradle documentation.
+Process command line: C:\Program Files (x86)\Java\jre1.8.0_451\bin\java.exe --add-opens java.base/java.io=ALL-UNNAMED -Xmx2048m -
+Dfile.encoding=UTF-8 -Duser.country=US -Duser.language=en -Duser.variant -cp C:\Users\tanfi\.gradle\wrapper\dists\gradle-8.11.1-a
+ll\2qik7nd48slq1ooc2496ixf4i\gradle-8.11.1\lib\gradle-daemon-main-8.11.1.jar -javaagent:C:\Users\tanfi\.gradle\wrapper\dists\grad
+le-8.11.1-all\2qik7nd48slq1ooc2496ixf4i\gradle-8.11.1\lib\agents\gradle-instrumentation-agent-8.11.1.jar org.gradle.launcher.daemon.bootstrap.GradleDaemon 8.11.1
+Please read the following process output to find out more:
+-----------------------
+Unrecognized option: --add-opens
+Error: Could not create the Java Virtual Machine.
+Error: A fatal exception has occurred. Program will exit.
+
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+PS C:\Users\tanfi\Downloads\DemocraC\DemocraC\android> ./gradlew assembleRelease
+Starting a Gradle Daemon, 3 incompatible and 3 stopped Daemons could not be reused, use --status for details
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Unable to start the daemon process.
+This problem might be caused by incorrect configuration of the daemon.
+For example, an unrecognized jvm option is used.For more details on the daemon, please refer to https://docs.gradle.org/8.11.1/userguide/gradle_daemon.html in the Gradle documentation.
+Process command line: C:\Program Files (x86)\Java\jre1.8.0_451\bin\java.exe --add-opens java.base/java.io=ALL-UNNAMED -Xmx2048m -
+Dfile.encoding=UTF-8 -Duser.country=US -Duser.language=en -Duser.variant -cp C:\Users\tanfi\.gradle\wrapper\dists\gradle-8.11.1-a
+ll\2qik7nd48slq1ooc2496ixf4i\gradle-8.11.1\lib\gradle-daemon-main-8.11.1.jar -javaagent:C:\Users\tanfi\.gradle\wrapper\dists\grad
+le-8.11.1-all\2qik7nd48slq1ooc2496ixf4i\gradle-8.11.1\lib\agents\gradle-instrumentation-agent-8.11.1.jar org.gradle.launcher.daemon.bootstrap.GradleDaemon 8.11.1
+Please read the following process output to find out more:
+-----------------------
+Unrecognized option: --add-opens
+Error: Could not create the Java Virtual Machine.
+Error: A fatal exception has occurred. Program will exit.
+
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
