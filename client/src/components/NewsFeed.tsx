@@ -133,8 +133,16 @@ export default function NewsFeed() {
     mobile_endpoint: boolean;
   };
   
+  // Response type for the WebView specialized endpoint
+  type WebViewResponse = {
+    status: string;
+    timestamp: number;
+    count: number;
+    items: EnhancedNewsItem[];
+  };
+  
   // Combined response type
-  type NewsResponse = RegularNewsResponse | MobileRssResponse;
+  type NewsResponse = RegularNewsResponse | MobileRssResponse | WebViewResponse;
   
   // Check if we're in a mobile app environment with more robust detection
   const forceMobileMode = window.location.search.includes('mobile=true');
@@ -197,6 +205,7 @@ export default function NewsFeed() {
       // Type guard for narrowing response type
       const mobileResponse = newsResponse as MobileRssResponse;
       const regularResponse = newsResponse as RegularNewsResponse;
+      const webViewResponse = newsResponse as WebViewResponse;
       
       // Type guard to check response type
       if ('results' in newsResponse) {
@@ -206,6 +215,10 @@ export default function NewsFeed() {
       } else if ('news' in newsResponse) {
         console.log('News fetch succeeded, timestamp:', regularResponse.timestamp, 
                    'items:', regularResponse.news?.length);
+      } else if ('items' in newsResponse && 'status' in newsResponse) {
+        console.log('WebView fetch succeeded, timestamp:', webViewResponse.timestamp, 
+                   'status:', webViewResponse.status,
+                   'items:', webViewResponse.count);
       }
     }
   }, [newsResponse]);
@@ -217,9 +230,16 @@ export default function NewsFeed() {
     // Type assertion for narrowing
     const mobileResponse = newsResponse as MobileRssResponse;
     const regularResponse = newsResponse as RegularNewsResponse;
+    const webViewResponse = newsResponse as WebViewResponse;
     
+    // Handle the WebView response format
+    if ('items' in newsResponse && 'status' in newsResponse) {
+      // WebView-specific response format
+      console.log('Processing WebView response with', webViewResponse.count, 'items');
+      return webViewResponse.items;
+    }
     // Handle the response from mobile RSS endpoint - type guard with new format
-    if ('results' in newsResponse) {
+    else if ('results' in newsResponse) {
       try {
         console.log('Processing mobile RSS data from multiple sources');
         
