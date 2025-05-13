@@ -271,14 +271,15 @@ export default function NewsFeed() {
                 // Extract image URL with fallbacks for different formats
                 let imageUrl = '';
                 
-                // Check for enclosure format (standard RSS format)
-                if (item.enclosure?.$?.url) {
-                  imageUrl = item.enclosure.$.url;
-                } 
-                // Check for direct imageUrl property
-                else if (item.imageUrl) {
+                // First check if server already extracted the image URL
+                if (item.imageUrl) {
+                  console.log(`Server provided image URL for "${item.title?.substring(0, 20)}...": ${item.imageUrl.substring(0, 30)}...`);
                   imageUrl = item.imageUrl;
                 }
+                // Check for enclosure format (standard RSS format)
+                else if (item.enclosure?.$?.url) {
+                  imageUrl = item.enclosure.$.url;
+                } 
                 // Try to extract from description as last resort
                 else if (item.description && typeof item.description === 'string') {
                   const imgMatch = item.description.match(/<img[^>]+src="([^">]+)"/);
