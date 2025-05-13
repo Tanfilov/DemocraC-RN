@@ -7,9 +7,15 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { enhancedWebViewScript, webViewMethods } from './WebViewIntegration';
 
-// The URL of your democra.C web application - this assumes it's hosted somewhere
-// You'll need to update this to your actual hosted URL
-const WEB_APP_URL = 'https://democrac.repl.co/';
+// The URL of your democra.C web application
+// This includes the mobile=true parameter to help with server-side detection
+const WEB_APP_URL = 'https://democrac.repl.co/?mobile=true&app=android';
+
+// Fallback URLs in case the main one doesn't work
+const FALLBACK_URLS = [
+  'https://democrac.repl.co/?mobile=true&app=android',  // Primary 
+  'https://democra-c.replit.app/?mobile=true&app=android',  // Secondary (if available)
+];
 
 // Splash screen to show while the WebView loads
 const SplashScreen = () => {
@@ -51,9 +57,12 @@ const OfflineScreen = ({ onRetry }) => {
 const WebViewScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isOffline, setIsOffline] = useState(false);
+  const [currentUrlIndex, setCurrentUrlIndex] = useState(0);
+  const [currentUrl, setCurrentUrl] = useState(FALLBACK_URLS[0]);
   const webViewRef = useRef(null);
   const [backButtonPressedOnce, setBackButtonPressedOnce] = useState(false);
   const appState = useRef(AppState.currentState);
+  const [retryCount, setRetryCount] = useState(0);
 
   // Handle app state changes (background/foreground)
   useEffect(() => {
@@ -71,16 +80,49 @@ const WebViewScreen = () => {
     };
   }, []);
 
+  // Try next URL in the fallback list
+  const tryNextUrl = useCallback(() => {
+    // Try next URL if available
+    if (currentUrlIndex < FALLBACK_URLS.length - 1) {
+      const nextIndex = currentUrlIndex + 1;
+      setCurrentUrlIndex(nextIndex);
+      setCurrentUrl(FALLBACK_URLS[nextIndex]);
+      setIsLoading(true);
+      console.log(`Trying fallback URL ${nextIndex + 1}/${FALLBACK_URLS.length}: ${FALLBACK_URLS[nextIndex]}`);
+      return true;
+    }
+    return false;
+  }, [currentUrlIndex]);
+
   // Handle connection errors
-  const handleError = () => {
+  const handleError = useCallback(() => {
+    // Increment retry count
+    const newRetryCount = retryCount + 1;
+    setRetryCount(newRetryCount);
+    
+    // If we've tried 3 times or less, try the next URL
+    if (newRetryCount <= 3 && tryNextUrl()) {
+      // We switched to a new URL, keep loading state
+      return;
+    }
+    
+    // Otherwise show offline screen
     setIsOffline(true);
     setIsLoading(false);
-  };
+  }, [retryCount, tryNextUrl]);
 
   // Retry connection
   const handleRetry = useCallback(() => {
+    // Reset retry count on manual retry
+    setRetryCount(0);
+    
+    // Start with first URL again
+    setCurrentUrlIndex(0);
+    setCurrentUrl(FALLBACK_URLS[0]);
     setIsLoading(true);
     setIsOffline(false);
+    
+    // Also try to reload if we have a reference
     if (webViewRef.current) {
       webViewRef.current.reload();
     }
@@ -142,12 +184,18 @@ const WebViewScreen = () => {
       ) : (
         <WebView
           ref={webViewRef}
-          source={{ uri: WEB_APP_URL }}
+          source={{ uri: currentUrl }}
           style={styles.webview}
           injectedJavaScript={enhancedWebViewScript}
           onLoadStart={() => setIsLoading(true)}
           onLoadEnd={() => setIsLoading(false)}
           onError={handleError}
+          onHttpError={(event) => {
+            console.log('HTTP error:', event.nativeEvent.statusCode);
+            if (event.nativeEvent.statusCode >= 400) {
+              handleError();
+            }
+          }}
           javaScriptEnabled={true}
           domStorageEnabled={true}
           startInLoadingState={true}
@@ -161,6 +209,13 @@ const WebViewScreen = () => {
           applicationNameForUserAgent="democraC-AndroidApp"
           textZoom={100}
           sharedCookiesEnabled={false}
+          decelerationRate="normal"
+          overScrollMode="always"
+          scalesPageToFit={true}
+          allowFileAccess={true}
+          allowFileAccessFromFileURLs={false}
+          allowUniversalAccessFromFileURLs={false}
+          originWhitelist={['https://*']}
           // Handle errors by showing a simple error page
           renderError={(errorName) => (
             <OfflineScreen onRetry={handleRetry} />

@@ -32,7 +32,7 @@ rtlStyles.innerHTML = `
 `;
 document.head.appendChild(rtlStyles);
 
-// Disable caching for all API calls
+// Disable caching for all API calls and handle JSON parsing errors
 if (window.fetch) {
   const originalFetch = window.fetch;
   window.fetch = function(url, options) {
@@ -42,7 +42,7 @@ if (window.fetch) {
     // Add cache-busting for API calls
     if (typeof url === 'string' && url.includes('/api/')) {
       const separator = url.includes('?') ? '&' : '?';
-      url = url + separator + 'nocache=' + Date.now();
+      url = url + separator + 'nocache=' + Date.now() + '&mobile=true';
     }
     
     // Add no-cache headers
@@ -50,9 +50,78 @@ if (window.fetch) {
     options.headers['Pragma'] = 'no-cache';
     options.headers['Expires'] = '0';
     
-    return originalFetch(url, options);
+    // Add accepts header to ensure we get JSON
+    options.headers['Accept'] = 'application/json';
+    
+    // Return a promise that handles HTML response errors
+    return originalFetch(url, options).then(response => {
+      // Clone the response so we can check the content type
+      const contentType = response.headers.get('content-type');
+      
+      // If it's not JSON but we expected JSON, handle the error
+      if (url.includes('/api/') && (!contentType || !contentType.includes('application/json'))) {
+        // Create a custom error response with helpful message
+        return response.text().then(text => {
+          console.error('Received HTML instead of JSON:', text.substring(0, 100) + '...');
+          
+          // Return a fake response with error message
+          const errorData = {
+            error: true,
+            message: 'שגיאת שרת: התקבל HTML במקום JSON. בדוק את הכתובת או נסה שוב מאוחר יותר.',
+            items: []
+          };
+          
+          const blob = new Blob([JSON.stringify(errorData)], {type: 'application/json'});
+          const init = { status: 200, statusText: 'OK' };
+          return new Response(blob, init);
+        });
+      }
+      
+      return response;
+    }).catch(error => {
+      console.error('Fetch error:', error);
+      
+      // Create a custom error response
+      const errorData = {
+        error: true,
+        message: 'שגיאת תקשורת: ' + error.message,
+        items: []
+      };
+      
+      const blob = new Blob([JSON.stringify(errorData)], {type: 'application/json'});
+      const init = { status: 500, statusText: 'Network Error' };
+      return new Response(blob, init);
+    });
   };
 }
+
+// Add error handler for JSON.parse
+(function() {
+  const originalJSONParse = JSON.parse;
+  JSON.parse = function(text) {
+    try {
+      return originalJSONParse(text);
+    } catch (e) {
+      console.error('JSON parse error:', e, 'for text:', text.substring(0, 100) + '...');
+      
+      // Return a valid but empty response instead of throwing
+      if (text.includes('<!DOCTYPE') || text.includes('<html')) {
+        console.error('Received HTML instead of JSON');
+        return {
+          error: true,
+          message: 'שגיאת פענוח: התקבל HTML במקום JSON',
+          items: []
+        };
+      }
+      
+      return {
+        error: true,
+        message: 'שגיאת פענוח JSON: ' + e.message,
+        items: []
+      };
+    }
+  };
+})();
 
 // Intercept XMLHttpRequest to add cache-busting
 (function() {
