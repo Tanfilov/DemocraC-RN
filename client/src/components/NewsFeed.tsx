@@ -76,11 +76,24 @@ export default function NewsFeed() {
       }
     };
     
-    // Set up regular refresh timer
-    const timer = setInterval(() => {
-      console.log('Timer refresh triggered');
-      handleManualRefresh();
-    }, 30000); // Check for updates every 30 seconds
+    // Check if we're in a mobile app environment
+    const isMobileApp = window.location.search.includes('mobile=true') || 
+                       window.location.search.includes('webview=true') ||
+                       !!window.Capacitor || 
+                       /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    // Set up refresh timer only for desktop (not for mobile app)
+    let timer: ReturnType<typeof setInterval> | undefined = undefined;
+    
+    if (!isMobileApp) {
+      console.log('Desktop mode detected - enabling auto-refresh');
+      timer = setInterval(() => {
+        console.log('Timer refresh triggered');
+        handleManualRefresh();
+      }, 30000); // Check for updates every 30 seconds
+    } else {
+      console.log('Mobile app detected - auto-refresh disabled');
+    }
     
     // Set up visibility change listener for mobile app
     document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -102,7 +115,9 @@ export default function NewsFeed() {
     
     // Clean up listeners
     return () => {
-      clearInterval(timer);
+      if (timer !== undefined) {
+        clearInterval(timer);
+      }
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       if (window.Capacitor && window.Capacitor.isPluginAvailable('App')) {
         // @ts-ignore - Capacitor types might not be available
