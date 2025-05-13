@@ -19,14 +19,16 @@ interface PoliticianRatingModalProps {
   politicians: PoliticianMention[];
   isOpen: boolean;
   onClose: () => void;
-  articleId: string; // Add articleId to track ratings per article
+  onRated?: (politicianId: number, rating: number) => void; // Optional callback for ratings
+  articleId?: string; // Add articleId to track ratings per article (optional)
 }
 
 export default function PoliticianRatingModal({ 
   politicians, 
   isOpen, 
   onClose,
-  articleId
+  onRated,
+  articleId = 'global' // Default to global if no specific article ID is provided
 }: PoliticianRatingModalProps) {
   const [ratings, setRatings] = useState<Record<number, number>>({});
   const queryClient = useQueryClient();
@@ -109,6 +111,15 @@ export default function PoliticianRatingModal({
       
       // Force data refresh by invalidating the news query
       queryClient.invalidateQueries({ queryKey: ['/api/news'] });
+      
+      // Call the onRated callback if provided
+      if (onRated) {
+        Object.entries(ratings)
+          .filter(([_, rating]) => rating > 0)
+          .forEach(([politicianId, rating]) => {
+            onRated(parseInt(politicianId, 10), rating);
+          });
+      }
       
       // Show animation without showing the separate success screen
       setSubmissionComplete(true);
