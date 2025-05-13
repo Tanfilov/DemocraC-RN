@@ -39,10 +39,16 @@ if (window.fetch) {
     if (!options) options = {};
     if (!options.headers) options.headers = {};
     
-    // Add cache-busting for API calls
+    // Add cache-busting for API calls and redirect to WebView-specific endpoints
     if (typeof url === 'string' && url.includes('/api/')) {
+      // Replace standard news endpoint with WebView-specific endpoint
+      if (url.includes('/api/news')) {
+        url = '/api/webview/news';
+      }
+      
+      // Add cache busting parameters
       const separator = url.includes('?') ? '&' : '?';
-      url = url + separator + 'nocache=' + Date.now() + '&mobile=true';
+      url = url + separator + 'nocache=' + Date.now() + '&mobile=true&webview=true';
     }
     
     // Add no-cache headers
@@ -100,24 +106,63 @@ if (window.fetch) {
   const originalJSONParse = JSON.parse;
   JSON.parse = function(text) {
     try {
+      // Safeguard against empty or null inputs
+      if (!text) {
+        console.warn('Attempted to parse empty or null JSON');
+        return { error: true, message: 'קלט ריק', items: [] };
+      }
+      
+      // Sanitize input to handle potential HTML responses
+      if (typeof text === 'string') {
+        // Check for HTML content
+        if (text.includes('<!DOCTYPE') || 
+            text.includes('<html') || 
+            text.includes('<head') || 
+            text.includes('<body')) {
+          console.error('Detected HTML in JSON input, creating fallback response');
+          return {
+            error: true,
+            message: 'התקבל HTML במקום JSON - נסה לרענן את האפליקציה',
+            items: [],
+            timestamp: Date.now()
+          };
+        }
+        
+        // Try to extract JSON if embedded in other content
+        // This handles cases where we get JSON mixed with other text
+        if (!text.trim().startsWith('{') && !text.trim().startsWith('[')) {
+          const jsonMatch = text.match(/({[\s\S]*}|\[[\s\S]*\])/);
+          if (jsonMatch) {
+            console.warn('Extracted embedded JSON from mixed content');
+            text = jsonMatch[0];
+          }
+        }
+      }
+      
+      // Now try to parse the (potentially sanitized) input
       return originalJSONParse(text);
     } catch (e) {
-      console.error('JSON parse error:', e, 'for text:', text.substring(0, 100) + '...');
+      console.error('JSON parse error:', e, 'for text type:', typeof text);
+      if (typeof text === 'string') {
+        console.error('Preview:', text.substring(0, 100) + '...');
+      }
       
       // Return a valid but empty response instead of throwing
-      if (text.includes('<!DOCTYPE') || text.includes('<html')) {
+      if (typeof text === 'string' && (text.includes('<!DOCTYPE') || text.includes('<html'))) {
         console.error('Received HTML instead of JSON');
         return {
           error: true,
           message: 'שגיאת פענוח: התקבל HTML במקום JSON',
-          items: []
+          items: [],
+          timestamp: Date.now()
         };
       }
       
       return {
         error: true,
         message: 'שגיאת פענוח JSON: ' + e.message,
-        items: []
+        items: [],
+        timestamp: Date.now()
       };
     }
   };
@@ -128,8 +173,14 @@ if (window.fetch) {
   const originalOpen = XMLHttpRequest.prototype.open;
   XMLHttpRequest.prototype.open = function(method, url, ...rest) {
     if (typeof url === 'string' && url.includes('/api/')) {
+      // Replace standard news endpoint with WebView-specific endpoint
+      if (url.includes('/api/news')) {
+        url = '/api/webview/news';
+      }
+      
+      // Add cache busting parameters
       const separator = url.includes('?') ? '&' : '?';
-      url = url + separator + 'nocache=' + Date.now();
+      url = url + separator + 'nocache=' + Date.now() + '&mobile=true&webview=true';
     }
     return originalOpen.call(this, method, url, ...rest);
   };
