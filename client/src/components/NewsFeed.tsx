@@ -223,23 +223,32 @@ export default function NewsFeed() {
     }
   }, [newsResponse]);
   
-  // Process mobile RSS or use regular news
+  // Process news from all API response formats
   const news = useMemo(() => {
     if (!newsResponse) return [];
     
-    // Type assertion for narrowing
-    const mobileResponse = newsResponse as MobileRssResponse;
-    const regularResponse = newsResponse as RegularNewsResponse;
-    const webViewResponse = newsResponse as WebViewResponse;
+    console.log('Processing news response:', Object.keys(newsResponse));
     
-    // Handle the WebView response format
-    if ('items' in newsResponse && 'status' in newsResponse) {
-      // WebView-specific response format
-      console.log('Processing WebView response with', webViewResponse.count, 'items');
-      return webViewResponse.items;
+    // First check for the unified format which includes both 'news' and 'items' properties
+    if ('items' in newsResponse && Array.isArray(newsResponse.items)) {
+      console.log('Using unified response format with', newsResponse.items.length, 'items');
+      return newsResponse.items;
     }
-    // Handle the response from mobile RSS endpoint - type guard with new format
-    else if ('results' in newsResponse) {
+    
+    // Then check for WebView format
+    if ('status' in newsResponse && 'items' in newsResponse && Array.isArray(newsResponse.items)) {
+      console.log('Using WebView response format with', newsResponse.items.length, 'items');
+      return newsResponse.items;
+    }
+    
+    // Next check for the regular news format
+    if ('news' in newsResponse && Array.isArray(newsResponse.news)) {
+      console.log('Using regular response format with', newsResponse.news.length, 'news items');
+      return newsResponse.news;
+    }
+    
+    // Handle the response from mobile RSS endpoint
+    if ('results' in newsResponse) {
       try {
         console.log('Processing mobile RSS data from multiple sources');
         

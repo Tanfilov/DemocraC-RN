@@ -10,6 +10,60 @@ import axios from "axios";
 import * as xml2js from "xml2js";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Main news endpoint that works with both desktop and mobile
+  app.get("/api/news", async (req, res) => {
+    try {
+      console.log("News request received");
+      
+      // Set proper JSON content type header for better reliability
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      
+      // Set cache control headers to prevent browser caching
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+      
+      // Get the news - use cached data here for performance
+      const news = await rssService.fetchRssNews(false);
+      
+      // Process news items to add politicians
+      const processedNews = await Promise.all(news.map(async (newsItem) => {
+        try {
+          const detectedPoliticians = await politicianRecognitionService.detectPoliticians(
+            `${newsItem.title} ${newsItem.description || ''}`
+          );
+          
+          return {
+            ...newsItem,
+            politicians: detectedPoliticians
+          };
+        } catch (error) {
+          console.error("Error processing news item:", error);
+          return newsItem;
+        }
+      }));
+      
+      // Return in a format that works with all client formats - this format is compatible with WebView format
+      res.json({
+        status: "success",
+        timestamp: Date.now(),
+        news: processedNews, // Keep legacy format for backwards compatibility
+        count: processedNews.length,
+        items: processedNews,  // Add this for new WebView format
+      });
+    } catch (error) {
+      console.error("Error fetching news:", error);
+      res.status(200).json({
+        status: "error",
+        timestamp: Date.now(),
+        news: [],
+        count: 0,
+        items: [],
+        message: String(error)
+      });
+    }
+  });
+  
   // Simple mobile refresh endpoint - just returns the current time
   app.get("/api/mobile/ping", (req, res) => {
     console.log("Mobile ping received");
