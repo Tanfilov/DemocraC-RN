@@ -336,7 +336,7 @@ export default function NewsFeed() {
     
     // Regular news response - type guard
     if ('news' in newsResponse) {
-      return regularResponse.news || [];
+      return newsResponse.news || [];
     }
     
     return [];

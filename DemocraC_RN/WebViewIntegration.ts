@@ -39,16 +39,16 @@ if (window.fetch) {
     if (!options) options = {};
     if (!options.headers) options.headers = {};
     
-    // Add cache-busting for API calls and redirect to WebView-specific endpoints
-    if (typeof url === 'string' && url.includes('/api/')) {
-      // Replace standard news endpoint with WebView-specific endpoint
-      if (url.includes('/api/news')) {
-        url = '/api/webview/news';
-      }
-      
+    // Add cache-busting for API calls
+    if (typeof url === 'string' && url.includes('/api/')) {      
       // Add cache busting parameters
       const separator = url.includes('?') ? '&' : '?';
       url = url + separator + 'nocache=' + Date.now() + '&mobile=true&webview=true';
+      
+      // Set the webview parameter to true to help the server identify the client
+      if (url.includes('/api/news')) {
+        url = url + '&webview=true';
+      }
     }
     
     // Add no-cache headers
@@ -173,14 +173,14 @@ if (window.fetch) {
   const originalOpen = XMLHttpRequest.prototype.open;
   XMLHttpRequest.prototype.open = function(method, url, ...rest) {
     if (typeof url === 'string' && url.includes('/api/')) {
-      // Replace standard news endpoint with WebView-specific endpoint
-      if (url.includes('/api/news')) {
-        url = '/api/webview/news';
-      }
-      
       // Add cache busting parameters
       const separator = url.includes('?') ? '&' : '?';
       url = url + separator + 'nocache=' + Date.now() + '&mobile=true&webview=true';
+      
+      // Set the webview parameter to true to help the server identify the client
+      if (url.includes('/api/news')) {
+        url = url + '&webview=true';
+      }
     }
     return originalOpen.call(this, method, url, ...rest);
   };
